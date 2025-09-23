@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MDRRMO - Santa.Fe</title>
+  <title>MDRRMO - MADRIDEJOS</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -47,7 +47,7 @@
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-2">
           <i data-lucide="shield" class="w-7 h-7 text-brand-400"></i>
-          <h1 class="text-xl font-bold tracking-wide">MDRRMO Santa Fe</h1>
+          <h1 class="text-xl font-bold tracking-wide">MDRRMO MADRIDEJOS</h1>
         </div>
         <button class="md:hidden" @click="mobileMenu=false">
           <i data-lucide="x" class="w-6 h-6"></i>
@@ -64,15 +64,11 @@
         <a href="#announcements" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
           <i data-lucide="megaphone" class="w-5 h-5 text-blue-400"></i> Announcements
         </a>
-        <a href="#events" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
-          <i data-lucide="calendar" class="w-5 h-5 text-green-400"></i> Events
-        </a>
+       
         <a href="#alerts" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
           <i data-lucide="bell" class="w-5 h-5 text-rose-400"></i> Emergency Alerts
         </a>
-        <a href="#feedback" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
-          <i data-lucide="message-square" class="w-5 h-5 text-cyan-400"></i> Feedback
-        </a>
+        
       </nav>
 
       <form method="POST" action="{{ route('logout') }}" class="mt-6">

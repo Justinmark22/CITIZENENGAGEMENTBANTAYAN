@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MDRRMO Madrdejos Dashboard</title>
+<title>MDRRMO Bantayan Dashboard</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -39,7 +39,7 @@ tailwind.config = {
        :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
   <div class="flex items-center justify-between mb-10">
-    <h1 class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO Madrdejos</h1>
+    <h1 class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO Bantayan</h1>
     <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
   </div>
 
@@ -56,7 +56,7 @@ tailwind.config = {
     <!-- Reports -->
     <div>
       <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Reports</p>
-      <a href="{{ route('mdrrmo.reports-santafe') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+      <a href="{{ route('mdrrmo.reports-bantayan') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
         <i data-lucide="file-text" class="w-5 h-5"></i>
         <span>All Reports</span>
       </a>
@@ -65,7 +65,7 @@ tailwind.config = {
     <!-- Communications -->
     <div>
       <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Communications</p>
-      <a href="{{ route('mdrrmo.mdrrmo_santafe-announcements') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+      <a href="{{ route('mdrrmo.mdrrmo_bantayan-announcements') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
         <i data-lucide="megaphone" class="w-5 h-5"></i>
         <span>Announcements</span>
       </a>

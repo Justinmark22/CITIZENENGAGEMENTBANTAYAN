@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Madridejos - Reports</title>
+  <title>Santa Fe - Reports</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 
   <style>
     body {
@@ -16,7 +19,7 @@
     .sidebar {
       height: 100vh;
       width: 240px;
-        background: linear-gradient(180deg,rgba(225, 242, 127, 1), #0e0e0dff);
+       background: linear-gradient(180deg,rgb(130, 228, 174), #1d4ed8);
       color: #fff;
       position: fixed;
       top: 0;
@@ -104,10 +107,10 @@
   
 <!-- Logo Section -->
  <div class="text-center mb-4">
-  <img src="{{ asset('images/madri.png') }}" alt="Santa Fe Logo" class="img-fluid rounded-circle" style="max-height: 80px; width: 80px; object-fit: cover;">
+  <img src="{{ asset('images/santafe.png') }}" alt="Santa Fe Logo" class="img-fluid rounded-circle" style="max-height: 80px; width: 80px; object-fit: cover;">
 </div>
 
- <!-- Menu Links -->
+  <!-- Menu Links -->
   <a href="{{ route('dashboard.madridejosadmin') }}">
   <i data-lucide="home" class="me-2"></i> Dashboard
 </a>
@@ -126,16 +129,14 @@
   <a href="{{ route('madridejos.events') }}">
     <i data-lucide="calendar-days" class="me-2"></i> Events
   </a>
-<a href="{{ route('madridejos.updates.index') }}">
+ <a href="{{ route('madridejos.updates') }}">
   <i data-lucide="message-square" class="me-2"></i> Updates
 </a>
-
- 
  
 </div>
   <!-- Navbar -->
 <div class="navbar d-flex justify-content-between align-items-center">
-  <h5 class="mb-0">Reports Panel</h5>
+  <h5 class="mb-0">📣 Announcements Panel</h5>
     <div class="dropdown">
   <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 px-3 py-2 border rounded-pill shadow-sm"
           type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -200,8 +201,7 @@
 @forelse ($reports as $report)
   <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
-
-      <!-- Report Info -->
+<!-- Report Info -->
 <div class="flex-grow-1 pe-3">
   <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
       data-bs-toggle="modal"
@@ -214,6 +214,7 @@
      data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
         {{ $report->title }}
   </h6>
+
 
 
         <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
@@ -260,7 +261,7 @@
           <ul class="dropdown-menu dropdown-menu-end shadow rounded-3" style="z-index: 2000;">
             @if($report->status === 'Resolved')
               <li>
-                <a href="{{ route('madridejos.export', $report->id) }}" class="dropdown-item d-flex align-items-center gap-2 text-primary">
+                <a href="{{ route('santafe.export', $report->id) }}" class="dropdown-item d-flex align-items-center gap-2 text-primary">
                   <i data-lucide="download"></i> Export PDF
                 </a>
               </li>
@@ -381,21 +382,116 @@
 
         </div>
       </div>
+<!-- 🔹 Footer -->
+<div class="modal-footer bg-light border-top rounded-bottom px-4 py-3 d-flex justify-content-between align-items-center">
+  <small class="text-muted d-flex align-items-center gap-2">
+    <i data-lucide="cpu"></i> MADRIDEJOS
+  </small>
 
-      <!-- 🔹 Footer -->
-      <div class="modal-footer bg-light border-top rounded-bottom px-4 py-3 d-flex justify-content-between align-items-center">
-        <small class="text-muted d-flex align-items-center gap-2">
-          <i data-lucide="cpu"></i> Madridejos
-        </small>
-        <div class="d-flex gap-2">
-          <button type="button" class="btn btn-outline-secondary hover-scale" data-bs-dismiss="modal">
-            <i data-lucide="x" class="me-1"></i> Close
-          </button>
-          <button type="button" id="printButton" class="btn btn-primary hover-scale d-none" onclick="printReport()">
-            <i data-lucide="printer" class="me-1"></i> Print
-          </button>
-        </div>
+ @foreach ($reports as $report)
+  <div id="report-{{ $report->id }}" class="card border-0 shadow-sm mb-4">
+    <div class="card-body d-flex justify-content-between align-items-center">
+
+      <!-- Status badge -->
+      <span class="badge {{ $report->status === 'Forwarded' ? 'bg-success' : 'bg-secondary' }}" data-role="status-badge">
+        {{ $report->status ?? 'Pending' }}
+      </span>
+
+      <!-- Forward Dropdown -->
+      <div class="dropdown">
+        <button class="btn btn-outline-primary dropdown-toggle" type="button"
+                id="forwardDropdown{{ $report->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+          <i data-lucide="send" class="me-1"></i> Forward To
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3"
+            aria-labelledby="forwardDropdown{{ $report->id }}">
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'MDRRMO')">MDRRMO</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'PNP')">PNP</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'BFP')">BFP</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Health Office')">Health Office</a></li>
+        </ul>
       </div>
+
+    </div>
+  </div>
+@endforeach
+<script>
+function forwardReport(reportId, office) {
+  Swal.fire({
+    title: "Forward Report?",
+    text: `Do you want to forward report #${reportId} to ${office}?`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Yes, forward",
+    cancelButtonText: "Cancel"
+  }).then((result) => {
+    if (!result.isConfirmed) return;
+
+    Swal.fire({
+      title: "Forwarding...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    fetch("{{ route('reports.forward') }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        report_id: reportId,
+        forwarded_to: office
+      })
+    })
+    .then(async res => {
+      let data = await res.json();
+      Swal.close();
+      if (res.ok && data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Forwarded!",
+          text: `Report has been forwarded to ${office}.`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+        const badge = document.querySelector(`#report-${reportId} [data-role="status-badge"]`);
+        if (badge) {
+          badge.textContent = `Forwarded to ${office}`;
+          badge.classList.remove("bg-secondary");
+          badge.classList.add("bg-success");
+        }
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data.message || "Something went wrong."
+        });
+      }
+    })
+    .catch(err => {
+      Swal.close();
+      Swal.fire({
+        icon: "error",
+        title: "Request Failed",
+        text: err.message || "Please try again."
+      });
+    });
+  });
+}
+</script>
+
+    <!-- Existing Buttons -->
+    <button type="button" class="btn btn-outline-secondary hover-scale" data-bs-dismiss="modal">
+      <i data-lucide="x" class="me-1"></i> Close
+    </button>
+    <button type="button" id="printButton" class="btn btn-primary hover-scale d-none" onclick="printReport()">
+      <i data-lucide="printer" class="me-1"></i> Print
+    </button>
+  </div>
+</div>
 
     </div>
   </div>
@@ -424,7 +520,7 @@
 </style>
 
 <script>
-   document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('reportModal');
 
     modal.addEventListener('show.bs.modal', function (event) {
@@ -471,6 +567,7 @@
       document.getElementById('printButton').classList.toggle('d-none', status !== 'Ongoing');
     });
 });
+
 function printReport() {
   // Get modal content safely
   const getText = (id) => {

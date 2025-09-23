@@ -3,22 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>911  Bantayan</title>
+  <title>Bantayan 911</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide-icons/dist/umd/lucide.min.js"></script>
   <style>
     body { font-family: 'Roboto', sans-serif; scroll-behavior: smooth; }
-    
-    /* Fade-in + slide animations */
     @keyframes fadeInUp { 0% {opacity:0;transform:translateY(40px);} 100% {opacity:1;transform:translateY(0);} }
     .animate-fadeInUp { animation: fadeInUp 1s ease-out forwards; }
-    
-    /* Carousel */
     .carousel-slide { transition: opacity 1s ease-in-out, transform 1s ease-in-out; }
     .carousel-slide.active { transform: scale(1.05); opacity: 1 !important; }
-    
-    /* Mobile menu */
-    #mobileMenu { transition: all 0.4s ease-in-out; }
   </style>
 </head>
 
@@ -26,26 +20,30 @@
 
 <!-- ✅ Navbar -->
 <nav class="bg-white border-b border-gray-200 shadow-md fixed top-0 inset-x-0 z-50">
-  <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
+  <div class="max-w-7xl mx-auto px-6">
     <div class="flex justify-between items-center h-20">
-      <div class="flex items-center gap-4">
-        <img src="images/911.png" alt="911 Logo" class="w-14 h-14 rounded-full shadow-md">
-        <span class="text-2xl md:text-3xl font-extrabold text-red-600 tracking-tight">911 Bantayan</span>
+      <!-- Logo + Title -->
+      <div class="flex items-center gap-3">
+        <img src="images/citizen.png" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-md">
+        <span class="text-xl md:text-2xl font-extrabold text-blue-700 tracking-tight">  Bantayan 911</span>
       </div>
-      <div class="hidden md:flex space-x-8">
-        <a href="{{ url('/') }}" class="text-gray-800 hover:text-red-600 font-medium transition">Home</a>
-        <a href="{{ route('about') }}" class="text-gray-800 hover:text-red-600 font-medium transition">About</a>
-        <a href="{{ route('contact') }}" class="text-gray-800 hover:text-red-600 font-medium transition">Contact</a>
-        <a href="{{ route('faq') }}" class="text-gray-800 hover:text-red-600 font-medium transition">FAQs</a>
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex space-x-8 text-sm font-medium">
+        <a href="{{ url('/') }}" class="hover:text-blue-700 transition">Home</a>
+        <a href="{{ route('about') }}" class="hover:text-blue-700 transition">About</a>
+       
+        <a href="{{ route('contact') }}" class="hover:text-blue-700 transition">Contact</a>
+        <a href="{{ route('faq') }}" class="hover:text-blue-700 transition">FAQs</a>
       </div>
-      <div class="hidden md:flex items-center gap-4">
-        <a href="{{ url('/login') }}" class="text-lg font-bold text-red-600 hover:underline">Log In</a>
-        <a href="{{ url('/register') }}" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow-md transition">Register</a>
+      <!-- Desktop Auth -->
+      <div class="hidden md:flex items-center gap-3">
+        <a href="{{ url('/login') }}" class="text-sm font-bold text-blue-700 hover:underline">Log In</a>
+        <a href="{{ url('/register') }}" class="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-lg font-semibold text-sm shadow-md transition">Register</a>
       </div>
       <!-- Mobile Menu Button -->
       <div class="md:hidden">
         <button id="mobileMenuBtn" class="text-gray-800 focus:outline-none">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
@@ -54,140 +52,168 @@
   </div>
   <!-- Mobile Menu -->
   <div id="mobileMenu" class="md:hidden bg-white shadow-lg px-6 py-4 hidden">
-    <a href="{{ url('/') }}" class="block py-2 text-gray-800 hover:text-red-600">Home</a>
-    <a href="{{ route('about') }}" class="block py-2 text-gray-800 hover:text-red-600">About</a>
-    <a href="{{ route('contact') }}" class="block py-2 text-gray-800 hover:text-red-600">Contact</a>
-    <a href="{{ route('faq') }}" class="block py-2 text-gray-800 hover:text-red-600">FAQs</a>
-    <a href="{{ url('/login') }}" class="block py-2 font-bold text-red-600">Log In</a>
-    <a href="{{ url('/register') }}" class="block py-2 bg-red-600 text-white rounded-md text-center mt-2">Register</a>
+    <a href="{{ url('/') }}" class="block py-2 hover:text-blue-700">Home</a>
+    <a href="{{ route('about') }}" class="block py-2 hover:text-blue-700">About</a>
+  
+    <a href="{{ route('contact') }}" class="block py-2 hover:text-blue-700">Contact</a>
+    <a href="{{ route('faq') }}" class="block py-2 hover:text-blue-700">FAQs</a>
+    <a href="{{ url('/login') }}" class="block py-2 font-bold text-blue-700">Log In</a>
+    <a href="{{ url('/register') }}" class="block py-2 bg-blue-700 text-white rounded-md text-center mt-2">Register</a>
   </div>
 </nav>
-<!-- ✅ Hero Section -->
-<section class="bg-white pt-32 pb-20 border-b border-gray-200">
-  <div class="container mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
-    
-    <!-- Left Content -->
-    <div class="lg:w-1/2 text-center lg:text-left">
+
+<!-- ✅ Hero -->
+<section class="relative pt-32 pb-20 bg-gradient-to-r from-blue-50 to-blue-100">
+  <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
+    <!-- Left -->
+    <div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
       <h1 class="text-4xl lg:text-5xl font-extrabold mb-4 leading-tight text-gray-900">
-        Emergency Hotline for Bantayan Island
+        Strengthening Citizen Engagement in Bantayan Island
       </h1>
       <p class="text-lg text-gray-700 mb-6">
-        Call <span class="font-bold text-red-600">911</span> for emergencies. Fast, reliable, and connected to all LGUs across Bantayan, Santa Fe, and Madridejos.
+        A transparent and collaborative <span class="font-bold text-blue-700">digital platform</span> connecting citizens, local government units, and communities in Bantayan, Santa Fe, and Madridejos.
       </p>
-      <a href="{{ route('contact') }}" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold shadow-lg transition">
-        Call Now
+      <a href="{{ route('contact') }}" class="px-8 py-4 bg-blue-700 hover:bg-blue-800 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1">
+        Get Involved Today
       </a>
     </div>
-    
-    <!-- Right Image Carousel -->
+    <!-- Right -->
     <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-xl border border-gray-200">
       <img src="images/bantayan.png" class="carousel-slide active w-full h-80 object-cover">
       <img src="images/madridejos.png" class="carousel-slide absolute top-0 left-0 w-full h-80 object-cover opacity-0">
       <img src="images/sta.fe.png" class="carousel-slide absolute top-0 left-0 w-full h-80 object-cover opacity-0">
-      
-      <!-- Optional subtle overlay -->
       <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
     </div>
   </div>
 </section>
 
+<!-- ✅ Mission & Vision -->
+<section class="py-20 bg-gray-50">
+  <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+    <div>
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Mission</h2>
+      <p class="text-gray-600 leading-relaxed">To empower every citizen of Bantayan Island by providing an inclusive and transparent platform for engagement, collaboration, and governance. We aim to strengthen trust between communities and local government through open communication and active participation.</p>
+    </div>
+    <div>
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Vision</h2>
+      <p class="text-gray-600 leading-relaxed">A digitally empowered Bantayan Island where citizens, government, and communities work hand-in-hand to achieve sustainable development, safety, and resilience.</p>
+    </div>
+  </div>
+</section>
 
-<!-- ✅ Emergency Categories -->
-<section class="py-20 bg-gray-50 animate-fadeInUp">
-  <div class="container mx-auto px-6 text-center">
-    <h2 class="text-4xl font-bold mb-6 text-gray-900 tracking-tight">Emergency Categories</h2>
-    <p class="text-lg text-gray-600 mb-14 max-w-2xl mx-auto">
-      Select the type of emergency you need help with. Our team will connect you to the right responders immediately.
-    </p>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-      <!-- Medical -->
-      <div class="bg-white border rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 p-10">
-        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-6 rounded-full bg-red-100 text-red-600 text-3xl">
-          🚑
-        </div>
-        <h3 class="text-xl font-semibold mb-3 text-gray-900">Medical Emergencies</h3>
-        <p class="text-gray-600">Immediate assistance for accidents, injuries, and urgent health crises.</p>
+<!-- ✅ Services -->
+<section class="py-20 bg-white">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <h2 class="text-3xl font-bold mb-8">🌐 Featured Services</h2>
+    <div class="grid md:grid-cols-3 gap-10">
+      <div class="p-8 bg-blue-50 rounded-xl shadow hover:shadow-lg transition">
+        <h3 class="font-bold text-xl text-blue-700 mb-3">📢 Announcements</h3>
+        <p class="text-gray-600">Stay informed with real-time updates from your community leaders.</p>
       </div>
-
-      <!-- Fire -->
-      <div class="bg-white border rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 p-10">
-        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-6 rounded-full bg-red-100 text-red-600 text-3xl">
-          🔥
-        </div>
-        <h3 class="text-xl font-semibold mb-3 text-gray-900">Fire & Rescue</h3>
-        <p class="text-gray-600">Rapid response to fire incidents, rescue operations, and disaster aid.</p>
+      <div class="p-8 bg-green-50 rounded-xl shadow hover:shadow-lg transition">
+        <h3 class="font-bold text-xl text-green-700 mb-3">📑 Certificate Requests</h3>
+        <p class="text-gray-600">Request barangay certificates, clearances, and other documents online.</p>
       </div>
-
-      <!-- Police -->
-      <div class="bg-white border rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 p-10">
-        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-6 rounded-full bg-red-100 text-red-600 text-3xl">
-          👮
-        </div>
-        <h3 class="text-xl font-semibold mb-3 text-gray-900">Police Assistance</h3>
-        <p class="text-gray-600">Report crimes, disturbances, or request urgent law enforcement support.</p>
+      <div class="p-8 bg-yellow-50 rounded-xl shadow hover:shadow-lg transition">
+        <h3 class="font-bold text-xl text-yellow-700 mb-3">🚨 Report Incidents</h3>
+        <p class="text-gray-600">Submit reports on emergencies, issues, or concerns directly to your LGU.</p>
       </div>
     </div>
   </div>
 </section>
 
 
-<!-- ✅ Bantayan Island Map -->
-<section class="py-20 bg-gray-50 animate-fadeInUp">
-  <div class="container mx-auto px-6 text-center">
-    <h2 class="text-3xl font-bold mb-8">📍 Bantayan Island Coverage</h2>
-    <p class="text-gray-600 mb-6">Our 911 services cover the entire island — Bantayan, Santa Fe, and Madridejos.</p>
-    <div class="w-full h-96 rounded-xl overflow-hidden shadow-2xl border bg-white bg-opacity-80 backdrop-blur-lg">
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62891.93853362131!2d123.66712135292486!3d11.171104087352572!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33067ebff1b14b7f%3A0x9e1082c1a657d816!2sBantayan%20Island!5e0!3m2!1sen!2sph!4v1697903417620!5m2!1sen!2sph" 
-        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+<!-- ✅ News & Updates -->
+<section class="py-20 bg-white">
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="text-3xl font-bold mb-8 text-center">📰 Latest News & Updates</h2>
+    <div class="grid md:grid-cols-3 gap-10">
+      <div class="p-6 border rounded-lg shadow hover:shadow-xl transition">
+        <img src="images/news1.jpg" class="w-full h-40 object-cover rounded-lg mb-4">
+        <h3 class="font-bold text-lg mb-2">Barangay Coastal Cleanup 2025</h3>
+        <p class="text-gray-600 text-sm">Hundreds of citizens joined hands for a cleaner Bantayan shoreline.</p>
+      </div>
+      <div class="p-6 border rounded-lg shadow hover:shadow-xl transition">
+        <img src="images/news2.jpg" class="w-full h-40 object-cover rounded-lg mb-4">
+        <h3 class="font-bold text-lg mb-2">Digital Skills Training</h3>
+        <p class="text-gray-600 text-sm">Youth were trained in basic coding and digital literacy for future opportunities.</p>
+      </div>
+      <div class="p-6 border rounded-lg shadow hover:shadow-xl transition">
+        <img src="images/news3.jpg" class="w-full h-40 object-cover rounded-lg mb-4">
+        <h3 class="font-bold text-lg mb-2">Emergency Response Drill</h3>
+        <p class="text-gray-600 text-sm">Santa Fe held a community-wide drill to strengthen disaster preparedness.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ✅ Call-to-Action -->
-<section class="relative mt-20 animate-fadeInUp">
-  <div class="relative h-80 bg-cover bg-center flex items-center justify-center" style="background-image: url('/images/hasd.png');">
+<!-- ✅ Newsletter Signup -->
+<section class="py-16 bg-blue-700 text-white text-center">
+  <div class="max-w-3xl mx-auto px-6">
+    <h2 class="text-3xl font-bold mb-4">📩 Stay Updated</h2>
+    <p class="mb-6 text-blue-100">Subscribe to our newsletter and get the latest updates on community events, reports, and announcements.</p>
+    <form class="flex flex-col md:flex-row items-center justify-center gap-4">
+      <input type="email" placeholder="Enter your email" class="w-full md:w-2/3 px-4 py-3 rounded-lg text-gray-800" required>
+      <button class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-6 py-3 rounded-lg font-bold shadow-md transition">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+<!-- ✅ CTA -->
+<section class="relative mt-20">
+  <div class="relative h-80 bg-cover bg-center flex items-center justify-center" style="background-image: url('/images/community.png');">
     <div class="bg-black bg-opacity-60 absolute inset-0"></div>
     <div class="z-10 text-center text-white px-6">
-      <h2 class="text-3xl font-semibold mb-4">One Island. One Hotline. <span class="text-red-500">911 Bantayan</span></h2>
-      <a href="tel:911" class="inline-block mt-4 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow-md transition">📞 Call Now</a>
+      <h2 class="text-3xl font-semibold mb-4">Empowering Communities with <span class="text-blue-400">Citizen Engagement</span></h2>
+      <a href="{{ route('contact') }}" class="inline-block mt-4 bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-bold text-lg shadow-md transition">Join Now</a>
     </div>
   </div>
 </section>
 
 <!-- ✅ Footer -->
 <footer class="bg-gray-900 text-gray-300 mt-16">
-  <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-10">
+  <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
     <div>
-      <h4 class="text-white text-lg font-bold mb-4">Emergency Links</h4>
+      <h4 class="text-white text-lg font-bold mb-4">Quick Links</h4>
       <ul class="space-y-3 text-sm">
-        <li><a href="#" class="hover:text-red-400">• Bantayan MDRRMO</a></li>
-        <li><a href="#" class="hover:text-red-400">• Santa Fe MDRRMO</a></li>
-        <li><a href="#" class="hover:text-red-400">• Madridejos MDRRMO</a></li>
+        <li><a href="#" class="hover:text-blue-400">Bantayan Updates</a></li>
+        <li><a href="#" class="hover:text-blue-400">Santa Fe Updates</a></li>
+        <li><a href="#" class="hover:text-blue-400">Madridejos Updates</a></li>
       </ul>
     </div>
     <div>
       <h4 class="text-white text-lg font-bold mb-4">Legal & Policies</h4>
       <ul class="space-y-3 text-sm">
-        <li><a href="{{ route('privacy.policy') }}" class="hover:text-red-400">• Privacy Policy</a></li>
-        <li><a href="{{ route('terms.service') }}" class="hover:text-red-400">• Terms of Service</a></li>
+        <li><a href="{{ route('privacy.policy') }}" class="hover:text-blue-400">Privacy Policy</a></li>
+        <li><a href="{{ route('terms.service') }}" class="hover:text-blue-400">Terms of Service</a></li>
       </ul>
     </div>
     <div>
-      <h4 class="text-white text-lg font-bold mb-4">About 911 Bantayan</h4>
-      <p class="text-gray-400 text-sm">911 Hotline Bantayan connects citizens to emergency services across the island, ensuring quick response and saving lives.</p>
+      <h4 class="text-white text-lg font-bold mb-4">Contact</h4>
+      <p class="text-gray-400 text-sm">📍 Bantayan Island, Cebu<br>📧 info@citizenengage.ph<br>☎ +63 912 345 6789</p>
+    </div>
+    <div>
+      <h4 class="text-white text-lg font-bold mb-4">Stay Connected</h4>
+      <div class="flex flex-col space-y-2 text-sm">
+        <a href="#" class="hover:text-blue-400">🌐 Facebook</a>
+        <a href="#" class="hover:text-blue-400">🐦 Twitter</a>
+        <a href="#" class="hover:text-blue-400">📷 Instagram</a>
+        <a href="#" class="hover:text-blue-400">▶ YouTube</a>
+      </div>
     </div>
   </div>
   <div class="border-t border-gray-700 mt-8">
     <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
-      <p>&copy; 2025 911 Hotline Bantayan — Saving Lives, Protecting Communities</p>
+      <p>&copy; 2025 Citizen Engagement Bantayan — Connecting People, Building Communities</p>
+      <p class="mt-2 md:mt-0">Powered by Local Government & Communities</p>
     </div>
   </div>
 </footer>
 
 <!-- ✅ Scripts -->
 <script>
-  // Carousel
+  lucide.createIcons();
+
   const slides = document.querySelectorAll('.carousel-slide');
   let current = 0;
   setInterval(() => {
@@ -198,7 +224,6 @@
     slides[current].style.opacity = 1;
   }, 4000);
 
-  // Mobile menu toggle
   const mobileBtn = document.getElementById("mobileMenuBtn");
   const mobileMenu = document.getElementById("mobileMenu");
   mobileBtn.addEventListener("click", () => {

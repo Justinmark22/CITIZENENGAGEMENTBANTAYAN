@@ -46,6 +46,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\MunicipalAdminController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\MDRRMOController;
+use App\Http\Controllers\WasteDashboardController;
+use App\Http\Controllers\WaterDashboardController;
 
 
 
@@ -145,6 +147,23 @@ if (strtolower($user->role) === 'mdrrmo') {
         default      => redirect('/dashboard'),
     };
 }
+if (strtolower($user->role) === 'waste') {
+    return match ($user->location) {
+        'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
+        'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
+        'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
+        default      => redirect('/dashboard'),
+    };
+}
+if (strtolower($user->role) === 'water') {
+    return match ($user->location) {
+        'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
+        'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
+        'Madridejos' => redirect()->route('dashboard.water-madridejos'),
+        default      => redirect('/dashboard'),
+    };
+}
+
 
 // ✅ Citizens or fallback
 return match ($user->location) {
@@ -699,3 +718,66 @@ Route::get('/mdrrmo/reports/madridejos', [MDRRMOController::class, 'reportsMadri
 Route::post('/forwarded-reports/{report}/update-status', [MDRRMOController::class, 'updateStatus']);
 Route::get('/dashboard/mdrrmo-santafe', [MDRRMOController::class, 'santafe'])->name('mdrrmo.santafe');
 Route::get('/mdrrmo/stats', [MDRRMOController::class, 'stats'])->name('mdrrmo.stats');
+//
+Route::get('/mdrrmo/santafe-announcements', [MDRRMOController::class, 'santafeAnnouncements'])
+    ->name('mdrrmo.mdrrmo_santafe-announcements');
+    Route::get('/resolved-reports', [MDRRMOController::class, 'getResolvedReports']);
+  Route::post('/post-announcement', [MDRRMOController::class, 'postAnnouncement']);
+//
+// ---------------- MADRIDEJOS ----------------
+Route::get('/mdrrmo/madridejos-announcements', [MDRRMOController::class, 'madridejosAnnouncements'])
+    ->name('mdrrmo.mdrrmo_madridejos-announcements');
+
+Route::get('/resolved-reports/madridejos', function () {
+    return app(\App\Http\Controllers\MDRRMOController::class)->getResolvedReports('Madridejos');
+})->name('mdrrmo.madridejos-resolved');
+
+Route::post('/post-announcement/madridejos', [MDRRMOController::class, 'postAnnouncement'])
+    ->name('mdrrmo.madridejos-post-announcement');
+    // ---------------- MADRIDEJOS REPORTS / UPDATES ----------------
+Route::get('/mdrrmo/madridejos-updates', [MDRRMOController::class, 'reportsMadridejos'])
+    ->name('madridejos.updates');
+    //
+    Route::get('/api/resolved-reports/madridejos', [MDRRMOController::class, 'getResolvedReportsMadridejos']);
+//
+// ---------------- BANTAYAN ----------------
+Route::get('/mdrrmo/bantayan-announcements', [MDRRMOController::class, 'bantayanAnnouncements'])
+    ->name('mdrrmo.mdrrmo_bantayan-announcements'); // fixed typo
+
+Route::get('/resolved-reports/bantayan', function () {
+    return app(\App\Http\Controllers\MDRRMOController::class)->getResolvedReportsBantayan();
+})->name('mdrrmo.bantayan-resolved');
+
+Route::post('/post-announcement/bantayan', [MDRRMOController::class, 'postAnnouncement'])
+    ->name('mdrrmo.bantayan-post-announcement');
+
+// ---------------- BANTAYAN REPORTS / UPDATES ----------------
+Route::get('/mdrrmo/bantayan-updates', [MDRRMOController::class, 'reportsBantayan'])
+    ->name('bantayan.updates');
+
+Route::get('/api/resolved-reports/bantayan', [MDRRMOController::class, 'getResolvedReportsBantayan']);
+//
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard/waste-santafe', [WasteDashboardController::class, 'santafe'])->name('dashboard.waste-santafe');
+    Route::get('/dashboard/waste-bantayan', [WasteDashboardController::class, 'bantayan'])->name('dashboard.waste-bantayan');
+    Route::get('/dashboard/waste-madridejos', [WasteDashboardController::class, 'madridejos'])->name('dashboard.waste-madridejos');
+});
+
+/// Reports
+Route::get('/reports/waste/santafe', [WasteDashboardController::class, 'reportsSantafe'])->name('waste.reports-santafe');
+Route::get('/reports/waste/bantayan', [WasteDashboardController::class, 'reportsBantayan'])->name('waste.reports-bantayan');
+Route::get('/reports/waste/madridejos', [WasteDashboardController::class, 'reportsMadridejos'])->name('waste.reports-madridejos');
+
+Route::put('/reports/{report}/{status}', [WasteDashboardController::class, 'updateStatus'])
+    ->name('reports.updateStatus');
+
+Route::post('/rerouted-reports/{report}/update-status', [WasteDashboardController::class, 'updateStatus']);
+Route::post('/forwarded-reports/{report}/update-status', [WasteDashboardController::class, 'updateStatus']);
+
+// water manangement
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard/water-santafe', [WaterDashboardController::class, 'santafe'])->name('dashboard.water-santafe');
+    Route::get('/dashboard/water-bantayan', [WaterDashboardController::class, 'bantayan'])->name('dashboard.water-bantayan');
+    Route::get('/dashboard/water-madridejos', [WaterDashboardController::class, 'madridejos'])->name('dashboard.water-madridejos');
+});

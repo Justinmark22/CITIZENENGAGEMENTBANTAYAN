@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login | Citizen Engagement Platform</title>
+  <title>Login | Bantayan 911</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <style>
     body {
@@ -78,7 +78,7 @@
       <!-- Left Login Section -->
       <div class="col-lg-6 p-5 form-animate">
         <div class="text-center mb-4">
-          <h1 class="fw-bold">Citizen Engagement</h1>
+          <h1 class="fw-bold">Bantayan 911</h1>
         </div>
 
         <div class="d-flex align-items-center text-muted-custom mb-4">
