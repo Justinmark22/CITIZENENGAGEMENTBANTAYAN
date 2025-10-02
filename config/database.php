@@ -49,7 +49,7 @@ return [
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'u802714156_bantayan911'),
-            'username' => env('DB_USERNAME', 'u802714156_bantayan911'),
+            'username' => env('DB_USERNAME', 'u802714156_bantayan_911'),
             'password' => env('DB_PASSWORD', '1Bantayan911'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
