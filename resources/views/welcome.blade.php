@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" x-data="{ open: false }">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide-icons/dist/umd/lucide.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <style>
     body { font-family: 'Roboto', sans-serif; scroll-behavior: smooth; }
     @keyframes fadeInUp { 0% {opacity:0;transform:translateY(40px);} 100% {opacity:1;transform:translateY(0);} }
@@ -15,6 +16,7 @@
     .carousel-slide.active { transform: scale(1.05); opacity: 1 !important; }
   </style>
 </head>
+
 <body class="bg-white text-gray-900">
 
 <!-- Navbar -->
@@ -26,6 +28,7 @@
         <img src="images/citizen.png" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-md">
         <span class="text-xl md:text-2xl font-extrabold text-blue-700 tracking-tight">Bantayan 911</span>
       </div>
+
       <!-- Desktop Menu -->
       <div class="hidden md:flex space-x-8 text-sm font-medium">
         <a href="{{ url('/') }}" class="hover:text-blue-700 transition">Home</a>
@@ -33,29 +36,35 @@
         <a href="{{ route('contact') }}" class="hover:text-blue-700 transition">Contact</a>
         <a href="{{ route('faq') }}" class="hover:text-blue-700 transition">FAQs</a>
       </div>
-      <!-- Auth Buttons -->
+
+      <!-- Desktop Auth -->
       <div class="hidden md:flex items-center gap-3">
         <a href="{{ url('/login') }}" class="text-sm font-bold text-blue-700 hover:underline">Log In</a>
         <a href="{{ url('/register') }}" class="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-lg font-semibold text-sm shadow-md transition">Register</a>
       </div>
+
       <!-- Mobile Menu Button -->
       <div class="md:hidden">
-        <button id="mobileMenuBtn" class="text-gray-800 focus:outline-none">
-          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button @click="open = !open" class="text-gray-800 focus:outline-none">
+          <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
       </div>
     </div>
-  </div>
-  <!-- Mobile Menu -->
-  <div id="mobileMenu" class="md:hidden bg-white shadow-lg px-6 py-4 hidden space-y-2">
-    <a href="{{ url('/') }}" class="block py-2 hover:text-blue-700">Home</a>
-    <a href="{{ route('about') }}" class="block py-2 hover:text-blue-700">About</a>
-    <a href="{{ route('contact') }}" class="block py-2 hover:text-blue-700">Contact</a>
-    <a href="{{ route('faq') }}" class="block py-2 hover:text-blue-700">FAQs</a>
-    <a href="{{ url('/login') }}" class="block py-2 font-bold text-blue-700">Log In</a>
-    <a href="{{ url('/register') }}" class="block py-2 bg-blue-700 text-white rounded-md text-center mt-2">Register</a>
+
+    <!-- Mobile Menu -->
+    <div x-show="open" x-transition class="md:hidden bg-white shadow-lg px-6 py-4 space-y-2">
+      <a href="{{ url('/') }}" class="block py-2 hover:text-blue-700">Home</a>
+      <a href="{{ route('about') }}" class="block py-2 hover:text-blue-700">About</a>
+      <a href="{{ route('contact') }}" class="block py-2 hover:text-blue-700">Contact</a>
+      <a href="{{ route('faq') }}" class="block py-2 hover:text-blue-700">FAQs</a>
+      <a href="{{ url('/login') }}" class="block py-2 font-bold text-blue-700">Log In</a>
+      <a href="{{ url('/register') }}" class="block py-2 bg-blue-700 text-white rounded-md text-center mt-2">Register</a>
+    </div>
   </div>
 </nav>
 
@@ -125,19 +134,19 @@
 <section class="py-20 bg-white">
   <div class="max-w-6xl mx-auto px-6">
     <h2 class="text-3xl font-bold mb-8 text-center">📰 Latest News & Updates</h2>
-    <div class="grid md:grid-cols-3 gap-8">
+    <div class="grid md:grid-cols-3 gap-10">
       <div class="p-6 border rounded-lg shadow hover:shadow-xl transition transform hover:-translate-y-1">
-        <img src="images/news1.jpg" class="w-full h-40 sm:h-48 object-cover rounded-lg mb-4">
+        <img src="images/news1.jpg" class="w-full h-40 object-cover rounded-lg mb-4">
         <h3 class="font-bold text-lg mb-2">Barangay Coastal Cleanup 2025</h3>
         <p class="text-gray-600 text-sm">Hundreds of citizens joined hands for a cleaner Bantayan shoreline.</p>
       </div>
       <div class="p-6 border rounded-lg shadow hover:shadow-xl transition transform hover:-translate-y-1">
-        <img src="images/news2.jpg" class="w-full h-40 sm:h-48 object-cover rounded-lg mb-4">
+        <img src="images/news2.jpg" class="w-full h-40 object-cover rounded-lg mb-4">
         <h3 class="font-bold text-lg mb-2">Digital Skills Training</h3>
         <p class="text-gray-600 text-sm">Youth were trained in basic coding and digital literacy for future opportunities.</p>
       </div>
       <div class="p-6 border rounded-lg shadow hover:shadow-xl transition transform hover:-translate-y-1">
-        <img src="images/news3.jpg" class="w-full h-40 sm:h-48 object-cover rounded-lg mb-4">
+        <img src="images/news3.jpg" class="w-full h-40 object-cover rounded-lg mb-4">
         <h3 class="font-bold text-lg mb-2">Emergency Response Drill</h3>
         <p class="text-gray-600 text-sm">Santa Fe held a community-wide drill to strengthen disaster preparedness.</p>
       </div>
@@ -152,18 +161,18 @@
     <p class="mb-6 text-blue-100">Subscribe to our newsletter and get the latest updates on community events, reports, and announcements.</p>
     <form class="flex flex-col md:flex-row items-center justify-center gap-4">
       <input type="email" placeholder="Enter your email" class="w-full md:w-2/3 px-4 py-3 rounded-lg text-gray-800" required>
-      <button class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-6 py-3 rounded-lg font-bold shadow-md transition transform hover:-translate-y-1">Subscribe</button>
+      <button class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-6 py-3 rounded-lg font-bold shadow-md transition">Subscribe</button>
     </form>
   </div>
 </section>
 
 <!-- CTA -->
 <section class="relative mt-20">
-  <div class="relative h-80 sm:h-96 bg-cover bg-center flex items-center justify-center" style="background-image: url('/images/community.png');">
-    <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+  <div class="relative h-80 bg-cover bg-center flex items-center justify-center" style="background-image: url('/images/community.png');">
+    <div class="bg-black bg-opacity-60 absolute inset-0"></div>
     <div class="z-10 text-center text-white px-6">
-      <h2 class="text-3xl sm:text-4xl font-semibold mb-4">Empowering Communities with <span class="text-blue-400">Citizen Engagement</span></h2>
-      <a href="{{ route('contact') }}" class="inline-block mt-4 bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-bold text-lg shadow-md transition transform hover:-translate-y-1">Join Now</a>
+      <h2 class="text-3xl font-semibold mb-4">Empowering Communities with <span class="text-blue-400">Citizen Engagement</span></h2>
+      <a href="{{ route('contact') }}" class="inline-block mt-4 bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-bold text-lg shadow-md transition">Join Now</a>
     </div>
   </div>
 </section>
@@ -212,7 +221,6 @@
 <script>
   lucide.createIcons();
 
-  // Carousel
   const slides = document.querySelectorAll('.carousel-slide');
   let current = 0;
   setInterval(() => {
@@ -222,11 +230,7 @@
     slides[current].classList.add('active');
     slides[current].style.opacity = 1;
   }, 4000);
-
-  // Mobile menu
-  const mobileBtn = document.getElementById("mobileMenuBtn");
-  const mobileMenu = document.getElementById("mobileMenu");
-  mobileBtn.addEventListener("click", () => mobileMenu.classList.toggle("hidden"));
 </script>
+
 </body>
 </html>
