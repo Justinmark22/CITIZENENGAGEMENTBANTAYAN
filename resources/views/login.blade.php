@@ -1,148 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login | Bantayan 911</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      background-color: #111827;
-      color: white;
-      animation: fadeInBody 1s ease-in-out;
-      font-family: 'Segoe UI', sans-serif;
+    body { font-family: 'Roboto', sans-serif; }
+    @keyframes fadeInUp {
+      0% {opacity:0; transform: translateY(30px);}
+      100% {opacity:1; transform: translateY(0);}
     }
-
-    @keyframes fadeInBody {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes slideFadeIn {
-      0% { transform: translateY(30px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
-    }
-
-    .form-animate { animation: slideFadeIn 0.8s ease-out; }
-    .logo-animate { animation: slideFadeIn 1s ease-out; }
-
-    .form-control {
-      background-color: #374151;
-      border-color: #4b5563;
-      color: white;
-      transition: background-color 0.3s ease, border-color 0.3s ease;
-    }
-
-    .form-control:focus {
-      background-color: #374151;
-      border-color: #6366f1;
-      color: white;
-      box-shadow: none;
-    }
-
-    .border-custom { border-color: #4b5563 !important; }
-    .text-muted-custom { color: #9ca3af !important; }
-
-    .btn-indigo {
-      background-color: #6366f1;
-      transition: transform 0.3s ease, background-color 0.3s ease;
-    }
-
-    .btn-indigo:hover {
-      transform: scale(1.02);
-      background-color: #4f46e5 !important;
-    }
+    .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
   </style>
 </head>
-<body class="d-flex justify-content-center align-items-center min-vh-100">
+<body class="bg-gray-900 flex items-center justify-center min-h-screen px-4">
 
-  <div class="container">
-    <div class="row bg-dark rounded-4 overflow-hidden shadow-lg flex-column flex-lg-row-reverse">
-      
-      <!-- Left Login Section -->
-      <div class="col-lg-6 p-5 form-animate order-2 order-lg-1">
-        <div class="text-center mb-4 d-lg-none">
-          <img src="{{ asset('images/citizen.png') }}"
-               alt="Citizen Logo"
-               class="mb-3 rounded-circle shadow"
-               style="height: 80px; width: 80px; object-fit: cover;">
-          <h1 class="fw-bold">Bantayan 911</h1>
-        </div>
+  <div class="w-full max-w-4xl bg-gray-800 rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+    
+    <!-- Logo & Description (Left on Desktop, Top on Mobile) -->
+    <div class="flex flex-col justify-center items-center p-8 lg:p-12 text-center lg:text-left animate-fadeInUp">
+      <img src="{{ asset('images/citizen.png') }}" alt="Citizen Logo"
+           class="w-24 h-24 rounded-full shadow-lg mb-4 lg:mb-6">
+      <h1 class="text-3xl font-bold text-white mb-2">Bantayan 911</h1>
+      <p class="text-gray-300 text-sm lg:text-base">
+        A platform designed to strengthen community interaction and empower citizens through inclusive digital services.
+      </p>
+    </div>
 
-        <div class="d-flex align-items-center text-muted-custom mb-4">
-          <div class="flex-grow-1 border-top border-custom"></div>
-          <div class="mx-3 small">Sign in here</div>
-          <div class="flex-grow-1 border-top border-custom"></div>
-        </div>
+    <!-- Login Form -->
+    <div class="p-8 lg:p-12 animate-fadeInUp">
+      <h2 class="text-2xl font-bold text-white mb-6 text-center lg:text-left">Sign in to your account</h2>
 
-        @if ($errors->any())
-        <div class="text-danger small mb-3">
-          <ul class="mb-0 ps-3">
+      @if ($errors->any())
+        <div class="text-red-500 text-sm mb-4">
+          <ul class="list-disc pl-5">
             @foreach ($errors->all() as $error)
               <li>{{ $error }}</li>
             @endforeach
           </ul>
         </div>
-        @endif
+      @endif
 
-        <form method="POST" action="{{ route('login.submit') }}">
-          @csrf
-          <div class="mb-3">
-            <label for="email" class="form-label small">Email</label>
-            <input type="email" id="email" name="email"
-                   value="{{ old('email') }}"
-                   required class="form-control"
-                   oninput="this.value = this.value.replace(/[^A-Za-z@.]/g, '')"
-                   title="Only letters, @, and . are allowed"/>
+      <form method="POST" action="{{ route('login.submit') }}" class="space-y-4">
+        @csrf
+        <div>
+          <label for="email" class="block text-gray-300 text-sm mb-1">Email</label>
+          <input type="email" id="email" name="email" required
+                 value="{{ old('email') }}"
+                 class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                 oninput="this.value = this.value.replace(/[^A-Za-z@.]/g, '')"
+                 title="Only letters, @, and . are allowed">
+        </div>
+
+        <div>
+          <label for="password" class="block text-gray-300 text-sm mb-1">Password</label>
+          <div class="relative">
+            <input type="password" id="password" name="password" required
+                   class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button type="button" id="togglePassword"
+                    class="absolute right-3 top-2.5 text-gray-400 hover:text-indigo-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
           </div>
+        </div>
 
-          <div class="mb-3">
-            <label for="password" class="form-label small">Password</label>
-            <div class="input-group">
-              <input type="password" id="password" name="password" required class="form-control"/>
-              <span id="togglePassword" class="input-group-text bg-transparent border-custom text-muted-custom" style="cursor: pointer;">
-                <svg xmlns="http://www.w3.org/2000/svg" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </span>
-            </div>
-          </div>
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center text-sm text-gray-300">
+  <label class="inline-flex items-center gap-2 mb-2 md:mb-0">
+    <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-500">
+    Remember me for a week
+  </label>
+  <a href="{{ route('password.request') }}" class="text-indigo-400 hover:underline">Forgot Password?</a>
+</div>
 
-          <div class="d-flex justify-content-between align-items-center mb-3 small">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="remember"/>
-              <label class="form-check-label" for="remember">Remember me for a week</label>
-            </div>
-            <a href="" class="text-primary text-decoration-none">register here</a>
-          </div>
-          <button type="submit" class="btn btn-indigo w-100 text-white">Continue</button>
-        </form>
-      </div>
+        <button type="submit"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition transform hover:scale-105">
+          Continue
+        </button>
 
-      <!-- Right Section with Logo & Description -->
-      <div class="col-lg-6 p-5 text-center logo-animate order-1 order-lg-2 d-none d-lg-flex flex-column justify-content-center align-items-center">
-        <img src="{{ asset('images/citizen.png') }}"
-             alt="Citizen Engagement Logo"
-             class="mb-3 rounded-circle shadow"
-             style="height: 100px; width: 100px; object-fit: cover;">
-        <h1 class="fw-bold mb-2">Bantayan 911</h1>
-        <p class="text-muted-custom small mt-2 text-center">
-          A platform designed to strengthen community interaction and<br>
-          empower citizens through inclusive digital services.
+        <p class="text-center text-gray-400 text-sm mt-2">
+          Don't have an account? <a href="{{ route('register') }}" class="text-indigo-400 hover:underline">Register here</a>
         </p>
-      </div>
-
+      </form>
     </div>
   </div>
 
   <script>
-    document.getElementById("togglePassword").addEventListener("click", function () {
-      const passwordInput = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+
+    togglePassword.addEventListener("click", () => {
       const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
       passwordInput.setAttribute("type", type);
     });
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
