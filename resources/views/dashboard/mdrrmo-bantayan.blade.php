@@ -38,11 +38,13 @@ tailwind.config = {
 <aside class="fixed md:static inset-y-0 left-0 w-64 bg-gradient-to-b from-blue-200 to-blue-100 text-gray-800 p-6 transform transition-transform duration-300 z-40 shadow-lg"
        :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
-  <div class="flex items-center justify-between mb-10">
-    <h1 class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO Bantayan</h1>
-    <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
+ <div class="flex items-center justify-between mb-10">
+  <!-- Larger Circular Logo -->
+<img src="{{ asset('/images/mad.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
+    <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO BANTAYAN</span>
   </div>
-
+  <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
+</div>
   <nav class="flex flex-col gap-4">
     <!-- Dashboard -->
     <div>
@@ -134,7 +136,7 @@ tailwind.config = {
 <div class="bg-white shadow-lg rounded-xl border border-gray-200 overflow-hidden">
   <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
     <h3 class="font-bold text-gray-800 text-lg">Recent Reports</h3>
-    <a href="{{ route('mdrrmo.reports-santafe') }}" class="px-3 py-1 bg-gray-800 text-white rounded hover:bg-gray-700 transition text-sm">View All</a>
+    <a href="{{ route('mdrrmo.reports-bantayan') }}" class="px-3 py-1 bg-gray-800 text-white rounded hover:bg-gray-700 transition text-sm">View All</a>
   </div>
 
   <div class="overflow-x-auto">

@@ -406,8 +406,8 @@
         <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3"
             aria-labelledby="forwardDropdown{{ $report->id }}">
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'MDRRMO')">MDRRMO</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'PNP')">PNP</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'BFP')">BFP</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'WASTEMANAGEMENT')">WASTEMANAGEMENT</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'WATERMANAGEMENT')">WATERMANAGEMENT</a></li>
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Health Office')">Health Office</a></li>
         </ul>
       </div>

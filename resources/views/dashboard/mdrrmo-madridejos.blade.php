@@ -35,19 +35,23 @@ tailwind.config = {
 </head>
 <body class="bg-page-gradient font-sans h-screen flex overflow-hidden text-gray-800" x-data="{ mobileMenu:false }">
 
-<aside class="fixed md:static inset-y-0 left-0 w-64 bg-gradient-to-b from-blue-200 to-blue-100 text-gray-800 p-6 transform transition-transform duration-300 z-40 shadow-lg"
-       :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
+<!-- Sidebar -->
+<aside 
+  class="fixed md:static inset-y-0 left-0 z-40 w-64 
+         bg-gradient-to-b from-blue-200 to-blue-100 
+         text-gray-800 p-6 transform transition-transform duration-300 
+         ease-in-out shadow-lg"
+  :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
   <div class="flex items-center justify-between mb-10">
-    <h1 class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO Santa Fe</h1>
-    <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
+   <img src="{{ asset('/images/mad.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
+    <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO MADRIDEJOS</span>
   </div>
-
   <nav class="flex flex-col gap-4">
     <!-- Dashboard -->
     <div>
       <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Dashboard</p>
-      <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-300 hover:bg-blue-200 transition-all">
+       <a href="{{ route('dashboard.mdrrmo-madridejos') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-300 hover:bg-blue-200 transition-all">
         <i data-lucide="home" class="w-5 h-5"></i>
         <span class="font-medium">Overview</span>
       </a>
@@ -78,9 +82,8 @@ tailwind.config = {
         Logout
       </button>
     </form>
+  </nav>
 </aside>
-
-
 <!-- Main -->
 <main class="flex-1 flex flex-col overflow-y-auto">
 

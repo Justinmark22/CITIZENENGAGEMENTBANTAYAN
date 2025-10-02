@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Santa Fe - Reports</title>
+  <title>bantayan- Reports</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -385,14 +385,17 @@
 <!-- 🔹 Footer -->
 <div class="modal-footer bg-light border-top rounded-bottom px-4 py-3 d-flex justify-content-between align-items-center">
   <small class="text-muted d-flex align-items-center gap-2">
-    <i data-lucide="cpu"></i> BANTAYAN
+    <i data-lucide="cpu"></i> Santa Fe
   </small>
 
  @foreach ($reports as $report)
   <div id="report-{{ $report->id }}" class="card border-0 shadow-sm mb-4">
     <div class="card-body d-flex justify-content-between align-items-center">
 
-    
+      <!-- Status badge -->
+      <span class="badge {{ $report->status === 'Forwarded' ? 'bg-success' : 'bg-secondary' }}" data-role="status-badge">
+        {{ $report->status ?? 'Pending' }}
+      </span>
 
       <!-- Forward Dropdown -->
       <div class="dropdown">
@@ -403,8 +406,8 @@
         <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3"
             aria-labelledby="forwardDropdown{{ $report->id }}">
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'MDRRMO')">MDRRMO</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'PNP')">PNP</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'BFP')">BFP</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Waste Management')">WASTEMANAGEMENT</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'WATERMANAGEMENT')">WATERMANAGEMENT</a></li>
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Health Office')">Health Office</a></li>
         </ul>
       </div>

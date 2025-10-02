@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MDRRMO Madrdejos Dashboard</title>
+<title>MDRRMO SANTA.FE </title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -39,9 +39,16 @@ tailwind.config = {
        :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
   <div class="flex items-center justify-between mb-10">
-    <h1 class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO Madrdejos</h1>
-    <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
+  <!-- Replace text with logo -->
+  
+   <img src="{{ asset('/images/SAN.PNG') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
+    <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO SANTA.FE</span>
   </div>
+  <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
+</div>
+  <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
+</div>
+
 
   <nav class="flex flex-col gap-4">
     <!-- Dashboard -->
@@ -87,7 +94,7 @@ tailwind.config = {
   <!-- Topbar -->
   <header class="sticky top-0 z-20 bg-white shadow-md border-b border-gray-200">
     <div class="flex justify-between items-center px-6 py-4">
-      <h2 class="text-2xl font-bold text-gray-800">MDRRMO Dashboard</h2>
+      <h2 class="text-2xl font-bold text-gray-800">MDRRMO SANTA.FE</h2>
       <button class="md:hidden px-3 py-2 rounded-lg bg-gray-900 text-white" @click="mobileMenu = true">☰</button>
     </div>
   </header>

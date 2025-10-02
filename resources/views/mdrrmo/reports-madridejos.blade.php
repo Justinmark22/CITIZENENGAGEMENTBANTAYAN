@@ -9,21 +9,28 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  <script>
+<script>
     tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ["Inter", "ui-sans-serif"] },
-          colors: {
-            brand: {
-              50: "#eef2ff", 100: "#e0e7ff", 200: "#c7d2fe", 300: "#a5b4fc",
-              400: "#818cf8", 500: "#6366f1", 600: "#4f46e5",
-              700: "#4338ca", 800: "#3730a3", 900: "#312e81",
-            }
-          }
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Inter', 'ui-sans-serif'] },
+      colors: {
+        mdrrmo: {
+          blue: '#1e3a8a',
+          red: '#dc2626',
+          green: '#16a34a',
+          amber: '#f59e0b',
+          gray: '#4b5563',
+          light: '#f3f4f6'
         }
+      },
+      backgroundImage: {
+        'page-gradient': 'linear-gradient(to right, #e0e7ff, #f3f4f6)',
+        'card-texture': 'repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 8px)'
       }
     }
+  }
+}
   </script>
 
   <!-- Lucide Icons -->
@@ -39,45 +46,56 @@
 <body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col" x-data="{ mobileMenu: false }">
   <div class="flex flex-1 min-h-screen overflow-hidden">
     
-    <!-- Sidebar -->
-    <aside 
-      class="fixed md:static inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white p-6 transform transition-transform duration-300 ease-in-out"
-      :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
-      
-      <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center gap-2">
-          <i data-lucide="shield" class="w-7 h-7 text-brand-400"></i>
-          <h1 class="text-xl font-bold tracking-wide">MDRRMO MADRIDEJOS</h1>
-        </div>
-        <button class="md:hidden" @click="mobileMenu=false">
-          <i data-lucide="x" class="w-6 h-6"></i>
-        </button>
-      </div>
 
-      <nav class="flex-1 space-y-2">
-        <a href="{{ route('dashboard.mdrrmo-santafe') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
-          <i data-lucide="home" class="w-5 h-5"></i> Dashboard
-        </a>
-        <a href="{{ route('mdrrmo.reports-santafe') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
-          <i data-lucide="file-warning" class="w-5 h-5 text-amber-400"></i> Reports
-        </a>
-        <a href="#announcements" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
-          <i data-lucide="megaphone" class="w-5 h-5 text-blue-400"></i> Announcements
-        </a>
-       
-        <a href="#alerts" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
-          <i data-lucide="bell" class="w-5 h-5 text-rose-400"></i> Emergency Alerts
-        </a>
-        
-      </nav>
+<!-- Sidebar -->
+<aside 
+  class="fixed md:static inset-y-0 left-0 z-40 w-64 
+         bg-gradient-to-b from-blue-200 to-blue-100 
+         text-gray-800 p-6 transform transition-transform duration-300 
+         ease-in-out shadow-lg"
+  :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
-      <form method="POST" action="{{ route('logout') }}" class="mt-6">
-        @csrf
-        <button type="submit" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition font-medium">
-          <i data-lucide="log-out" class="w-5 h-5"></i> Logout
-        </button>
-      </form>
-    </aside>
+  <div class="flex items-center justify-between mb-10">
+   <img src="{{ asset('/images/mad.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
+    <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO MADRIDEJOS</span>
+  </div>
+  <nav class="flex flex-col gap-4">
+    <!-- Dashboard -->
+    <div>
+      <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Dashboard</p>
+       <a href="{{ route('dashboard.mdrrmo-madridejos') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-300 hover:bg-blue-200 transition-all">
+        <i data-lucide="home" class="w-5 h-5"></i>
+        <span class="font-medium">Overview</span>
+      </a>
+    </div>
+
+    <!-- Reports -->
+    <div>
+      <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Reports</p>
+      <a href="{{ route('mdrrmo.reports-madridejos') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+        <i data-lucide="file-text" class="w-5 h-5"></i>
+        <span>All Reports</span>
+      </a>
+    </div>
+
+    <!-- Communications -->
+    <div>
+      <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Communications</p>
+      <a href="{{ route('mdrrmo.mdrrmo_madridejos-announcements') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+        <i data-lucide="megaphone" class="w-5 h-5"></i>
+        <span>Announcements</span>
+      </a>
+    </div>
+
+    <!-- Logout -->
+    <form method="POST" action="{{ route('logout') }}" class="mt-auto pt-6">
+      @csrf
+      <button type="submit" class="w-full px-4 py-2 rounded-lg bg-red-400 hover:bg-red-500 font-semibold shadow transition-all">
+        Logout
+      </button>
+    </form>
+  </nav>
+</aside>
 
     <!-- Main Content -->
     <main class="flex-1 p-6 overflow-y-auto bg-gray-50 min-h-screen">

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('category')->nullable();
             $table->string('location')->default('Santa.Fe');
             
+            
             // ✅ Add optional photo for uploaded image
             $table->string('photo')->nullable();
 

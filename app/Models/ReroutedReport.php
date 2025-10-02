@@ -6,17 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReroutedReport extends Model
 {
-    protected $fillable = [
-        'report_id',
-        'category',
-        'title',
-        'description',
-        'photo',
-        'status',
-        'forwarded_to',
-        'location',
-        'user_id',
-    ];
+   protected $fillable = [
+    'report_id', 'category', 'title', 'description', 'photo',
+    'status', 'forwarded_to', 'rerouted_to', 'location', 'user_id'
+];
 
     // 🔗 Relation to ForwardedReport
     public function forwardedReport()

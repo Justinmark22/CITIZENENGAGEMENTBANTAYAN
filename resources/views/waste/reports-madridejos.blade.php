@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Waste- MADRIDEJOS</title>
+  <title>Waste - Bantayan</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -45,7 +45,7 @@
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-2">
           <i data-lucide="shield" class="w-7 h-7 text-brand-400"></i>
-          <h1 class="text-xl font-bold tracking-wide">WASTE MADRIDEJOS</h1>
+          <h1 class="text-xl font-bold tracking-wide">WASTE Bantayan</h1>
         </div>
         <button class="md:hidden" @click="mobileMenu=false">
           <i data-lucide="x" class="w-6 h-6"></i>
@@ -79,14 +79,34 @@
     <main class="flex-1 p-6 overflow-y-auto bg-gray-50 min-h-screen">
       <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Forwarded Reports</h1>
+          <h1 class="text-2xl font-bold text-gray-900">Forwarded Reports (Waste Management)</h1>
           <p class="text-sm text-gray-500">Dashboard / Forwarded Reports</p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white p-4 rounded-lg shadow flex flex-col items-center">
+          <span class="text-sm text-gray-500">Pending</span>
+          <span id="count-pending" class="text-xl font-bold text-yellow-600">{{ $reports->where('status','Pending')->count() }}</span>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow flex flex-col items-center">
+          <span class="text-sm text-gray-500">Accepted</span>
+          <span id="count-accepted" class="text-xl font-bold text-blue-600">{{ $reports->where('status','Accepted')->count() }}</span>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow flex flex-col items-center">
+          <span class="text-sm text-gray-500">Ongoing</span>
+          <span id="count-ongoing" class="text-xl font-bold text-orange-600">{{ $reports->where('status','Ongoing')->count() }}</span>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow flex flex-col items-center">
+          <span class="text-sm text-gray-500">Resolved</span>
+          <span id="count-resolved" class="text-xl font-bold text-green-600">{{ $reports->where('status','Resolved')->count() }}</span>
         </div>
       </div>
 
       <!-- Reports -->
       <div class="space-y-4" id="reports-container">
-        @forelse($reports->whereNotIn('status', ['Resolved','Rejected']) as $report)
+        @forelse($reports->where('forwarded_to', 'Waste Management')->whereNotIn('status', ['Resolved','Rejected']) as $report)
         <div 
           x-data="{ open: false }" 
           id="report-{{ $report->id }}"
@@ -122,26 +142,33 @@
             @if($report->photo)
             <img src="{{ asset('storage/'.$report->photo) }}" class="rounded-md w-full md:w-2/3 lg:w-1/2 h-48 object-cover border border-gray-200">
             @endif
+<!-- Buttons -->
+<div class="flex justify-end space-x-2 mt-4">
+  <button onclick="updateStatus('{{ $report->id }}','Accepted',{}, this)" 
+    class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Accept</button>
+  <button onclick="updateStatus('{{ $report->id }}','Ongoing',{}, this)" 
+    class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Ongoing</button>
+  <button onclick="updateStatus('{{ $report->id }}','Resolved',{}, this)" 
+    class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">Resolved</button>
+  <div class="relative inline-block text-left">
+    <button type="button" onclick="toggleDropdown('{{ $report->id }}')" 
+      class="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600">Reroute</button>
+    <div id="dropdown-{{ $report->id }}" 
+      class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-10">
+      <button onclick="rerouteReport('{{ $report->id }}','Water Management', this)" 
+        class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Water Management</button>
+      <button onclick="rerouteReport('{{ $report->id }}','Mayor\'s Office', this)" 
+        class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Mayor's Office</button>
+      <button onclick="rerouteReport('{{ $report->id }}','MDRRMO', this)" 
+        class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">MDRRMO</button>
+    </div>
+  </div>
+</div>
 
-            <!-- Buttons -->
-            <div class="flex justify-end space-x-2 mt-4">
-              <button onclick="updateStatus('{{ $report->id }}','Accepted',this)" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Accept</button>
-              <button onclick="updateStatus('{{ $report->id }}','Ongoing',this)" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Ongoing</button>
-              <button onclick="updateStatus('{{ $report->id }}','Resolved',this)" class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">Resolved</button>
-              <div class="relative inline-block text-left">
-                <button onclick="toggleDropdown('{{ $report->id }}')" class="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600">Reroute</button>
-                <div id="dropdown-{{ $report->id }}" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-10">
-                  <button onclick="rerouteReport('{{ $report->id }}','Water Management')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Water Management</button>
-                  <button onclick="rerouteReport('{{ $report->id }}','Waste Management')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Waste Management</button>
-                  <button onclick="rerouteReport('{{ $report->id }}','Mayor\'s Office')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Mayor's Office</button>
-                  <button onclick="rerouteReport('{{ $report->id }}','Engineering Dept')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Engineering Dept</button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
         @empty
-        <p class="text-gray-500 text-center mt-10">No forwarded reports found.</p>
+        <p class="text-gray-500 text-center mt-10">No Waste Management reports found.</p>
         @endforelse
       </div>
 
@@ -152,99 +179,109 @@
   </div>
 
 <script>
-function updateStatus(reportId, status, btn, isRerouted = false) {
-  Swal.fire({
-      title: `Mark report as ${status}?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes',
-      cancelButtonText: 'Cancel'
-  }).then(result => {
-      if (!result.isConfirmed) return;
+/* ---------- CONFIG ---------- */
+const CSRF = document.querySelector('meta[name="csrf-token"]').content || '';
 
-      const url = isRerouted 
-          ? `/rerouted-reports/${reportId}/update-status` 
-          : `/forwarded-reports/${reportId}/update-status`;
-
-      fetch(url, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-          },
-          body: JSON.stringify({ status })
-      })
-      .then(async res => {
-          if (!res.ok) {
-              const text = await res.text();
-              throw new Error(text);
-          }
-          return res.json();
-      })
-      .then(data => {
-          if (data.success) {
-              Swal.fire('Updated!', data.message, 'success');
-              const badge = document.querySelector(`#report-${reportId} .status-badge`);
-              if (badge) {
-                  badge.textContent = data.status;
-                  let color = 'bg-blue-500';
-                  if (data.status === 'Accepted') color = 'bg-green-500';
-                  if (data.status === 'Ongoing') color = 'bg-yellow-500';
-                  if (data.status === 'Resolved') color = 'bg-green-700';
-                  if (data.status.includes('Rerouted')) color = 'bg-purple-500';
-                  badge.className = `status-badge px-2.5 py-1 text-xs font-medium rounded-full text-white ${color}`;
-              }
-          } else {
-              Swal.fire('Error', data.message, 'error');
-          }
-      })
-      .catch(err => Swal.fire('Error', err.message, 'error'));
-  });
+/* ---------- helpers ---------- */
+function mapCountId(status) {
+  if (!status) return null;
+  const s = status.toLowerCase();
+  if (s.includes('pending')) return 'count-pending';
+  if (s.includes('accepted')) return 'count-accepted';
+  if (s.includes('ongoing')) return 'count-ongoing';
+  if (s.includes('resolved')) return 'count-resolved';
+  if (s.includes('rejected')) return 'count-rejected';
+  return null;
 }
 
-function toggleDropdown(reportId) {
-    document.querySelectorAll('[id^="dropdown-"]').forEach(el => el.classList.add('hidden'));
-    document.getElementById(`dropdown-${reportId}`).classList.toggle('hidden');
+function adjustCounters(oldStatus, newStatus) {
+  const decId = mapCountId(oldStatus);
+  const incId = mapCountId(newStatus);
+
+  if (decId) {
+    const el = document.getElementById(decId);
+    if (el) el.innerText = Math.max(0, (parseInt(el.innerText || '0') - 1));
+  }
+  if (incId) {
+    const el = document.getElementById(incId);
+    if (el) el.innerText = (parseInt(el.innerText || '0') + 1);
+  }
 }
 
-function rerouteReport(reportId, destination) {
-    Swal.fire({
-        title: 'Reroute Report',
-        text: `Are you sure you want to reroute this report to ${destination}?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, reroute',
-        cancelButtonText: 'Cancel'
-    }).then(result => {
-        if(!result.isConfirmed) return;
+/* ---------- main update ---------- */
+async function updateStatus(id, status, opts = {}, btn = null) {
+  try {
+    const payload = Object.assign({ status }, opts);
 
-        fetch(`/forwarded-reports/${reportId}/update-status`, {
-            method: 'POST',
-            headers: {
-                'Content-Type':'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                status: `Rerouted to ${destination}`,
-                rerouted_to: destination
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success){
-                Swal.fire('Rerouted!', `Report rerouted to ${destination}`, 'success');
-                const badge = document.querySelector(`#report-${reportId} .status-badge`);
-                if(badge){
-                    badge.textContent = `Rerouted (${destination})`;
-                    badge.className = 'status-badge px-2.5 py-1 text-xs font-medium rounded-full bg-purple-500 text-white';
-                }
-            } else {
-                Swal.fire('Error', data.message || 'Failed to reroute', 'error');
-            }
-        })
-        .catch(err => Swal.fire('Error','Request failed','error'));
+    const res = await fetch(`/reports/${id}/update-status`, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': CSRF,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
     });
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      Swal.fire('Error', text || `Status ${res.status}`, 'error');
+      return;
+    }
+
+    const data = await res.json();
+    if (!data.success) {
+      Swal.fire('Error', data.message || 'Failed to update status', 'error');
+      return;
+    }
+
+    Swal.fire({
+      icon: 'success',
+      title: data.message || `Marked as ${data.status || status}`,
+      timer: 1300,
+      showConfirmButton: false
+    });
+
+    // Hide clicked button only
+    if (btn) btn.style.display = "none";
+
+    // Update badge
+    const card = document.getElementById(`report-${id}`);
+    if (card) {
+      const badge = card.querySelector('.status-badge');
+      if (badge && data.status) badge.textContent = data.status;
+
+      // If Resolved → remove card from list
+      if (data.status && data.status.toLowerCase().includes('resolved')) {
+        card.style.transition = "opacity .3s ease";
+        card.style.opacity = "0";
+        setTimeout(() => card.remove(), 350);
+      }
+    }
+
+    adjustCounters(data.old_status || null, data.status || payload.status || null);
+
+  } catch (err) {
+    console.error('updateStatus exception', err);
+    Swal.fire('Error', 'Network or server error. See console for details.', 'error');
+  }
+}
+
+/* ---------- reroute wrapper ---------- */
+function rerouteReport(id, dept, btn = null) {
+  const status = `Rerouted to ${dept}`;
+  updateStatus(id, status, { rerouted_to: dept }, btn);
+}
+
+/* ---------- dropdown helper ---------- */
+function toggleDropdown(id) {
+  document.querySelectorAll('[id^="dropdown-"]').forEach(el => {
+    if (el.id !== `dropdown-${id}`) el.classList.add('hidden');
+  });
+  const d = document.getElementById(`dropdown-${id}`);
+  if (d) d.classList.toggle('hidden');
 }
 </script>
+
 </body>
 </html>

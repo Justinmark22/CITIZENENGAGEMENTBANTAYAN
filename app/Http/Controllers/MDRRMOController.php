@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 use App\Models\ReroutedReport;
 use App\Models\PostAnnounce;
-
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use App\Models\ForwardedReport;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -195,47 +198,113 @@ class MDRRMOController extends Controller
     }
 public function updateStatus(Request $request, ForwardedReport $report)
 {
-    $request->validate([
-        'status'      => 'required|string|max:255',
-        'rerouted_to' => 'nullable|string|max:255',
-    ]);
+    try {
+        Log::debug('updateStatus called', [
+            'report_id' => $report->id,
+            'payload'   => $request->only(['status','rerouted_to'])
+        ]);
 
-    $status = $request->status;
+        $request->validate([
+            'status'      => 'required|string|max:255',
+            'rerouted_to' => 'nullable|string|max:255',
+        ]);
 
-    // ✅ Allowed statuses
-    $validStatuses = ['Pending', 'Forwarded', 'Accepted', 'Ongoing', 'Resolved', 'Rejected'];
-    if (!in_array($status, $validStatuses) && !str_starts_with($status, 'Rerouted to')) {
+        $origStatus  = trim((string) $request->input('status'));
+        $rerouted_to = $request->input('rerouted_to');
+
+        // Allowed base statuses
+        $validStatuses = ['Pending', 'Forwarded', 'Accepted', 'Ongoing', 'Resolved', 'Rejected', 'Rerouted'];
+
+        // --- Build final status ---
+        if (strcasecmp($origStatus, 'Rerouted') === 0 && !empty($rerouted_to)) {
+            $status = 'Rerouted to ' . $rerouted_to;
+        } elseif (strcasecmp($origStatus, 'Forwarded') === 0 && !empty($rerouted_to)) {
+            // ✅ allow transition from Forwarded → Rerouted
+            $status = 'Rerouted to ' . $rerouted_to;
+        } elseif (Str::startsWith($origStatus, 'Rerouted to')) {
+            $status = $origStatus;
+        } else {
+            $status = $origStatus;
+        }
+
+        // --- Validate final status ---
+        if (
+            ! in_array($status, $validStatuses, true) &&
+            ! Str::startsWith($status, 'Rerouted to')
+        ) {
+            Log::warning('updateStatus invalid status', [
+                'orig'  => $origStatus,
+                'final' => $status
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid status provided.',
+            ], 400);
+        }
+
+        // --- Update forwarded_reports record ---
+        $report->status = $status;
+
+        if (!empty($rerouted_to)) {
+            if (Schema::hasColumn($report->getTable(), 'rerouted_to')) {
+                $report->rerouted_to = $rerouted_to;
+            } elseif (Schema::hasColumn($report->getTable(), 'forwarded_to')) {
+                $report->forwarded_to = $rerouted_to;
+            } else {
+                $report->setAttribute('rerouted_to', $rerouted_to);
+            }
+        }
+
+        $report->save();
+
+        // --- Log reroute in rerouted_reports ---
+        if (Str::startsWith($status, 'Rerouted to')) {
+            $rr = new ReroutedReport();
+            $rr->report_id   = $report->id;
+            $rr->category    = $report->category ?? null;
+            $rr->title       = $report->title ?? null;
+            $rr->description = $report->description ?? null;
+            $rr->photo       = $report->photo ?? null;
+            $rr->status      = $status;
+
+            $rrTable = $rr->getTable();
+            if (Schema::hasColumn($rrTable, 'rerouted_to')) {
+                $rr->rerouted_to = $rerouted_to;
+            } elseif (Schema::hasColumn($rrTable, 'forwarded_to')) {
+                $rr->forwarded_to = $rerouted_to;
+            } else {
+                $rr->setAttribute('rerouted_to', $rerouted_to);
+            }
+
+            $rr->location = $report->location ?? null;
+            $rr->user_id  = $report->user_id ?? null;
+            $rr->save();
+        }
+
+        return response()->json([
+            'success'     => true,
+            'status'      => $status,
+            'rerouted_to' => $rerouted_to ?? null,
+        ], 200);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        Log::warning('updateStatus validation failed', ['errors' => $e->errors()]);
         return response()->json([
             'success' => false,
-            'message' => 'Invalid status provided.',
-        ], 400);
+            'message' => collect($e->errors())->flatten()->join(' ')
+        ], 422);
+
+    } catch (\Throwable $e) {
+        Log::error("updateStatus error: {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}");
+        return response()->json([
+            'success' => false,
+            'message' => 'Server error while updating status. Check logs.'
+        ], 500);
     }
-
-    // ✅ Update forwarded_reports
-    $report->status = $status;
-    $report->save();
-
-    // ✅ Only log reroutes
-    if (str_starts_with($status, 'Rerouted to')) {
-        ReroutedReport::create([
-            'report_id'   => $report->id,           // 🔗 original report
-            'category'    => $report->category,
-            'title'       => $report->title,
-            'description' => $report->description,
-            'photo'       => $report->photo,
-            'status'      => $status,
-            'forwarded_to'=> $request->rerouted_to, // new office/department
-            'location'    => $report->location,
-            'user_id'     => $report->user_id,
-        ]);
-    }
-
-    return response()->json([
-        'success'     => true,
-        'status'      => $status,
-        'rerouted_to' => $request->rerouted_to,
-    ]);
 }
+
+
 public function santafeAnnouncements()
 {
     $announcements = \App\Models\Announcement::where('location', 'Santa.Fe')
@@ -245,59 +314,94 @@ public function santafeAnnouncements()
     return view('mdrrmo.mdrrmo_santafe-announcements', compact('announcements'));
 }
  public function getResolvedReports()
-    {
-        // Fetch resolved reports for Santa Fe
-        $reports = ForwardedReport::where('location', 'Santa.Fe')
-                                   ->where('status', 'Resolved')
-                                   ->orderBy('updated_at', 'desc')
-                                   ->get(['title', 'description', 'category', 'updated_at']);
+{
+    $reports = ForwardedReport::where('location', 'Santa.Fe')
+        ->where('status', 'Resolved')
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
-        return response()->json($reports);
-    }
-    // Fetch resolved reports for Madridejos
+    // Map photo to a full URL
+    $reports->transform(function ($report) {
+        $report->photo = $report->photo 
+            ? asset('storage/' . $report->photo)   // ✅ full URL
+            : null;
+        return $report;
+    });
+
+    return response()->json($reports);
+}
+
+// 🔹 Madridejos Resolved Reports
 public function getResolvedReportsMadridejos()
 {
     $reports = ForwardedReport::where('location', 'Madridejos')
-                               ->where('status', 'Resolved')
-                               ->orderBy('updated_at', 'desc')
-                               ->get(['title', 'description', 'category', 'updated_at']);
+        ->where('status', 'Resolved')
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
+
+    $reports->transform(function ($report) {
+        $report->photo = $report->photo 
+            ? asset('storage/' . $report->photo) 
+            : null;
+        return $report;
+    });
 
     return response()->json($reports);
-}
-
-// Fetch resolved reports for Bantayan
-public function getResolvedReportsBantayan()
+}public function getResolvedReportsBantayan()
 {
     $reports = ForwardedReport::where('location', 'Bantayan')
-                               ->where('status', 'Resolved')
-                               ->orderBy('updated_at', 'desc')
-                               ->get(['title', 'description', 'category', 'updated_at']);
+        ->where('status', 'Resolved')
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
+
+    // Map photo to a full URL
+    $reports->transform(function ($report) {
+        $report->photo = $report->photo 
+            ? asset('storage/' . $report->photo)  // ✅ full URL
+            : null;
+        $report->announced = false; // add default announced state
+        return $report;
+    });
 
     return response()->json($reports);
 }
+
+
 
 public function postAnnouncement(Request $request)
 {
-    $data = $request->only(['title', 'description', 'category', 'location']);
-
     // Validate input
     $request->validate([
         'title'       => 'required|string|max:255',
         'description' => 'required|string',
         'category'    => 'nullable|string|max:100',
-        'location'    => 'required|in:Santa.Fe,Madridejos,Bantayan'
+        'location'    => 'required|in:Santa.Fe,Madridejos,Bantayan',
+        'photo'       => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
     ]);
+
+    // Handle photo upload
+    $photoPath = null;
+    if ($request->hasFile('photo')) {
+        $photoPath = $request->file('photo')->store('announcements', 'public');
+        // stored in: storage/app/public/announcements
+    }
 
     // Save announcement
-    PostAnnounce::create([
-        'title'       => $data['title'],
-        'description' => $data['description'],
-        'category'    => $data['category'] ?? 'General',
-        'location'    => $data['location']
+    $announcement = PostAnnounce::create([
+        'title'       => $request->title,
+        'description' => $request->description,
+        'category'    => $request->category ?? 'General',
+        'location'    => $request->location,
+        'photo'       => $photoPath, // ✅ save photo path
     ]);
 
-    return response()->json(['success' => true, 'message' => 'Announcement posted successfully.']);
+    return response()->json([
+        'success' => true,
+        'message' => 'Announcement posted successfully.',
+        'data'    => $announcement,
+    ]);
 }
+
 
 // 🔹 Madridejos Announcements
 public function madridejosAnnouncements()

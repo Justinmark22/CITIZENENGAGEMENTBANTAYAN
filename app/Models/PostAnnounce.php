@@ -9,8 +9,14 @@ class PostAnnounce extends Model
 {
     use HasFactory;
 
-    protected $table = 'post_announce'; // specify custom table name
+    protected $table = 'post_announce'; // 👈 force Laravel to use this table
 
-    // Include 'location' so it can be mass-assigned
-    protected $fillable = ['title', 'description', 'category', 'location'];
+    protected $fillable = [
+        'title',
+        'description',
+        'category',
+        'location',
+        'photo',
+    ];
 }
+
