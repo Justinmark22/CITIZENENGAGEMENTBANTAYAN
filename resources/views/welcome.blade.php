@@ -119,11 +119,11 @@
     <!-- Card 1: Services Overview -->
     <div x-data="{
           images: [
-            '{{ asset('images/service1.jpg') }}',
-            '{{ asset('images/service2.jpg') }}',
-            '{{ asset('images/service3.jpg') }}',
-            '{{ asset('images/service4.jpg') }}',
-            '{{ asset('images/service5.jpg') }}'
+             '{{ asset('images/gsd (1).png') }}',
+            '{{ asset('images/sta.fe.png') }}',
+            '{{ asset('images/mad.png') }}',
+            '{{ asset('images/hasd.png') }}',
+            '{{ asset('images/madri.png') }}'
           ],
           index: 0,
           typingTexts: [
@@ -185,11 +185,11 @@
     <!-- Card 2: Additional Services -->
     <div x-data="{
           images: [
-            '{{ asset('images/service6.jpg') }}',
-            '{{ asset('images/service7.jpg') }}',
-            '{{ asset('images/service8.jpg') }}',
-            '{{ asset('images/service9.jpg') }}',
-            '{{ asset('images/service10.jpg') }}'
+            '{{ asset('images/gsd (1).png') }}',
+            '{{ asset('images/sta.fe.png') }}',
+            '{{ asset('images/mad.png') }}',
+            '{{ asset('images/hasd.png') }}',
+            '{{ asset('images/madri.png') }}'
           ],
           index: 0,
           typingTexts: [
