@@ -65,7 +65,6 @@
     </div>
   </div>
 </nav>
-
 <!-- Hero -->
 <section class="relative pt-32 pb-24 bg-gray-900 text-white overflow-hidden">
   <!-- Patterned Background -->
@@ -89,18 +88,21 @@
 
     <!-- Right (Slideshow) -->
     <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20"
-         x-data="{ images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/santafe.png') }}', '{{ asset('images/madridejos.png') }}'], index: 0 }"
-         x-init="setInterval(() => index = (index + 1) % images.length, 3000)">
+         x-data="{
+           images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/santafe.png') }}', '{{ asset('images/madridejos.png') }}'],
+           index: 0,
+           init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) }
+         }">
         
-        <!-- Image Slides -->
-        <template x-for="(img, i) in images" :key="i">
-            <img :src="img"
-                 class="absolute inset-0 w-full h-96 object-cover transition-opacity duration-1000"
-                 :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
-        </template>
+      <!-- Image Slides -->
+      <template x-for="(img, i) in images" :key="i">
+        <img :src="img"
+             class="absolute inset-0 w-full h-96 object-cover transition-opacity duration-1000"
+             :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
+      </template>
 
-        <!-- Gradient Overlay -->
-        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+      <!-- Gradient Overlay -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
     </div>
   </div>
 </section>
