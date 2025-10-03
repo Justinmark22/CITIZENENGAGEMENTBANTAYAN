@@ -103,7 +103,6 @@ Route::post('/register', function (Request $request) {
 
     return redirect()->route('login')->with('success', 'Registration successful!');
 })->name('register.submit');
-    
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
@@ -197,17 +196,6 @@ return match ($user->location) {
     ])->onlyInput('email');
 })->name('login.submit');
 
-Route::post('/mfa-resend', function(Request $request) {
-    $user = \App\Models\User::find(session('mfa_user_id'));
-    if (!$user) return response()->json(['error' => 'User not found'], 404);
-
-    $otp = rand(100000, 999999);
-    session(['mfa_otp' => $otp]);
-
-    Mail::to($user->email)->send(new MfaOtpMail($otp));
-
-    return response()->json(['status' => 'OTP resent']);
-})->name('mfa.resend');
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
     if ($user) {
