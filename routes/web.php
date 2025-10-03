@@ -48,7 +48,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\MDRRMOController;
 use App\Http\Controllers\WasteDashboardController;
 use App\Http\Controllers\WaterDashboardController;
-
+use App\Mail\MfaOtpMail;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
@@ -103,8 +103,6 @@ Route::post('/register', function (Request $request) {
 
     return redirect()->route('login')->with('success', 'Registration successful!');
 })->name('register.submit');
-Route::get('/login', fn() => view('login'))->name('login');
-
 Route::post('/login', function (Request $request) {
     // ✅ Apply throttling based on IP + email
     $key = Str::lower($request->input('email')).'|'.$request->ip();
@@ -142,51 +140,65 @@ Route::post('/login', function (Request $request) {
 
         RateLimiter::clear($key); // ✅ Reset attempts on success
 
-       // ✅ Redirect based on role and location
-if (strtolower($user->role) === 'admin') {
-    return match ($user->location) {
-        'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
-        'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
-        'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
-        'Admin'      => redirect()->route('dashboard.admin'),
-        default      => redirect('/dashboard'),
-    };
-}
+        // ✅ MFA: Check if user requires MFA
+        $mfaRequired = true; // Change condition if only certain roles need MFA
+        if ($mfaRequired) {
+            $otp = rand(100000, 999999); // 6-digit OTP
+            session([
+                'mfa_otp' => $otp,
+                'mfa_user_id' => $user->id,
+            ]);
 
-if (strtolower($user->role) === 'mdrrmo') {
-    return match ($user->location) {
-        'Santa.Fe'    => redirect()->route('dashboard.mdrrmo-santafe'),
-        'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
-        'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
-        default      => redirect('/dashboard'),
-    };
-}
-if (strtolower($user->role) === 'waste') {
-    return match ($user->location) {
-        'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
-        'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
-        'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
-        default      => redirect('/dashboard'),
-    };
-}
-if (strtolower($user->role) === 'water') {
-    return match ($user->location) {
-        'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
-        'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
-        'Madridejos' => redirect()->route('dashboard.water-madridejos'),
-        default      => redirect('/dashboard'),
-    };
-}
+            // Send OTP via email
+            Mail::to($user->email)->send(new MfaOtpMail($otp));
 
+            Auth::logout(); // Log out temporarily until OTP verified
+            return redirect()->route('login')->with('mfa_required', true);
+        }
 
-// ✅ Citizens or fallback
-return match ($user->location) {
-    'Santa.Fe'   => redirect()->route('dashboard.santafe'),
-    'Bantayan'   => redirect()->route('dashboard.bantayan'),
-    'Madridejos' => redirect()->route('dashboard.madridejos'),
-    default      => redirect('/dashboard'),
-};
+        // ✅ Redirect based on role and location (your existing code)
+        if (strtolower($user->role) === 'admin') {
+            return match ($user->location) {
+                'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
+                'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
+                'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
+                'Admin'      => redirect()->route('dashboard.admin'),
+                default      => redirect('/dashboard'),
+            };
+        }
 
+        if (strtolower($user->role) === 'mdrrmo') {
+            return match ($user->location) {
+                'Santa.Fe'    => redirect()->route('dashboard.mdrrmo-santafe'),
+                'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
+                'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
+                default      => redirect('/dashboard'),
+            };
+        }
+        if (strtolower($user->role) === 'waste') {
+            return match ($user->location) {
+                'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
+                'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
+                'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
+                default      => redirect('/dashboard'),
+            };
+        }
+        if (strtolower($user->role) === 'water') {
+            return match ($user->location) {
+                'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
+                'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
+                'Madridejos' => redirect()->route('dashboard.water-madridejos'),
+                default      => redirect('/dashboard'),
+            };
+        }
+
+        // ✅ Citizens or fallback
+        return match ($user->location) {
+            'Santa.Fe'   => redirect()->route('dashboard.santafe'),
+            'Bantayan'   => redirect()->route('dashboard.bantayan'),
+            'Madridejos' => redirect()->route('dashboard.madridejos'),
+            default      => redirect('/dashboard'),
+        };
     }
 
     RateLimiter::hit($key, 60); // ✅ Increment failed attempts
@@ -196,6 +208,17 @@ return match ($user->location) {
     ])->onlyInput('email');
 })->name('login.submit');
 
+Route::post('/mfa-resend', function(Request $request) {
+    $user = \App\Models\User::find(session('mfa_user_id'));
+    if (!$user) return response()->json(['error' => 'User not found'], 404);
+
+    $otp = rand(100000, 999999);
+    session(['mfa_otp' => $otp]);
+
+    Mail::to($user->email)->send(new MfaOtpMail($otp));
+
+    return response()->json(['status' => 'OTP resent']);
+})->name('mfa.resend');
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
     if ($user) {
