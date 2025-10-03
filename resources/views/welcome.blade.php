@@ -104,6 +104,8 @@
   </template>
   <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
 </div>
+
+</section>
 <!-- Advanced Services Section with Full-Width Patterned Black Background -->
 <section id="services" class="relative py-24">
   <!-- Full-width Patterned Black Background -->
@@ -269,6 +271,7 @@
   }
 </style>
 
+     
 <!-- News & Updates -->
 <section class="py-20 bg-white">
   <div class="max-w-6xl mx-auto px-6">
