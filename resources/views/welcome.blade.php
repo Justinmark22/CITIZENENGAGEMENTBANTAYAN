@@ -84,16 +84,25 @@
       </a>
     </div>
     <!-- Right -->
-    <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-xl border border-gray-200 w-full">
-      <div class="relative w-full h-80 sm:h-96">
-        <img src="images/bantayan.png" class="carousel-slide active absolute inset-0 w-full h-full object-cover rounded-xl">
-        <img src="images/madridejos.png" class="carousel-slide absolute inset-0 w-full h-full object-cover rounded-xl opacity-0">
-        <img src="images/sta.fe.png" class="carousel-slide absolute inset-0 w-full h-full object-cover rounded-xl opacity-0">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl"></div>
-      </div>
-    </div>
+<div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-xl border border-gray-200 w-full">
+  <div class="relative w-full h-80 sm:h-96">
+    <img src="images/bantayan.png" class="carousel-slide active absolute inset-0 w-full h-full object-cover rounded-xl">
+    <img src="images/madridejos.png" class="carousel-slide absolute inset-0 w-full h-full object-cover rounded-xl opacity-0">
+    <img src="images/sta.fe.png" class="carousel-slide absolute inset-0 w-full h-full object-cover rounded-xl opacity-0">
+    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl"></div>
   </div>
-</section>
+</div>
+<style>
+  .carousel-slide {
+    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+    opacity: 0;
+  }
+  .carousel-slide.active {
+    opacity: 1 !important;
+    transform: scale(1.05);
+  }
+</style>
+
 
 <!-- Mission & Vision -->
 <section class="py-20 bg-gray-50">
