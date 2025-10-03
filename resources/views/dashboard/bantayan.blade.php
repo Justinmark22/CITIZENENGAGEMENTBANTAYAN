@@ -15,7 +15,7 @@
   <!-- Left: Logo + Title -->
   <a href="#" class="flex items-center gap-3">
     <img src="{{ asset('images/citizen.png') }}" alt="Logo" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-gray-200 shadow-sm">
-    <span class="text-lg md:text-xl font-bold text-gray-900 tracking-tight">Santa.Fe Dashboard</span>
+    <span class="text-lg md:text-xl font-bold text-gray-900 tracking-tight">Bantayan Dashboard</span>
   </a>
 
   <!-- Mobile menu toggle -->
