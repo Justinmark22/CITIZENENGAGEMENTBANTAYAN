@@ -106,7 +106,7 @@
 </div>
 
 </section>
-<!-- Advanced Services Section -->
+<!-- Advanced Services Section with Patterned Black Background -->
 <section id="services" class="py-24 bg-gray-50">
   <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10">
 
@@ -130,10 +130,7 @@
           displayText: '',
           charIndex: 0,
           init() {
-            // Background slideshow
             setInterval(() => this.index = (this.index + 1) % this.images.length, 4000);
-
-            // Start typing animation
             this.type();
           },
           type() {
@@ -166,11 +163,15 @@
              :style="`background-image: url(${img})`"></div>
       </template>
 
-      <!-- Overlay -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent"></div>
+      <!-- Patterned Black Overlay -->
+      <div class="absolute inset-0 z-20"
+           style="background-color: rgba(0,0,0,0.7);
+                  background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/black-thread.png');
+                  background-repeat: repeat;
+                  background-blend-mode: overlay;"></div>
 
       <!-- Typing Text Content -->
-      <div class="relative z-20 px-6">
+      <div class="relative z-30 px-6">
         <h2 class="text-3xl md:text-4xl font-bold mb-4">Our Key Services</h2>
         <p class="text-lg md:text-xl leading-relaxed tracking-wide">
           <span x-text="displayText"></span><span class="blinking">|</span>
@@ -232,11 +233,15 @@
              :style="`background-image: url(${img})`"></div>
       </template>
 
-      <!-- Overlay -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent"></div>
+      <!-- Patterned Black Overlay -->
+      <div class="absolute inset-0 z-20"
+           style="background-color: rgba(0,0,0,0.7);
+                  background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/black-thread.png');
+                  background-repeat: repeat;
+                  background-blend-mode: overlay;"></div>
 
       <!-- Typing Text Content -->
-      <div class="relative z-20 px-6">
+      <div class="relative z-30 px-6">
         <h2 class="text-3xl md:text-4xl font-bold mb-4">Other Services</h2>
         <p class="text-lg md:text-xl leading-relaxed tracking-wide">
           <span x-text="displayText"></span><span class="blinking">|</span>
@@ -257,9 +262,7 @@
   }
 </style>
 
-     
-</section>
-
+   
 <!-- News & Updates -->
 <section class="py-20 bg-white">
   <div class="max-w-6xl mx-auto px-6">
