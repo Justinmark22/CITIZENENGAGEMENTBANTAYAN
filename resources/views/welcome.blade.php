@@ -86,9 +86,8 @@
         <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">Explore Services</a>
         <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">Contact Us</a>
       </div>
-    </div>
-<div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20"
-     x-data="{ images: ['{{ asset('/images/bantayan.png') }}', '{{ asset('/images/santafe.png') }}', '{{ asset('/images/madridejos.png') }}'], index: 0 }"
+    </div><div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20"
+     x-data="{ images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/santafe.png') }}', '{{ asset('images/madridejos.png') }}'], index: 0 }"
      x-init="setInterval(() => index = (index + 1) % images.length, 3000)">
     
     <!-- Image Slides -->
@@ -102,10 +101,6 @@
     <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
 </div>
 
-
-   
-<!-- Alpine.js -->
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </section>
 <!-- Services -->
 <section id="services" class="py-24 bg-gray-50">
