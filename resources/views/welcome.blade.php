@@ -67,160 +67,83 @@
     </div>
   </div>
 </nav>
-
 <!-- Hero -->
-<section class="relative pt-32 pb-20 bg-gradient-to-r from-blue-50 to-blue-100">
+<section class="relative pt-32 pb-24 bg-gradient-to-r from-blue-800 via-blue-700 to-blue-900 text-white">
   <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
     <!-- Left -->
     <div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
-      <h1 class="text-4xl lg:text-5xl font-extrabold mb-4 leading-tight text-gray-900">
+      <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight">
         Strengthening Citizen Engagement in Bantayan Island
       </h1>
-      <p class="text-lg text-gray-700 mb-6">
-        A transparent and collaborative <span class="font-bold text-blue-700">digital platform</span> connecting citizens, LGUs, and communities in Bantayan, Santa Fe, and Madridejos.
+      <p class="text-lg text-blue-100 mb-8 leading-relaxed">
+        A transparent and collaborative <span class="font-semibold text-yellow-300">digital platform</span> connecting citizens, LGUs, and communities in Bantayan, Santa Fe, and Madridejos.
       </p>
-      <a href="{{ route('contact') }}" class="px-8 py-4 bg-blue-700 hover:bg-blue-800 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1">
-        Get Involved Today
-      </a>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+        <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">Explore Services</a>
+        <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">Contact Us</a>
+      </div>
     </div>
-<!-- Right -->
-<div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-xl border border-gray-200 w-full">
-  <div class="relative w-full h-80 sm:h-96">
-    <img src="images/bantayan.png" class="carousel-slide active">
-    <img src="images/madridejos.png" class="carousel-slide">
-    <img src="images/sta.fe.png" class="carousel-slide">
-    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl"></div>
-  </div>
-</div>
-</div>
-</section>
-
-<!-- Carousel Styles -->
-<style>
-  .carousel-slide {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-    border-radius: 0.75rem; /* match your rounded-xl */
-  }
-  .carousel-slide.active {
-    opacity: 1 !important;
-    transform: scale(1.05);
-    z-index: 10;
-  }
-</style>
-
-<!-- Carousel Script -->
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const slides = document.querySelectorAll(".carousel-slide");
-    let current = 0;
-
-    setInterval(() => {
-      slides[current].classList.remove("active");
-      current = (current + 1) % slides.length;
-      slides[current].classList.add("active");
-    }, 3000); // change every 3s
-  });
-</script>
-
-
-
-<!-- Mission & Vision -->
-<section class="py-20 bg-gray-50">
-  <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-start">
-    
-    <!-- Mission -->
-    <div class="bg-white p-10 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
-      <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Mission</h2>
-      <p class="text-gray-600 leading-relaxed text-lg">
-        To empower every citizen of Bantayan Island by providing an inclusive and transparent platform 
-        for engagement, collaboration, and governance. Strengthening trust through open communication 
-        and participation.
-      </p>
-    </div>
-
-    <!-- Vision -->
-    <div class="bg-white p-10 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
-      <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Vision</h2>
-      <p class="text-gray-600 leading-relaxed text-lg">
-        A digitally empowered Bantayan Island where citizens, government, and communities work 
-        hand-in-hand to achieve sustainable development, safety, and resilience.
-      </p>
+    <!-- Right -->
+    <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20">
+      <img src="images/bantayan.png" class="w-full h-96 object-cover">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
     </div>
   </div>
 </section>
-<!-- Services Section -->
-<section class="relative py-24 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700">
-  <div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-    <!-- Header -->
-    <div class="text-center mb-16">
-      <h2 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
-        Featured Services
-      </h2>
-      <p class="text-lg text-gray-300 max-w-2xl mx-auto">
-        Access essential barangay services online — quick, reliable, and designed for the community.
-      </p>
-    </div>
 
-    <!-- Grid -->
-    <div class="grid gap-10 md:grid-cols-3">
+<!-- Services -->
+<section id="services" class="py-24 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-6 text-center">
+    <h2 class="text-4xl font-extrabold text-gray-900 mb-6">Featured Services</h2>
+    <p class="text-lg text-gray-600 mb-16 max-w-2xl mx-auto">
+      Access barangay services online — quick, reliable, and designed for the community.
+    </p>
 
+    <div class="grid md:grid-cols-3 gap-10">
       <!-- Announcements -->
-      <div
-        class="p-10 rounded-2xl bg-white/90 backdrop-blur-sm border border-gray-200 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out">
-        <div
-          class="flex items-center justify-center w-20 h-20 mb-6 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-5xl shadow-lg">
-          📢
+      <div class="bg-white p-8 rounded-xl shadow-lg border hover:shadow-2xl transition transform hover:-translate-y-2">
+        <div class="mb-4 text-blue-600">
+          <i data-lucide="megaphone" class="w-12 h-12"></i>
         </div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-3">Announcements</h3>
-        <p class="text-gray-600 leading-relaxed">
-          Stay informed with real-time updates and important news from your community leaders.
-        </p>
-        <a href="#"
-          class="inline-block mt-6 px-5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow hover:shadow-lg transition">
-          Learn More
-        </a>
+        <h3 class="text-xl font-bold mb-3 text-gray-900">Announcements</h3>
+        <p class="text-gray-600 leading-relaxed mb-4">Stay informed with real-time updates from your community leaders.</p>
+        <ul class="text-sm text-gray-500 space-y-2 text-left">
+          <li>📌 Barangay Coastal Cleanup – Oct 10</li>
+          <li>📌 Power Interruption Notice – Oct 12</li>
+          <li>📌 Free Medical Check-up – Oct 15</li>
+        </ul>
+        <a href="#" class="inline-block mt-6 px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow transition">View All</a>
       </div>
 
       <!-- Certificates -->
-      <div
-        class="p-10 rounded-2xl bg-white/90 backdrop-blur-sm border border-gray-200 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out">
-        <div
-          class="flex items-center justify-center w-20 h-20 mb-6 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 text-white text-5xl shadow-lg">
-          📑
+      <div class="bg-white p-8 rounded-xl shadow-lg border hover:shadow-2xl transition transform hover:-translate-y-2">
+        <div class="mb-4 text-green-600">
+          <i data-lucide="file-text" class="w-12 h-12"></i>
         </div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-3">Certificate Requests</h3>
-        <p class="text-gray-600 leading-relaxed">
-          Easily request barangay certificates, clearances, and other official documents online.
-        </p>
-        <a href="#"
-          class="inline-block mt-6 px-5 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium shadow hover:shadow-lg transition">
-          Request Now
-        </a>
+        <h3 class="text-xl font-bold mb-3 text-gray-900">Certificate Requests</h3>
+        <p class="text-gray-600 leading-relaxed mb-4">Request barangay certificates, clearances, and other documents online.</p>
+        <ul class="text-sm text-gray-500 space-y-2 text-left">
+          <li>📑 Barangay Clearance</li>
+          <li>📑 Certificate of Residency</li>
+          <li>📑 Business Permit</li>
+        </ul>
+        <a href="#" class="inline-block mt-6 px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium shadow transition">Request Now</a>
       </div>
 
       <!-- Reports -->
-      <div
-        class="p-10 rounded-2xl bg-white/90 backdrop-blur-sm border border-gray-200 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out">
-        <div
-          class="flex items-center justify-center w-20 h-20 mb-6 rounded-2xl bg-gradient-to-r from-red-500 to-rose-600 text-white text-5xl shadow-lg">
-          🚨
+      <div class="bg-white p-8 rounded-xl shadow-lg border hover:shadow-2xl transition transform hover:-translate-y-2">
+        <div class="mb-4 text-red-600">
+          <i data-lucide="alert-triangle" class="w-12 h-12"></i>
         </div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-3">Report Incidents</h3>
-        <p class="text-gray-600 leading-relaxed">
-          Submit incident reports, emergencies, or concerns directly to your LGU for faster response.
-        </p>
-        <a href="#"
-          class="inline-block mt-6 px-5 py-2 rounded-lg bg-gradient-to-r from-red-500 to-rose-600 text-white font-medium shadow hover:shadow-lg transition">
-          Report Now
-        </a>
+        <h3 class="text-xl font-bold mb-3 text-gray-900">Report Incidents</h3>
+        <p class="text-gray-600 leading-relaxed mb-4">Submit reports on emergencies, issues, or concerns directly to your LGU.</p>
+        <ul class="text-sm text-gray-500 space-y-2 text-left">
+          <li>🚨 Emergency Hotlines</li>
+          <li>🚨 Disaster Response</li>
+          <li>🚨 Crime & Safety</li>
+        </ul>
+        <a href="#" class="inline-block mt-6 px-5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium shadow transition">Report Now</a>
       </div>
-
     </div>
   </div>
 </section>
