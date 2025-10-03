@@ -154,38 +154,71 @@
     </div>
   </div>
 </section>
+<!-- Services Section -->
+<section class="relative py-24 bg-gradient-to-b from-white via-gray-50 to-gray-100">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <!-- Header -->
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
+        Featured Services
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Access essential barangay services online — quick, reliable, and designed for the community.
+      </p>
+    </div>
 
-<!-- Services -->
-<section class="py-20 bg-white">
-  <div class="max-w-6xl mx-auto px-6 text-center">
-    <h2 class="text-3xl font-extrabold mb-12 text-gray-900">Featured Services</h2>
-    <div class="grid md:grid-cols-3 gap-8">
+    <!-- Grid -->
+    <div class="grid gap-10 md:grid-cols-3">
 
       <!-- Announcements -->
-      <div class="p-8 bg-gray-50 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
-        <div class="text-4xl mb-3">📢</div>
-        <h3 class="font-semibold text-xl text-gray-800 mb-2">Announcements</h3>
-        <p class="text-gray-600 text-base">
-          Stay informed with real-time updates from your community leaders.
+      <div
+        class="p-10 rounded-2xl bg-white border border-gray-200 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out">
+        <div
+          class="flex items-center justify-center w-20 h-20 mb-6 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-5xl shadow-lg">
+          📢
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">Announcements</h3>
+        <p class="text-gray-600 text-base leading-relaxed">
+          Stay informed with real-time updates and important news from your community leaders.
         </p>
+        <a href="#"
+          class="inline-block mt-6 text-blue-600 font-medium hover:text-indigo-600 transition">
+          Learn More →
+        </a>
       </div>
 
       <!-- Certificates -->
-      <div class="p-8 bg-gray-50 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
-        <div class="text-4xl mb-3">📑</div>
-        <h3 class="font-semibold text-xl text-gray-800 mb-2">Certificate Requests</h3>
-        <p class="text-gray-600 text-base">
-          Request barangay certificates, clearances, and other documents online.
+      <div
+        class="p-10 rounded-2xl bg-white border border-gray-200 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out">
+        <div
+          class="flex items-center justify-center w-20 h-20 mb-6 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 text-white text-5xl shadow-lg">
+          📑
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">Certificate Requests</h3>
+        <p class="text-gray-600 text-base leading-relaxed">
+          Easily request barangay certificates, clearances, and other official documents online.
         </p>
+        <a href="#"
+          class="inline-block mt-6 text-green-600 font-medium hover:text-emerald-600 transition">
+          Request Now →
+        </a>
       </div>
 
       <!-- Reports -->
-      <div class="p-8 bg-gray-50 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
-        <div class="text-4xl mb-3">🚨</div>
-        <h3 class="font-semibold text-xl text-gray-800 mb-2">Report Incidents</h3>
-        <p class="text-gray-600 text-base">
-          Submit reports on emergencies, issues, or concerns directly to your LGU.
+      <div
+        class="p-10 rounded-2xl bg-white border border-gray-200 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out">
+        <div
+          class="flex items-center justify-center w-20 h-20 mb-6 rounded-2xl bg-gradient-to-r from-red-500 to-rose-600 text-white text-5xl shadow-lg">
+          🚨
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">Report Incidents</h3>
+        <p class="text-gray-600 text-base leading-relaxed">
+          Submit incident reports, emergencies, or concerns directly to your LGU for faster response.
         </p>
+        <a href="#"
+          class="inline-block mt-6 text-red-600 font-medium hover:text-rose-600 transition">
+          Report Now →
+        </a>
       </div>
 
     </div>
