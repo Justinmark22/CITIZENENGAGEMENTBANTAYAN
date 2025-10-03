@@ -106,7 +106,7 @@
 
 <!-- Alpine.js -->
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
+</section>
 <!-- Services -->
 <section id="services" class="py-24 bg-gray-50">
   <div class="max-w-7xl mx-auto px-6 text-center">
