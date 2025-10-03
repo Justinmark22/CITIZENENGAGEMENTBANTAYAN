@@ -68,28 +68,48 @@
   </div>
 </nav>
 <!-- Hero -->
-<section class="relative pt-32 pb-24 bg-gradient-to-r from-blue-800 via-blue-700 to-blue-900 text-white">
-  <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
+<section class="relative pt-32 pb-24 bg-gray-900 text-white overflow-hidden">
+  <!-- Patterned Background -->
+  <div class="absolute inset-0 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/double-bubble-dark.png')] opacity-30"></div>
+  <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"></div>
+
+  <div class="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
     <!-- Left -->
     <div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
       <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight">
         Strengthening Citizen Engagement in Bantayan Island
       </h1>
-      <p class="text-lg text-blue-100 mb-8 leading-relaxed">
-        A transparent and collaborative <span class="font-semibold text-yellow-300">digital platform</span> connecting citizens, LGUs, and communities in Bantayan, Santa Fe, and Madridejos.
+      <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+        A transparent and collaborative <span class="font-semibold text-yellow-400">digital platform</span> connecting citizens, LGUs, and communities in Bantayan, Santa Fe, and Madridejos.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
         <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">Explore Services</a>
         <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">Contact Us</a>
       </div>
     </div>
-    <!-- Right -->
-    <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20">
-      <img src="images/bantayan.png" class="w-full h-96 object-cover">
-      <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+
+    <!-- Right (Looping Slideshow) -->
+    <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20" 
+         x-data="{ images: ['images/bantayan.png', 'images/santafe.png', 'images/madridejos.png'], index: 0 }" 
+         x-init="setInterval(() => index = (index + 1) % images.length, 4000)">
+      
+      <!-- Image -->
+      <template x-for="(img, i) in images" :key="i">
+        <img 
+          :src="img" 
+          class="absolute inset-0 w-full h-96 object-cover transition-opacity duration-1000"
+          :class="index === i ? 'opacity-100' : 'opacity-0'">
+      </template>
+
+      <!-- Gradient Overlay -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
     </div>
   </div>
 </section>
+
+<!-- Alpine.js for slideshow -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
 
 <!-- Services -->
 <section id="services" class="py-24 bg-gray-50">
