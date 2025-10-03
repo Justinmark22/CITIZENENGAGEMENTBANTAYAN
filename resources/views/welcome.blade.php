@@ -83,26 +83,51 @@
         Get Involved Today
       </a>
     </div>
-    <!-- Right -->
+<!-- Right -->
 <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-xl border border-gray-200 w-full">
   <div class="relative w-full h-80 sm:h-96">
-    <img src="images/bantayan.png" class="carousel-slide active absolute inset-0 w-full h-full object-cover rounded-xl">
-    <img src="images/madridejos.png" class="carousel-slide absolute inset-0 w-full h-full object-cover rounded-xl opacity-0">
-    <img src="images/sta.fe.png" class="carousel-slide absolute inset-0 w-full h-full object-cover rounded-xl opacity-0">
+    <img src="images/bantayan.png" class="carousel-slide active">
+    <img src="images/madridejos.png" class="carousel-slide">
+    <img src="images/sta.fe.png" class="carousel-slide">
     <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl"></div>
   </div>
 </div>
+</div>
 </section>
+
+<!-- Carousel Styles -->
 <style>
   .carousel-slide {
-    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     opacity: 0;
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    border-radius: 0.75rem; /* match your rounded-xl */
   }
   .carousel-slide.active {
     opacity: 1 !important;
     transform: scale(1.05);
+    z-index: 10;
   }
 </style>
+
+<!-- Carousel Script -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const slides = document.querySelectorAll(".carousel-slide");
+    let current = 0;
+
+    setInterval(() => {
+      slides[current].classList.remove("active");
+      current = (current + 1) % slides.length;
+      slides[current].classList.add("active");
+    }, 3000); // change every 3s
+  });
+</script>
+
 
 
 <!-- Mission & Vision -->
