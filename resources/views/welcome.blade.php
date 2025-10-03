@@ -88,9 +88,8 @@
       </div>
     </div>
 
-<!-- Right (Looping Slideshow) -->
 <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20"
-     x-data="{ images: ['images/bantayan.png', 'images/santafe.png', 'images/madridejos.png'], index: 0 }"
+     x-data="{ images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/santafe.png') }}', '{{ asset('images/madridejos.png') }}'], index: 0 }"
      x-init="setInterval(() => index = (index + 1) % images.length, 3000)">
     
     <!-- Image Slides -->
