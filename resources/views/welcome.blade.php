@@ -106,43 +106,47 @@
 </div>
 
 </section>
-
-<!-- Services -->
+<!-- Services Section with One Card and Looping Background -->
 <section id="services" class="py-24 bg-gray-50">
-  <div class="max-w-7xl mx-auto px-6 text-center">
-    <h2 class="text-4xl font-extrabold text-gray-900 mb-6">Featured Services</h2>
-    <p class="text-lg text-gray-600 mb-16 max-w-2xl mx-auto">
-      Access barangay services online — quick, reliable, and designed for the community.
-    </p>
-    <div class="grid md:grid-cols-3 gap-10">
-      <!-- Announcements -->
-      <div class="bg-white p-8 rounded-xl shadow-lg border hover:shadow-2xl transition transform hover:-translate-y-2">
-        <div class="mb-4 text-blue-600">
-          <i data-lucide="megaphone" class="w-12 h-12"></i>
-        </div>
-        <h3 class="text-xl font-bold mb-3 text-gray-900">Announcements</h3>
-        <p class="text-gray-600 leading-relaxed mb-4">Stay informed with real-time updates from your community leaders.</p>
-        <ul class="text-sm text-gray-500 space-y-2 text-left">
-          <li>📌 Barangay Coastal Cleanup – Oct 10</li>
-          <li>📌 Power Interruption Notice – Oct 12</li>
-          <li>📌 Free Medical Check-up – Oct 15</li>
-        </ul>
-        <a href="#" class="inline-block mt-6 px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow transition">View All</a>
+  <div class="max-w-5xl mx-auto px-6">
+    <div x-data="{
+          images: [
+            '{{ asset('images/service1.jpg') }}',
+            '{{ asset('images/service2.jpg') }}',
+            '{{ asset('images/service3.jpg') }}',
+            '{{ asset('images/service4.jpg') }}',
+            '{{ asset('images/service5.jpg') }}'
+          ],
+          index: 0,
+          init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) }
+        }"
+        class="relative rounded-xl overflow-hidden shadow-2xl h-96 flex items-center justify-center text-center text-white">
+      
+      <!-- Background Slideshow -->
+      <template x-for="(img, i) in images" :key="i">
+        <div :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'"
+             class="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000"
+             :style="`background-image: url(${img})`"></div>
+      </template>
+
+      <!-- Overlay -->
+      <div class="absolute inset-0 bg-black/50"></div>
+
+      <!-- Text Content -->
+      <div class="relative z-20 px-6">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Our Services</h2>
+        <p class="text-lg md:text-xl leading-relaxed">
+          MDRRMO | Waste Management | Water Management | Community Engagement | Emergency Response
+        </p>
       </div>
-      <!-- Certificates -->
-      <div class="bg-white p-8 rounded-xl shadow-lg border hover:shadow-2xl transition transform hover:-translate-y-2">
-        <div class="mb-4 text-green-600">
-          <i data-lucide="file-text" class="w-12 h-12"></i>
-        </div>
-        <h3 class="text-xl font-bold mb-3 text-gray-900">Certificate Requests</h3>
-        <p class="text-gray-600 leading-relaxed mb-4">Request barangay certificates, clearances, and other documents online.</p>
-        <ul class="text-sm text-gray-500 space-y-2 text-left">
-          <li>📑 Barangay Clearance</li>
-          <li>📑 Certificate of Residency</li>
-          <li>📑 Business Permit</li>
-        </ul>
-        <a href="#" class="inline-block mt-6 px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium shadow transition">Request Now</a>
-      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  lucide.createIcons();
+</script>
+
       <!-- Reports -->
       <div class="bg-white p-8 rounded-xl shadow-lg border hover:shadow-2xl transition transform hover:-translate-y-2">
         <div class="mb-4 text-red-600">
