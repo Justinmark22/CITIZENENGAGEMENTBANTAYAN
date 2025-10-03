@@ -31,102 +31,70 @@
       </p>
     </div>
 
-    <!-- Login & MFA Form Wrapper -->
+    <!-- Login Form -->
     <div class="p-8 lg:p-12 animate-fadeInUp">
+      <h2 class="text-2xl font-bold text-white mb-6 text-center lg:text-left">Sign in to your account</h2>
 
-      <!-- Login Form -->
-      <div id="loginWrapper">
-        <h2 class="text-2xl font-bold text-white mb-6 text-center lg:text-left">Sign in to your account</h2>
+      <!-- Countdown Timer (shows only when locked) -->
+      <div id="countdownWrapper" class="hidden mb-4 text-center">
+        <p class="text-red-400 font-semibold">
+          Account locked. Please try again in <span id="countdown">60</span> seconds.
+        </p>
+      </div>
 
-        <!-- Countdown Timer (shows only when locked) -->
-        <div id="countdownWrapper" class="hidden mb-4 text-center">
-          <p class="text-red-400 font-semibold">
-            Account locked. Please try again in <span id="countdown">60</span> seconds.
-          </p>
+      @if ($errors->any())
+        <div class="text-red-500 text-sm mb-4">
+          <ul class="list-disc pl-5">
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
+      <form id="loginForm" method="POST" action="{{ route('login.submit') }}" class="space-y-4">
+        @csrf
+        <div>
+          <label for="email" class="block text-gray-300 text-sm mb-1">Email</label>
+          <input type="email" id="email" name="email" required
+                 value="{{ old('email') }}"
+                 class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                 oninput="this.value = this.value.replace(/[^A-Za-z0-9@.]/g, '')"
+                 title="Only letters, numbers, @, and . are allowed">
         </div>
 
-        @if ($errors->any())
-          <div class="text-red-500 text-sm mb-4">
-            <ul class="list-disc pl-5">
-              @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-              @endforeach
-            </ul>
+        <div>
+          <label for="password" class="block text-gray-300 text-sm mb-1">Password</label>
+          <div class="relative">
+            <input type="password" id="password" name="password" required
+                   class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button type="button" id="togglePassword"
+                    class="absolute right-3 top-2.5 text-gray-400 hover:text-indigo-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
           </div>
-        @endif
+        </div>
 
-        <form id="loginForm" method="POST" action="{{ route('login.submit') }}" class="space-y-4">
-          @csrf
-          <div>
-            <label for="email" class="block text-gray-300 text-sm mb-1">Email</label>
-            <input type="email" id="email" name="email" required
-                   value="{{ old('email') }}"
-                   class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                   oninput="this.value = this.value.replace(/[^A-Za-z0-9@.]/g, '')"
-                   title="Only letters, numbers, @, and . are allowed">
-          </div>
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center text-sm text-gray-300">
+          <label class="inline-flex items-center gap-2 mb-2 md:mb-0">
+            <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-500">
+            Remember me for a week
+          </label>
+          <a href="{{ route('password.request') }}" class="text-indigo-400 hover:underline">Forgot Password?</a>
+        </div>
 
-          <div>
-            <label for="password" class="block text-gray-300 text-sm mb-1">Password</label>
-            <div class="relative">
-              <input type="password" id="password" name="password" required
-                     class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <button type="button" id="togglePassword"
-                      class="absolute right-3 top-2.5 text-gray-400 hover:text-indigo-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </button>
-            </div>
-          </div>
+        <button id="loginBtn" type="submit"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition transform hover:scale-105">
+          Continue
+        </button>
 
-          <div class="flex flex-col md:flex-row md:justify-between md:items-center text-sm text-gray-300">
-            <label class="inline-flex items-center gap-2 mb-2 md:mb-0">
-              <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-500">
-              Remember me for a week
-            </label>
-            <a href="{{ route('password.request') }}" class="text-indigo-400 hover:underline">Forgot Password?</a>
-          </div>
-
-          <button id="loginBtn" type="submit"
-                  class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition transform hover:scale-105">
-            Continue
-          </button>
-
-          <p class="text-center text-gray-400 text-sm mt-2">
-            Don't have an account? <a href="{{ route('register') }}" class="text-indigo-400 hover:underline">Register here</a>
-          </p>
-        </form>
-      </div>
-
-      <!-- MFA OTP Form -->
-      <div id="mfaWrapper" class="hidden">
-        <h2 class="text-2xl font-bold text-white mb-6 text-center lg:text-left">Enter Verification Code</h2>
-        <p class="text-gray-300 mb-4">A verification code has been sent to your email. Please enter it below.</p>
-
-        <form id="mfaForm" method="POST" action="{{ route('mfa.verify') }}" class="space-y-4">
-          @csrf
-          <div>
-            <label for="otp" class="block text-gray-300 text-sm mb-1">OTP Code</label>
-            <input type="text" id="otp" name="otp" required maxlength="6"
-                   class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                   title="Only numbers allowed">
-          </div>
-
-          <button type="submit"
-                  class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition transform hover:scale-105">
-            Verify
-          </button>
-
-          <p class="text-center text-gray-400 text-sm mt-2">
-            Didn't receive code? 
-            <button type="button" id="resendOtp" class="text-indigo-400 hover:underline">Resend OTP</button>
-          </p>
-        </form>
-      </div>
-
+        <p class="text-center text-gray-400 text-sm mt-2">
+          Don't have an account? <a href="{{ route('register') }}" class="text-indigo-400 hover:underline">Register here</a>
+        </p>
+      </form>
     </div>
   </div>
 
@@ -197,28 +165,6 @@
           e.preventDefault();
         }
       @endif
-    });
-
-    // MFA: Show OTP form if session indicates MFA is required
-    @if (session('mfa_required'))
-      document.getElementById("loginWrapper").classList.add("hidden");
-      document.getElementById("mfaWrapper").classList.remove("hidden");
-    @endif
-
-    // Resend OTP button
-    const resendOtp = document.getElementById("resendOtp");
-    resendOtp?.addEventListener("click", () => {
-      fetch("{{ route('mfa.resend') }}", {
-        method: "POST",
-        headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
-      }).then(res => res.json())
-        .then(data => {
-          Swal.fire({
-            icon: "success",
-            title: "OTP Sent!",
-            text: "A new verification code has been sent to your email."
-          });
-        });
     });
 
     // Reset lock if login succeeds
