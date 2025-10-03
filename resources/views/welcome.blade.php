@@ -106,11 +106,11 @@
 </div>
 
 </section>
-<!-- Services Section with Two Cards and Typing Text -->
+<!-- Advanced Services Section -->
 <section id="services" class="py-24 bg-gray-50">
   <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10">
 
-    <!-- Card 1 -->
+    <!-- Card 1: Services Overview -->
     <div x-data="{
           images: [
             '{{ asset('images/service1.jpg') }}',
@@ -120,61 +120,65 @@
             '{{ asset('images/service5.jpg') }}'
           ],
           index: 0,
-          typingTexts: ['MDRRMO', 'Waste Management', 'Water Management', 'Community Engagement', 'Emergency Response'],
+          typingTexts: [
+            'MDRRMO: Disaster Preparedness & Emergency Response',
+            'Waste Management: Keeping Bantayan Clean & Safe',
+            'Water Management: Clean Water Access for All',
+            'Community Engagement: Bridging Citizens and LGUs'
+          ],
           textIndex: 0,
           displayText: '',
           charIndex: 0,
           init() {
-            // Loop background images
-            setInterval(() => this.index = (this.index + 1) % this.images.length, 3000);
+            // Background slideshow
+            setInterval(() => this.index = (this.index + 1) % this.images.length, 4000);
 
-            // Typing effect
+            // Start typing animation
             this.type();
           },
           type() {
-            const currentText = this.typingTexts[this.textIndex];
-            if(this.charIndex < currentText.length) {
-              this.displayText += currentText[this.charIndex];
+            const current = this.typingTexts[this.textIndex];
+            if (this.charIndex < current.length) {
+              this.displayText += current[this.charIndex];
               this.charIndex++;
-              setTimeout(() => this.type(), 150);
+              setTimeout(() => this.type(), 80);
             } else {
-              // Pause then delete
-              setTimeout(() => this.delete(), 1000);
+              setTimeout(() => this.delete(), 1500);
             }
           },
           delete() {
-            if(this.charIndex > 0) {
+            if (this.charIndex > 0) {
               this.displayText = this.displayText.slice(0, -1);
               this.charIndex--;
-              setTimeout(() => this.delete(), 80);
+              setTimeout(() => this.delete(), 50);
             } else {
               this.textIndex = (this.textIndex + 1) % this.typingTexts.length;
               setTimeout(() => this.type(), 500);
             }
           }
         }"
-        class="relative rounded-xl overflow-hidden shadow-2xl h-96 flex items-center justify-center text-center text-white">
+        class="relative rounded-2xl overflow-hidden shadow-2xl h-96 flex items-center justify-center text-center text-white transform hover:scale-105 transition-transform duration-500">
 
-      <!-- Background Slideshow -->
+      <!-- Background Images -->
       <template x-for="(img, i) in images" :key="i">
-        <div :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'"
-             class="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000"
+        <div :class="index === i ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-105'"
+             class="absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-1000"
              :style="`background-image: url(${img})`"></div>
       </template>
 
       <!-- Overlay -->
-      <div class="absolute inset-0 bg-black/50"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent"></div>
 
-      <!-- Text Content -->
+      <!-- Typing Text Content -->
       <div class="relative z-20 px-6">
-        <h2 class="text-3xl md:text-4xl font-bold mb-4">Our Services</h2>
-        <p class="text-lg md:text-xl leading-relaxed">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Our Key Services</h2>
+        <p class="text-lg md:text-xl leading-relaxed tracking-wide">
           <span x-text="displayText"></span><span class="blinking">|</span>
         </p>
       </div>
     </div>
 
-    <!-- Card 2 -->
+    <!-- Card 2: Additional Services -->
     <div x-data="{
           images: [
             '{{ asset('images/service6.jpg') }}',
@@ -184,51 +188,57 @@
             '{{ asset('images/service10.jpg') }}'
           ],
           index: 0,
-          typingTexts: ['Health Services', 'Public Safety', 'Infrastructure', 'Education', 'Environmental Care'],
+          typingTexts: [
+            'Health Services: Accessible Care for Everyone',
+            'Public Safety: Protecting Our Communities',
+            'Infrastructure: Building Sustainable Facilities',
+            'Education: Learning & Growth Opportunities',
+            'Environmental Care: Preserving Natural Resources'
+          ],
           textIndex: 0,
           displayText: '',
           charIndex: 0,
           init() {
-            setInterval(() => this.index = (this.index + 1) % this.images.length, 3000);
+            setInterval(() => this.index = (this.index + 1) % this.images.length, 4000);
             this.type();
           },
           type() {
-            const currentText = this.typingTexts[this.textIndex];
-            if(this.charIndex < currentText.length) {
-              this.displayText += currentText[this.charIndex];
+            const current = this.typingTexts[this.textIndex];
+            if (this.charIndex < current.length) {
+              this.displayText += current[this.charIndex];
               this.charIndex++;
-              setTimeout(() => this.type(), 150);
+              setTimeout(() => this.type(), 80);
             } else {
-              setTimeout(() => this.delete(), 1000);
+              setTimeout(() => this.delete(), 1500);
             }
           },
           delete() {
-            if(this.charIndex > 0) {
+            if (this.charIndex > 0) {
               this.displayText = this.displayText.slice(0, -1);
               this.charIndex--;
-              setTimeout(() => this.delete(), 80);
+              setTimeout(() => this.delete(), 50);
             } else {
               this.textIndex = (this.textIndex + 1) % this.typingTexts.length;
               setTimeout(() => this.type(), 500);
             }
           }
         }"
-        class="relative rounded-xl overflow-hidden shadow-2xl h-96 flex items-center justify-center text-center text-white">
+        class="relative rounded-2xl overflow-hidden shadow-2xl h-96 flex items-center justify-center text-center text-white transform hover:scale-105 transition-transform duration-500">
 
-      <!-- Background Slideshow -->
+      <!-- Background Images -->
       <template x-for="(img, i) in images" :key="i">
-        <div :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'"
-             class="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000"
+        <div :class="index === i ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-105'"
+             class="absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-1000"
              :style="`background-image: url(${img})`"></div>
       </template>
 
       <!-- Overlay -->
-      <div class="absolute inset-0 bg-black/50"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent"></div>
 
-      <!-- Text Content -->
+      <!-- Typing Text Content -->
       <div class="relative z-20 px-6">
-        <h2 class="text-3xl md:text-4xl font-bold mb-4">Additional Services</h2>
-        <p class="text-lg md:text-xl leading-relaxed">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Other Services</h2>
+        <p class="text-lg md:text-xl leading-relaxed tracking-wide">
           <span x-text="displayText"></span><span class="blinking">|</span>
         </p>
       </div>
@@ -247,22 +257,7 @@
   }
 </style>
 
-      <!-- Reports -->
-      <div class="bg-white p-8 rounded-xl shadow-lg border hover:shadow-2xl transition transform hover:-translate-y-2">
-        <div class="mb-4 text-red-600">
-          <i data-lucide="alert-triangle" class="w-12 h-12"></i>
-        </div>
-        <h3 class="text-xl font-bold mb-3 text-gray-900">Report Incidents</h3>
-        <p class="text-gray-600 leading-relaxed mb-4">Submit reports on emergencies, issues, or concerns directly to your LGU.</p>
-        <ul class="text-sm text-gray-500 space-y-2 text-left">
-          <li>🚨 Emergency Hotlines</li>
-          <li>🚨 Disaster Response</li>
-          <li>🚨 Crime & Safety</li>
-        </ul>
-        <a href="#" class="inline-block mt-6 px-5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium shadow transition">Report Now</a>
-      </div>
-    </div>
-  </div>
+     
 </section>
 
 <!-- News & Updates -->
