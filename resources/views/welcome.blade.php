@@ -12,8 +12,6 @@
     body { font-family: 'Roboto', sans-serif; scroll-behavior: smooth; }
     @keyframes fadeInUp { 0% {opacity:0;transform:translateY(40px);} 100% {opacity:1;transform:translateY(0);} }
     .animate-fadeInUp { animation: fadeInUp 1s ease-out forwards; }
-    .carousel-slide { transition: opacity 1s ease-in-out, transform 1s ease-in-out; }
-    .carousel-slide.active { transform: scale(1.05); opacity: 1 !important; }
   </style>
 </head>
 
@@ -25,7 +23,7 @@
     <div class="flex justify-between items-center h-20">
       <!-- Logo -->
       <div class="flex items-center gap-3">
-        <img src="images/citizen.png" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-md">
+        <img src="{{ asset('images/citizen.png') }}" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-md">
         <span class="text-xl md:text-2xl font-extrabold text-blue-700 tracking-tight">Bantayan 911</span>
       </div>
 
@@ -67,6 +65,7 @@
     </div>
   </div>
 </nav>
+
 <!-- Hero -->
 <section class="relative pt-32 pb-24 bg-gray-900 text-white overflow-hidden">
   <!-- Patterned Background -->
@@ -86,22 +85,26 @@
         <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">Explore Services</a>
         <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">Contact Us</a>
       </div>
-    </div><div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20"
-     x-data="{ images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/santafe.png') }}', '{{ asset('images/madridejos.png') }}'], index: 0 }"
-     x-init="setInterval(() => index = (index + 1) % images.length, 3000)">
-    
-    <!-- Image Slides -->
-    <template x-for="(img, i) in images" :key="i">
-        <img :src="img"
-             class="absolute inset-0 w-full h-96 object-cover transition-opacity duration-1000"
-             :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
-    </template>
+    </div>
 
-    <!-- Gradient Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-</div>
+    <!-- Right (Slideshow) -->
+    <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20"
+         x-data="{ images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/santafe.png') }}', '{{ asset('images/madridejos.png') }}'], index: 0 }"
+         x-init="setInterval(() => index = (index + 1) % images.length, 3000)">
+        
+        <!-- Image Slides -->
+        <template x-for="(img, i) in images" :key="i">
+            <img :src="img"
+                 class="absolute inset-0 w-full h-96 object-cover transition-opacity duration-1000"
+                 :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
+        </template>
 
+        <!-- Gradient Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+    </div>
+  </div>
 </section>
+
 <!-- Services -->
 <section id="services" class="py-24 bg-gray-50">
   <div class="max-w-7xl mx-auto px-6 text-center">
@@ -109,7 +112,6 @@
     <p class="text-lg text-gray-600 mb-16 max-w-2xl mx-auto">
       Access barangay services online — quick, reliable, and designed for the community.
     </p>
-
     <div class="grid md:grid-cols-3 gap-10">
       <!-- Announcements -->
       <div class="bg-white p-8 rounded-xl shadow-lg border hover:shadow-2xl transition transform hover:-translate-y-2">
@@ -125,7 +127,6 @@
         </ul>
         <a href="#" class="inline-block mt-6 px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow transition">View All</a>
       </div>
-
       <!-- Certificates -->
       <div class="bg-white p-8 rounded-xl shadow-lg border hover:shadow-2xl transition transform hover:-translate-y-2">
         <div class="mb-4 text-green-600">
@@ -140,7 +141,6 @@
         </ul>
         <a href="#" class="inline-block mt-6 px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium shadow transition">Request Now</a>
       </div>
-
       <!-- Reports -->
       <div class="bg-white p-8 rounded-xl shadow-lg border hover:shadow-2xl transition transform hover:-translate-y-2">
         <div class="mb-4 text-red-600">
@@ -159,24 +159,23 @@
   </div>
 </section>
 
-
 <!-- News & Updates -->
 <section class="py-20 bg-white">
   <div class="max-w-6xl mx-auto px-6">
     <h2 class="text-3xl font-bold mb-8 text-center">📰 Latest News & Updates</h2>
     <div class="grid md:grid-cols-3 gap-10">
       <div class="p-6 border rounded-lg shadow hover:shadow-xl transition transform hover:-translate-y-1">
-        <img src="images/news1.jpg" class="w-full h-40 object-cover rounded-lg mb-4">
+        <img src="{{ asset('images/news1.jpg') }}" class="w-full h-40 object-cover rounded-lg mb-4">
         <h3 class="font-bold text-lg mb-2">Barangay Coastal Cleanup 2025</h3>
         <p class="text-gray-600 text-sm">Hundreds of citizens joined hands for a cleaner Bantayan shoreline.</p>
       </div>
       <div class="p-6 border rounded-lg shadow hover:shadow-xl transition transform hover:-translate-y-1">
-        <img src="images/news2.jpg" class="w-full h-40 object-cover rounded-lg mb-4">
+        <img src="{{ asset('images/news2.jpg') }}" class="w-full h-40 object-cover rounded-lg mb-4">
         <h3 class="font-bold text-lg mb-2">Digital Skills Training</h3>
         <p class="text-gray-600 text-sm">Youth were trained in basic coding and digital literacy for future opportunities.</p>
       </div>
       <div class="p-6 border rounded-lg shadow hover:shadow-xl transition transform hover:-translate-y-1">
-        <img src="images/news3.jpg" class="w-full h-40 object-cover rounded-lg mb-4">
+        <img src="{{ asset('images/news3.jpg') }}" class="w-full h-40 object-cover rounded-lg mb-4">
         <h3 class="font-bold text-lg mb-2">Emergency Response Drill</h3>
         <p class="text-gray-600 text-sm">Santa Fe held a community-wide drill to strengthen disaster preparedness.</p>
       </div>
@@ -198,7 +197,7 @@
 
 <!-- CTA -->
 <section class="relative mt-20">
-  <div class="relative h-80 bg-cover bg-center flex items-center justify-center" style="background-image: url('/images/community.png');">
+  <div class="relative h-80 bg-cover bg-center flex items-center justify-center" style="background-image: url('{{ asset('images/community.png') }}');">
     <div class="bg-black bg-opacity-60 absolute inset-0"></div>
     <div class="z-10 text-center text-white px-6">
       <h2 class="text-3xl font-semibold mb-4">Empowering Communities with <span class="text-blue-400">Citizen Engagement</span></h2>
@@ -250,16 +249,6 @@
 <!-- Scripts -->
 <script>
   lucide.createIcons();
-
-  const slides = document.querySelectorAll('.carousel-slide');
-  let current = 0;
-  setInterval(() => {
-    slides[current].classList.remove('active');
-    slides[current].style.opacity = 0;
-    current = (current + 1) % slides.length;
-    slides[current].classList.add('active');
-    slides[current].style.opacity = 1;
-  }, 4000);
 </script>
 
 </body>
