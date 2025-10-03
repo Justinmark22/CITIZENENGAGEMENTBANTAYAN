@@ -87,7 +87,7 @@
     </div>
 <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
      x-data="{
-       images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/santafe.png') }}', '{{ asset('images/madridejos.png') }}'],
+       images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/sta.fe.png') }}', '{{ asset('images/madridejos.png') }}'],
        index: 0,
        init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) }
      }">
