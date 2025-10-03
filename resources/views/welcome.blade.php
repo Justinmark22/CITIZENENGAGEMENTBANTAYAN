@@ -104,11 +104,15 @@
   </template>
   <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
 </div>
+<!-- Advanced Services Section with Full-Width Patterned Black Background -->
+<section id="services" class="relative py-24">
+  <!-- Full-width Patterned Black Background -->
+  <div class="absolute inset-0 bg-black/80"
+       style="background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/black-thread.png');
+              background-repeat: repeat;
+              z-index: -10;"></div>
 
-</section>
-<!-- Advanced Services Section with Patterned Black Background -->
-<section id="services" class="py-24 bg-gray-50">
-  <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10">
+  <div class="relative max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10">
 
     <!-- Card 1: Services Overview -->
     <div x-data="{
@@ -130,6 +134,7 @@
           displayText: '',
           charIndex: 0,
           init() {
+            // Background slideshow
             setInterval(() => this.index = (this.index + 1) % this.images.length, 4000);
             this.type();
           },
@@ -156,22 +161,18 @@
         }"
         class="relative rounded-2xl overflow-hidden shadow-2xl h-96 flex items-center justify-center text-center text-white transform hover:scale-105 transition-transform duration-500">
 
-      <!-- Background Images -->
+      <!-- Background Images with zoom/pan animation -->
       <template x-for="(img, i) in images" :key="i">
         <div :class="index === i ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-105'"
-             class="absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-1000"
+             class="absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-1000 transform scale-105 animate-zoom-pan"
              :style="`background-image: url(${img})`"></div>
       </template>
 
-      <!-- Patterned Black Overlay -->
-      <div class="absolute inset-0 z-20"
-           style="background-color: rgba(0,0,0,0.7);
-                  background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/black-thread.png');
-                  background-repeat: repeat;
-                  background-blend-mode: overlay;"></div>
+      <!-- Semi-transparent Overlay -->
+      <div class="absolute inset-0 bg-black/50"></div>
 
       <!-- Typing Text Content -->
-      <div class="relative z-30 px-6">
+      <div class="relative z-20 px-6">
         <h2 class="text-3xl md:text-4xl font-bold mb-4">Our Key Services</h2>
         <p class="text-lg md:text-xl leading-relaxed tracking-wide">
           <span x-text="displayText"></span><span class="blinking">|</span>
@@ -226,22 +227,18 @@
         }"
         class="relative rounded-2xl overflow-hidden shadow-2xl h-96 flex items-center justify-center text-center text-white transform hover:scale-105 transition-transform duration-500">
 
-      <!-- Background Images -->
+      <!-- Background Images with zoom/pan animation -->
       <template x-for="(img, i) in images" :key="i">
         <div :class="index === i ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-105'"
-             class="absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-1000"
+             class="absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-1000 transform scale-105 animate-zoom-pan"
              :style="`background-image: url(${img})`"></div>
       </template>
 
-      <!-- Patterned Black Overlay -->
-      <div class="absolute inset-0 z-20"
-           style="background-color: rgba(0,0,0,0.7);
-                  background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/black-thread.png');
-                  background-repeat: repeat;
-                  background-blend-mode: overlay;"></div>
+      <!-- Semi-transparent Overlay -->
+      <div class="absolute inset-0 bg-black/50"></div>
 
       <!-- Typing Text Content -->
-      <div class="relative z-30 px-6">
+      <div class="relative z-20 px-6">
         <h2 class="text-3xl md:text-4xl font-bold mb-4">Other Services</h2>
         <p class="text-lg md:text-xl leading-relaxed tracking-wide">
           <span x-text="displayText"></span><span class="blinking">|</span>
@@ -260,9 +257,18 @@
     0%, 50%, 100% { opacity: 1; }
     25%, 75% { opacity: 0; }
   }
+
+  /* Zoom/Pan Animation */
+  @keyframes zoomPan {
+    0% { transform: scale(1.05) translate(0px, 0px); }
+    50% { transform: scale(1.1) translate(10px, 10px); }
+    100% { transform: scale(1.05) translate(0px, 0px); }
+  }
+  .animate-zoom-pan {
+    animation: zoomPan 12s ease-in-out infinite;
+  }
 </style>
 
-   
 <!-- News & Updates -->
 <section class="py-20 bg-white">
   <div class="max-w-6xl mx-auto px-6">
