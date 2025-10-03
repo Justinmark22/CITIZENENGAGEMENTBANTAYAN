@@ -131,15 +131,31 @@
 
 
 <!-- Mission & Vision -->
-<section class="py-20 bg-gray-50">
-  <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
-    <div class="animate-fadeInUp">
-      <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Mission</h2>
-      <p class="text-gray-600 leading-relaxed">To empower every citizen of Bantayan Island by providing an inclusive and transparent platform for engagement, collaboration, and governance. Strengthening trust through open communication and participation.</p>
+<section class="py-20 bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
+  <div class="absolute inset-0 bg-pattern opacity-5"></div>
+  <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center relative z-10">
+    
+    <!-- Mission -->
+    <div class="animate-fadeInUp bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition">
+      <h2 class="text-3xl font-extrabold text-blue-800 mb-4 flex items-center gap-2">
+        🚀 Our Mission
+      </h2>
+      <p class="text-gray-600 leading-relaxed text-lg">
+        To empower every citizen of Bantayan Island by providing an inclusive and transparent platform 
+        for engagement, collaboration, and governance. Strengthening trust through open communication 
+        and participation.
+      </p>
     </div>
-    <div class="animate-fadeInUp">
-      <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Vision</h2>
-      <p class="text-gray-600 leading-relaxed">A digitally empowered Bantayan Island where citizens, government, and communities work hand-in-hand to achieve sustainable development, safety, and resilience.</p>
+
+    <!-- Vision -->
+    <div class="animate-fadeInUp bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition delay-150">
+      <h2 class="text-3xl font-extrabold text-green-800 mb-4 flex items-center gap-2">
+        🌅 Our Vision
+      </h2>
+      <p class="text-gray-600 leading-relaxed text-lg">
+        A digitally empowered Bantayan Island where citizens, government, and communities work 
+        hand-in-hand to achieve sustainable development, safety, and resilience.
+      </p>
     </div>
   </div>
 </section>
@@ -147,23 +163,58 @@
 <!-- Services -->
 <section class="py-20 bg-white">
   <div class="max-w-6xl mx-auto px-6 text-center">
-    <h2 class="text-3xl font-bold mb-8">🌐 Featured Services</h2>
-    <div class="grid md:grid-cols-3 gap-10">
-      <div class="p-8 bg-blue-50 rounded-xl shadow hover:shadow-lg transition transform hover:-translate-y-1">
-        <h3 class="font-bold text-xl text-blue-700 mb-3">📢 Announcements</h3>
-        <p class="text-gray-600">Stay informed with real-time updates from your community leaders.</p>
+    <h2 class="text-4xl font-extrabold mb-12 text-gray-900">🌐 Featured Services</h2>
+    <div class="grid md:grid-cols-3 gap-12">
+
+      <!-- Announcements -->
+      <div class="p-10 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl shadow-md hover:shadow-xl 
+                  transition transform hover:-translate-y-2">
+        <div class="text-5xl mb-4">📢</div>
+        <h3 class="font-bold text-2xl text-blue-800 mb-3">Announcements</h3>
+        <p class="text-gray-600 text-lg">
+          Stay informed with real-time updates from your community leaders.
+        </p>
       </div>
-      <div class="p-8 bg-green-50 rounded-xl shadow hover:shadow-lg transition transform hover:-translate-y-1">
-        <h3 class="font-bold text-xl text-green-700 mb-3">📑 Certificate Requests</h3>
-        <p class="text-gray-600">Request barangay certificates, clearances, and other documents online.</p>
+
+      <!-- Certificates -->
+      <div class="p-10 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl shadow-md hover:shadow-xl 
+                  transition transform hover:-translate-y-2">
+        <div class="text-5xl mb-4">📑</div>
+        <h3 class="font-bold text-2xl text-green-800 mb-3">Certificate Requests</h3>
+        <p class="text-gray-600 text-lg">
+          Request barangay certificates, clearances, and other documents online.
+        </p>
       </div>
-      <div class="p-8 bg-yellow-50 rounded-xl shadow hover:shadow-lg transition transform hover:-translate-y-1">
-        <h3 class="font-bold text-xl text-yellow-700 mb-3">🚨 Report Incidents</h3>
-        <p class="text-gray-600">Submit reports on emergencies, issues, or concerns directly to your LGU.</p>
+
+      <!-- Reports -->
+      <div class="p-10 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl shadow-md hover:shadow-xl 
+                  transition transform hover:-translate-y-2">
+        <div class="text-5xl mb-4">🚨</div>
+        <h3 class="font-bold text-2xl text-yellow-800 mb-3">Report Incidents</h3>
+        <p class="text-gray-600 text-lg">
+          Submit reports on emergencies, issues, or concerns directly to your LGU.
+        </p>
       </div>
+
     </div>
   </div>
 </section>
+
+<!-- Extra Styling -->
+<style>
+  .animate-fadeInUp {
+    animation: fadeInUp 1s ease-in-out;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .bg-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.05'%3E%3Cpath d='M50 0v100M0 50h100' stroke='%23000' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 40px 40px;
+  }
+</style>
+
 
 <!-- News & Updates -->
 <section class="py-20 bg-white">
