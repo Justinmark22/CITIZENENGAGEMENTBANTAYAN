@@ -88,28 +88,24 @@
       </div>
     </div>
 
-    <!-- Right (Looping Slideshow) -->
-    <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20" 
-         x-data="{ images: ['images/bantayan.png', 'images/santafe.png', 'images/madridejos.png'], index: 0 }" 
-         x-init="setInterval(() => index = (index + 1) % images.length, 4000)">
-      
-      <!-- Image -->
-      <template x-for="(img, i) in images" :key="i">
-        <img 
-          :src="img" 
-          class="absolute inset-0 w-full h-96 object-cover transition-opacity duration-1000"
-          :class="index === i ? 'opacity-100' : 'opacity-0'">
-      </template>
+<!-- Right (Looping Slideshow) -->
+<div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20"
+     x-data="{ images: ['images/bantayan.png', 'images/santafe.png', 'images/madridejos.png'], index: 0 }"
+     x-init="setInterval(() => index = (index + 1) % images.length, 3000)">
+    
+    <!-- Image Slides -->
+    <template x-for="(img, i) in images" :key="i">
+        <img :src="img"
+             class="absolute inset-0 w-full h-96 object-cover transition-opacity duration-1000"
+             :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
+    </template>
 
-      <!-- Gradient Overlay -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-    </div>
-  </div>
-</section>
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+</div>
 
-<!-- Alpine.js for slideshow -->
+<!-- Alpine.js -->
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
 
 <!-- Services -->
 <section id="services" class="py-24 bg-gray-50">
