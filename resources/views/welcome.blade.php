@@ -85,26 +85,20 @@
         <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">Contact Us</a>
       </div>
     </div>
+<div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
+     x-data="{
+       images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/santafe.png') }}', '{{ asset('images/madridejos.png') }}'],
+       index: 0,
+       init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) }
+     }">
+  <template x-for="(img, i) in images" :key="i">
+    <img :src="img"
+         class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+         :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
+  </template>
+  <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+</div>
 
-    <!-- Right (Slideshow) -->
-    <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20"
-         x-data="{
-           images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/santafe.png') }}', '{{ asset('images/madridejos.png') }}'],
-           index: 0,
-           init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) }
-         }">
-        
-      <!-- Image Slides -->
-      <template x-for="(img, i) in images" :key="i">
-        <img :src="img"
-             class="absolute inset-0 w-full h-96 object-cover transition-opacity duration-1000"
-             :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
-      </template>
-
-      <!-- Gradient Overlay -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-    </div>
-  </div>
 </section>
 
 <!-- Services -->
