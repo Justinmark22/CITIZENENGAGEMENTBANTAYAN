@@ -92,6 +92,7 @@
     <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl"></div>
   </div>
 </div>
+</section>
 <style>
   .carousel-slide {
     transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
