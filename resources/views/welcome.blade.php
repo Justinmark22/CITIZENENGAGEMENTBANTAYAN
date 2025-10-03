@@ -106,9 +106,11 @@
 </div>
 
 </section>
-<!-- Services Section with One Card and Looping Background -->
+<!-- Services Section with Two Cards and Typing Text -->
 <section id="services" class="py-24 bg-gray-50">
-  <div class="max-w-5xl mx-auto px-6">
+  <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10">
+
+    <!-- Card 1 -->
     <div x-data="{
           images: [
             '{{ asset('images/service1.jpg') }}',
@@ -118,10 +120,41 @@
             '{{ asset('images/service5.jpg') }}'
           ],
           index: 0,
-          init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) }
+          typingTexts: ['MDRRMO', 'Waste Management', 'Water Management', 'Community Engagement', 'Emergency Response'],
+          textIndex: 0,
+          displayText: '',
+          charIndex: 0,
+          init() {
+            // Loop background images
+            setInterval(() => this.index = (this.index + 1) % this.images.length, 3000);
+
+            // Typing effect
+            this.type();
+          },
+          type() {
+            const currentText = this.typingTexts[this.textIndex];
+            if(this.charIndex < currentText.length) {
+              this.displayText += currentText[this.charIndex];
+              this.charIndex++;
+              setTimeout(() => this.type(), 150);
+            } else {
+              // Pause then delete
+              setTimeout(() => this.delete(), 1000);
+            }
+          },
+          delete() {
+            if(this.charIndex > 0) {
+              this.displayText = this.displayText.slice(0, -1);
+              this.charIndex--;
+              setTimeout(() => this.delete(), 80);
+            } else {
+              this.textIndex = (this.textIndex + 1) % this.typingTexts.length;
+              setTimeout(() => this.type(), 500);
+            }
+          }
         }"
         class="relative rounded-xl overflow-hidden shadow-2xl h-96 flex items-center justify-center text-center text-white">
-      
+
       <!-- Background Slideshow -->
       <template x-for="(img, i) in images" :key="i">
         <div :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'"
@@ -136,16 +169,83 @@
       <div class="relative z-20 px-6">
         <h2 class="text-3xl md:text-4xl font-bold mb-4">Our Services</h2>
         <p class="text-lg md:text-xl leading-relaxed">
-          MDRRMO | Waste Management | Water Management | Community Engagement | Emergency Response
+          <span x-text="displayText"></span><span class="blinking">|</span>
         </p>
       </div>
     </div>
+
+    <!-- Card 2 -->
+    <div x-data="{
+          images: [
+            '{{ asset('images/service6.jpg') }}',
+            '{{ asset('images/service7.jpg') }}',
+            '{{ asset('images/service8.jpg') }}',
+            '{{ asset('images/service9.jpg') }}',
+            '{{ asset('images/service10.jpg') }}'
+          ],
+          index: 0,
+          typingTexts: ['Health Services', 'Public Safety', 'Infrastructure', 'Education', 'Environmental Care'],
+          textIndex: 0,
+          displayText: '',
+          charIndex: 0,
+          init() {
+            setInterval(() => this.index = (this.index + 1) % this.images.length, 3000);
+            this.type();
+          },
+          type() {
+            const currentText = this.typingTexts[this.textIndex];
+            if(this.charIndex < currentText.length) {
+              this.displayText += currentText[this.charIndex];
+              this.charIndex++;
+              setTimeout(() => this.type(), 150);
+            } else {
+              setTimeout(() => this.delete(), 1000);
+            }
+          },
+          delete() {
+            if(this.charIndex > 0) {
+              this.displayText = this.displayText.slice(0, -1);
+              this.charIndex--;
+              setTimeout(() => this.delete(), 80);
+            } else {
+              this.textIndex = (this.textIndex + 1) % this.typingTexts.length;
+              setTimeout(() => this.type(), 500);
+            }
+          }
+        }"
+        class="relative rounded-xl overflow-hidden shadow-2xl h-96 flex items-center justify-center text-center text-white">
+
+      <!-- Background Slideshow -->
+      <template x-for="(img, i) in images" :key="i">
+        <div :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'"
+             class="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000"
+             :style="`background-image: url(${img})`"></div>
+      </template>
+
+      <!-- Overlay -->
+      <div class="absolute inset-0 bg-black/50"></div>
+
+      <!-- Text Content -->
+      <div class="relative z-20 px-6">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Additional Services</h2>
+        <p class="text-lg md:text-xl leading-relaxed">
+          <span x-text="displayText"></span><span class="blinking">|</span>
+        </p>
+      </div>
+    </div>
+
   </div>
 </section>
 
-<script>
-  lucide.createIcons();
-</script>
+<style>
+  .blinking {
+    animation: blink 1s infinite;
+  }
+  @keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0; }
+  }
+</style>
 
       <!-- Reports -->
       <div class="bg-white p-8 rounded-xl shadow-lg border hover:shadow-2xl transition transform hover:-translate-y-2">
