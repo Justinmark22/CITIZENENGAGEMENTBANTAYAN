@@ -72,19 +72,25 @@
   <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"></div>
 
   <div class="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
-    <!-- Left -->
-    <div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
-      <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight">
-        Strengthening Citizen Engagement in Bantayan Island
-      </h1>
-      <p class="text-lg text-gray-300 mb-8 leading-relaxed">
-        A transparent and collaborative <span class="font-semibold text-yellow-400">digital platform</span> connecting citizens, LGUs, and communities in Bantayan, Santa Fe, and Madridejos.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-        <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">Explore Services</a>
-        <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">Contact Us</a>
-      </div>
-    </div>
+   <!-- Left (Updated Text) -->
+<div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
+  <h2 class="text-xl lg:text-2xl font-semibold text-yellow-400 mb-2">Welcome to Bantayan Island</h2>
+  <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-white">
+    Strengthening Citizen Engagement Across Communities
+  </h1>
+  <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+    Discover a <span class="font-semibold text-yellow-400">transparent digital platform</span> that connects citizens, LGUs, and local communities in Bantayan, Santa Fe, and Madridejos.
+  </p>
+  <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+    <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">
+      Explore Services
+    </a>
+    <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">
+      Contact Us
+    </a>
+  </div>
+</div>
+
 <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
      x-data="{
        images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/sta.fe.png') }}', '{{ asset('images/madridejos.png') }}'],
