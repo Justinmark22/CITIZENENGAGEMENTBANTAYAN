@@ -17,9 +17,6 @@
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <!-- Google reCAPTCHA JS -->
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
   <style>
     body { font-family: 'Roboto', sans-serif; }
     @keyframes fadeInUp { 0% {opacity:0; transform: translateY(30px);} 100% {opacity:1; transform: translateY(0);} }
@@ -59,7 +56,7 @@
       <form id="loginForm" method="POST" action="{{ route('login.submit') }}" class="space-y-4">
         @csrf
 
-        <!-- Inputs disabled until reCAPTCHA is solved -->
+        <!-- Disable form until custom checkbox is checked -->
         <fieldset id="loginFieldset" disabled>
           <div>
             <label for="email" class="block text-gray-300 text-sm mb-1">Email</label>
@@ -99,15 +96,12 @@
           </div>
         </fieldset>
 
-        <!-- Google reCAPTCHA Integration -->
+        <!-- Custom "8cbk1" checkbox -->
         <div class="flex justify-center mb-4">
-          <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"
-               data-callback="recaptchaSuccess" data-expired-callback="recaptchaExpired"></div>
-          @if ($errors->has('g-recaptcha-response'))
-              <span class="text-red-500 text-sm mt-1 block">
-                  {{ $errors->first('g-recaptcha-response') }}
-              </span>
-          @endif
+          <label class="flex items-center gap-2 cursor-pointer text-gray-300 select-none">
+            <input type="checkbox" id="customCaptcha" class="w-5 h-5 accent-indigo-500">
+            <span>8cbk1</span>
+          </label>
         </div>
 
         <button id="loginBtn" type="submit"
@@ -208,15 +202,17 @@
       localStorage.removeItem("lock_until");
     }
 
-    // ✅ reCAPTCHA callbacks
-    function recaptchaSuccess() {
-      document.getElementById('loginFieldset').disabled = false;
-    }
+    // ✅ Custom "8cbk1" checkbox logic
+    const customCaptcha = document.getElementById('customCaptcha');
+    const loginFieldset = document.getElementById('loginFieldset');
 
-    function recaptchaExpired() {
-      document.getElementById('loginFieldset').disabled = true;
-      grecaptcha.reset();
-    }
+    customCaptcha.addEventListener('change', () => {
+      if (customCaptcha.checked) {
+        loginFieldset.disabled = false;
+      } else {
+        loginFieldset.disabled = true;
+      }
+    });
   </script>
 
 </body>
