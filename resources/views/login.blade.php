@@ -17,6 +17,9 @@
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+  <!-- Google reCAPTCHA v3 -->
+  <script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITE_KEY') }}"></script>
+
   <style>
     body { font-family: 'Roboto', sans-serif; }
     @keyframes fadeInUp { 0% {opacity:0; transform: translateY(30px);} 100% {opacity:1; transform: translateY(0);} }
@@ -56,7 +59,7 @@
       <form id="loginForm" method="POST" action="{{ route('login.submit') }}" class="space-y-4">
         @csrf
 
-        <!-- Disable form until custom checkbox is checked -->
+        <!-- Disable form until reCAPTCHA verifies -->
         <fieldset id="loginFieldset" disabled>
           <div>
             <label for="email" class="block text-gray-300 text-sm mb-1">Email</label>
@@ -95,14 +98,6 @@
             <a href="{{ route('password.request') }}" class="text-indigo-400 hover:underline">Forgot Password?</a>
           </div>
         </fieldset>
-
-        <!-- Custom "8cbk1" checkbox -->
-        <div class="flex justify-center mb-4">
-          <label class="flex items-center gap-2 cursor-pointer text-gray-300 select-none">
-            <input type="checkbox" id="customCaptcha" class="w-5 h-5 accent-indigo-500">
-            <span>8cbk1</span>
-          </label>
-        </div>
 
         <button id="loginBtn" type="submit"
                 class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition transform hover:scale-105">
@@ -182,18 +177,24 @@
         e.preventDefault();
         return;
       }
-      if (loginErrors) {
-        attempts++;
-        localStorage.setItem("login_attempts", attempts);
-        if (attempts >= 3) {
-          let lockTime = Date.now() + 60 * 1000; // 1 min lock
-          localStorage.setItem("lock_until", lockTime);
-          lockUntil = lockTime;
-          const remaining = Math.ceil((lockUntil - Date.now()) / 1000);
-          showLockAlert(remaining);
-          e.preventDefault();
-        }
-      }
+
+      // Disable form until recaptcha token is retrieved
+      e.preventDefault();
+      grecaptcha.ready(function() {
+        grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', {action: 'login'}).then(function(token) {
+          // Add token as hidden input
+          let input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'g-recaptcha-response';
+          input.value = token;
+          loginForm.appendChild(input);
+
+          // Enable inputs before submitting
+          document.getElementById('loginFieldset').disabled = false;
+
+          loginForm.submit();
+        });
+      });
     });
 
     // Reset lock if login succeeds
@@ -201,18 +202,6 @@
       localStorage.removeItem("login_attempts");
       localStorage.removeItem("lock_until");
     }
-
-    // ✅ Custom "8cbk1" checkbox logic
-    const customCaptcha = document.getElementById('customCaptcha');
-    const loginFieldset = document.getElementById('loginFieldset');
-
-    customCaptcha.addEventListener('change', () => {
-      if (customCaptcha.checked) {
-        loginFieldset.disabled = false;
-      } else {
-        loginFieldset.disabled = true;
-      }
-    });
   </script>
 
 </body>
