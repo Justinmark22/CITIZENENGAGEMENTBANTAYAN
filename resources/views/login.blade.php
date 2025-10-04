@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login | Bantayan 911</title>
 
-  <!-- Favicon -->
-  <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
-
   <!-- SEO & Social Meta -->
   <meta name="description" content="Bantayan 911: A platform to strengthen community interaction and empower citizens.">
   <meta name="robots" content="index, follow">
