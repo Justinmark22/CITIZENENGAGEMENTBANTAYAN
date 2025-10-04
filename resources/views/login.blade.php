@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login | Bantayan 911</title>
 
-  <!-- Transparent favicon to prevent red X -->
+  <!-- Transparent favicon -->
   <link rel="icon" href="data:image/png;base64,iVBORw0KGgo=">
 
   <!-- Tailwind & Fonts -->
@@ -59,8 +59,8 @@
       <form id="loginForm" method="POST" action="{{ route('login.submit') }}" class="space-y-4">
         @csrf
 
-        <!-- Disable form until reCAPTCHA verifies -->
-        <fieldset id="loginFieldset" disabled>
+        <!-- Input fields (enabled by default) -->
+        <fieldset id="loginFieldset">
           <div>
             <label for="email" class="block text-gray-300 text-sm mb-1">Email</label>
             <input type="email" id="email" name="email" required
@@ -99,6 +99,7 @@
           </div>
         </fieldset>
 
+        <!-- Submit button -->
         <button id="loginBtn" type="submit"
                 class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition transform hover:scale-105">
           Continue
@@ -172,26 +173,25 @@
     // Check lock on page load
     checkLock();
 
-    loginForm.addEventListener("submit", function (e) {
+    // Handle form submission with reCAPTCHA v3
+    loginForm.addEventListener("submit", function(e) {
       if (checkLock()) {
         e.preventDefault();
         return;
       }
 
-      // Disable form until recaptcha token is retrieved
       e.preventDefault();
+
       grecaptcha.ready(function() {
         grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', {action: 'login'}).then(function(token) {
-          // Add token as hidden input
+          // Append token to form
           let input = document.createElement('input');
           input.type = 'hidden';
           input.name = 'g-recaptcha-response';
           input.value = token;
           loginForm.appendChild(input);
 
-          // Enable inputs before submitting
-          document.getElementById('loginFieldset').disabled = false;
-
+          // Submit form
           loginForm.submit();
         });
       });
