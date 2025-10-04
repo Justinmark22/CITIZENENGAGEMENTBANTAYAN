@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login | Bantayan 911</title>
 
+  <!-- Transparent favicon to prevent red X -->
+  <link rel="icon" href="data:image/png;base64,iVBORw0KGgo=">
   <!-- SEO & Social Meta -->
   <meta name="description" content="Bantayan 911: A platform to strengthen community interaction and empower citizens.">
   <meta name="robots" content="index, follow">
