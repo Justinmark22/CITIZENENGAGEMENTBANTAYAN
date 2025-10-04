@@ -39,13 +39,6 @@
     <div class="p-8 lg:p-12 animate-fadeInUp">
       <h2 class="text-2xl font-bold text-white mb-6 text-center lg:text-left">Sign in to your account</h2>
 
-      <!-- Countdown Timer (shows only when locked) -->
-      <div id="countdownWrapper" class="hidden mb-4 text-center">
-        <p class="text-red-400 font-semibold">
-          Account locked. Please try again in <span id="countdown">60</span> seconds.
-        </p>
-      </div>
-
       @if ($errors->any())
         <div class="text-red-500 text-sm mb-4">
           <ul class="list-disc pl-5">
@@ -95,9 +88,8 @@
           <a href="{{ route('password.request') }}" class="text-indigo-400 hover:underline">Forgot Password?</a>
         </div>
 
-        <!-- ✅ Google reCAPTCHA Integration -->
+        <!-- Google reCAPTCHA Integration -->
         <div class="flex justify-center mb-4">
-          {{-- Plain HTML version with your site key --}}
           <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
           @if ($errors->has('g-recaptcha-response'))
               <span class="text-red-500 text-sm mt-1 block">
@@ -119,51 +111,66 @@
   </div>
 
   <script>
+    // Blade -> JS
+    let loginErrors = @json($errors->any());
+    let loggedInStatus = @json(session('status') === 'logged_in');
+
     // Toggle password visibility
     const togglePassword = document.getElementById("togglePassword");
     const passwordInput = document.getElementById("password");
     togglePassword.addEventListener("click", () => {
       const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
       passwordInput.setAttribute("type", type);
+      togglePassword.classList.toggle("text-indigo-500");
     });
 
-    // Login Attempt Lockout + Countdown
+    // Lockout logic
     const loginForm = document.getElementById("loginForm");
     const loginBtn = document.getElementById("loginBtn");
-    const countdownWrapper = document.getElementById("countdownWrapper");
-    const countdownEl = document.getElementById("countdown");
 
     let attempts = parseInt(localStorage.getItem("login_attempts")) || 0;
-    let lockUntil = localStorage.getItem("lock_until");
+    let lockUntil = parseInt(localStorage.getItem("lock_until")) || null;
 
-    function startCountdown(seconds) {
-      countdownWrapper.classList.remove("hidden");
-      let interval = setInterval(() => {
-        let remaining = Math.ceil((lockUntil - Date.now()) / 1000);
-        if (remaining <= 0) {
-          clearInterval(interval);
-          localStorage.removeItem("lock_until");
-          localStorage.removeItem("login_attempts");
-          countdownWrapper.classList.add("hidden");
-          loginBtn.classList.remove("disabled");
-          return;
+    function showLockAlert(seconds) {
+      loginBtn.classList.add("disabled");
+
+      let timerInterval;
+      Swal.fire({
+        title: 'Account Locked',
+        html: `Please wait <b>${seconds}</b> seconds before trying again.`,
+        icon: 'error',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          const b = Swal.getHtmlContainer().querySelector('b');
+          timerInterval = setInterval(() => {
+            const remaining = Math.ceil((lockUntil - Date.now()) / 1000);
+            if (remaining <= 0) {
+              clearInterval(timerInterval);
+              Swal.close();
+              loginBtn.classList.remove("disabled");
+              localStorage.removeItem("lock_until");
+              localStorage.removeItem("login_attempts");
+            } else {
+              b.textContent = remaining;
+            }
+          }, 1000);
         }
-        countdownEl.textContent = remaining;
-      }, 1000);
+      });
     }
 
     function checkLock() {
       if (lockUntil && Date.now() < lockUntil) {
-        loginBtn.classList.add("disabled");
-        startCountdown(Math.ceil((lockUntil - Date.now()) / 1000));
+        const remaining = Math.ceil((lockUntil - Date.now()) / 1000);
+        showLockAlert(remaining);
         return true;
       } else {
         loginBtn.classList.remove("disabled");
-        countdownWrapper.classList.add("hidden");
         return false;
       }
     }
 
+    // Check lock on page load
     checkLock();
 
     loginForm.addEventListener("submit", function (e) {
@@ -172,7 +179,7 @@
         return;
       }
 
-      @if ($errors->any())
+      if (loginErrors) {
         attempts++;
         localStorage.setItem("login_attempts", attempts);
 
@@ -180,17 +187,18 @@
           let lockTime = Date.now() + 60 * 1000; // 1 min lock
           localStorage.setItem("lock_until", lockTime);
           lockUntil = lockTime;
-          checkLock();
+          const remaining = Math.ceil((lockUntil - Date.now()) / 1000);
+          showLockAlert(remaining);
           e.preventDefault();
         }
-      @endif
+      }
     });
 
     // Reset lock if login succeeds
-    @if (session('status') === 'logged_in')
+    if (loggedInStatus) {
       localStorage.removeItem("login_attempts");
       localStorage.removeItem("lock_until");
-    @endif
+    }
   </script>
 
 </body>
