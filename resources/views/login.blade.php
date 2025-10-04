@@ -6,6 +6,7 @@
   <title>Login | Bantayan 911</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Roboto', sans-serif; }
@@ -17,10 +18,11 @@
     .disabled { opacity: 0.6; pointer-events: none; }
   </style>
 </head>
+
 <body class="bg-gray-900 flex items-center justify-center min-h-screen px-4">
 
   <div class="w-full max-w-4xl bg-gray-800 rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
-    
+
     <!-- Logo & Description -->
     <div class="flex flex-col justify-center items-center p-8 lg:p-12 text-center lg:text-left animate-fadeInUp">
       <img src="{{ asset('images/citizen.png') }}" alt="Citizen Logo"
@@ -71,8 +73,13 @@
             <button type="button" id="togglePassword"
                     class="absolute right-3 top-2.5 text-gray-400 hover:text-indigo-500">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5
+                         c4.478 0 8.268 2.943 9.542 7
+                         -1.274 4.057-5.064 7-9.542 7
+                         -4.477 0-8.268-2.943-9.542-7z" />
               </svg>
             </button>
           </div>
@@ -84,6 +91,11 @@
             Remember me for a week
           </label>
           <a href="{{ route('password.request') }}" class="text-indigo-400 hover:underline">Forgot Password?</a>
+        </div>
+
+        <!-- Google reCAPTCHA -->
+        <div class="flex justify-center mb-4">
+          <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
         </div>
 
         <button id="loginBtn" type="submit"
@@ -152,7 +164,7 @@
         return;
       }
 
-      // Simulate wrong login attempt (for demo only, Laravel should handle real auth errors)
+      // Simulate wrong login attempt (for demo only; Laravel handles real errors)
       @if ($errors->any())
         attempts++;
         localStorage.setItem("login_attempts", attempts);
@@ -173,5 +185,6 @@
       localStorage.removeItem("lock_until");
     @endif
   </script>
+
 </body>
 </html>
