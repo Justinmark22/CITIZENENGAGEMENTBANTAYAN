@@ -7,13 +7,13 @@
 
   <!-- Transparent favicon to prevent red X -->
   <link rel="icon" href="data:image/png;base64,iVBORw0KGgo=">
-  <!-- SEO & Social Meta -->
-  <meta name="description" content="Bantayan 911: A platform to strengthen community interaction and empower citizens.">
-  <meta name="robots" content="index, follow">
-  <meta property="og:title" content="Login | Bantayan 911">
-  <meta property="og:description" content="Sign in to Bantayan 911 to access community services.">
-  <meta property="og:image" content="{{ asset('images/citizen.png') }}">
-  <meta property="og:type" content="website">
+ <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bantayan 911</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide-icons/dist/umd/lucide.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
   <!-- Tailwind & Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
