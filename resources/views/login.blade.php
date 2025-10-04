@@ -4,21 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login | Bantayan 911</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+
+  <!-- SEO & Social Meta -->
+  <meta name="description" content="Bantayan 911: A platform to strengthen community interaction and empower citizens.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Login | Bantayan 911">
+  <meta property="og:description" content="Sign in to Bantayan 911 to access community services.">
+  <meta property="og:image" content="{{ asset('images/citizen.png') }}">
+  <meta property="og:type" content="website">
+
+  <!-- Tailwind & Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Google reCAPTCHA JS -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
   <style>
     body { font-family: 'Roboto', sans-serif; }
-    @keyframes fadeInUp {
-      0% {opacity:0; transform: translateY(30px);}
-      100% {opacity:1; transform: translateY(0);}
-    }
+    @keyframes fadeInUp { 0% {opacity:0; transform: translateY(30px);} 100% {opacity:1; transform: translateY(0);} }
     .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
     .disabled { opacity: 0.6; pointer-events: none; }
   </style>
-
-  {{-- Google reCAPTCHA JS --}}
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 
 <body class="bg-gray-900 flex items-center justify-center min-h-screen px-4">
