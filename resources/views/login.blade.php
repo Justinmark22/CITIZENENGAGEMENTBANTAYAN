@@ -6,7 +6,6 @@
   <title>Login | Bantayan 911</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Roboto', sans-serif; }
@@ -17,6 +16,7 @@
     .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
     .disabled { opacity: 0.6; pointer-events: none; }
   </style>
+  {!! NoCaptcha::renderJs() !!}
 </head>
 
 <body class="bg-gray-900 flex items-center justify-center min-h-screen px-4">
@@ -93,9 +93,14 @@
           <a href="{{ route('password.request') }}" class="text-indigo-400 hover:underline">Forgot Password?</a>
         </div>
 
-        <!-- Google reCAPTCHA -->
+        <!-- ✅ Google reCAPTCHA Integration -->
         <div class="flex justify-center mb-4">
-          <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+          {!! NoCaptcha::display() !!}
+          @if ($errors->has('g-recaptcha-response'))
+              <span class="text-red-500 text-sm mt-1 block">
+                  {{ $errors->first('g-recaptcha-response') }}
+              </span>
+          @endif
         </div>
 
         <button id="loginBtn" type="submit"
@@ -164,7 +169,7 @@
         return;
       }
 
-      // Simulate wrong login attempt (for demo only; Laravel handles real errors)
+      // Simulate wrong login attempt (frontend only; Laravel handles backend)
       @if ($errors->any())
         attempts++;
         localStorage.setItem("login_attempts", attempts);
