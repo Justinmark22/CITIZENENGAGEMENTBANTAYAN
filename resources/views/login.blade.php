@@ -58,47 +58,51 @@
 
       <form id="loginForm" method="POST" action="{{ route('login.submit') }}" class="space-y-4">
         @csrf
-        <div>
-          <label for="email" class="block text-gray-300 text-sm mb-1">Email</label>
-          <input type="email" id="email" name="email" required
-                 value="{{ old('email') }}"
-                 class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                 oninput="this.value = this.value.replace(/[^A-Za-z0-9@.]/g, '')"
-                 title="Only letters, numbers, @, and . are allowed">
-        </div>
 
-        <div>
-          <label for="password" class="block text-gray-300 text-sm mb-1">Password</label>
-          <div class="relative">
-            <input type="password" id="password" name="password" required
-                   class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <button type="button" id="togglePassword"
-                    class="absolute right-3 top-2.5 text-gray-400 hover:text-indigo-500">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5
-                         c4.478 0 8.268 2.943 9.542 7
-                         -1.274 4.057-5.064 7-9.542 7
-                         -4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-            </button>
+        <!-- Inputs disabled until reCAPTCHA is solved -->
+        <fieldset id="loginFieldset" disabled>
+          <div>
+            <label for="email" class="block text-gray-300 text-sm mb-1">Email</label>
+            <input type="email" id="email" name="email" required
+                   value="{{ old('email') }}"
+                   class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                   oninput="this.value = this.value.replace(/[^A-Za-z0-9@.]/g, '')"
+                   title="Only letters, numbers, @, and . are allowed">
           </div>
-        </div>
 
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center text-sm text-gray-300">
-          <label class="inline-flex items-center gap-2 mb-2 md:mb-0">
-            <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-500">
-            Remember me for a week
-          </label>
-          <a href="{{ route('password.request') }}" class="text-indigo-400 hover:underline">Forgot Password?</a>
-        </div>
+          <div>
+            <label for="password" class="block text-gray-300 text-sm mb-1">Password</label>
+            <div class="relative">
+              <input type="password" id="password" name="password" required
+                     class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <button type="button" id="togglePassword"
+                      class="absolute right-3 top-2.5 text-gray-400 hover:text-indigo-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5
+                           c4.478 0 8.268 2.943 9.542 7
+                           -1.274 4.057-5.064 7-9.542 7
+                           -4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-col md:flex-row md:justify-between md:items-center text-sm text-gray-300">
+            <label class="inline-flex items-center gap-2 mb-2 md:mb-0">
+              <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-500">
+              Remember me for a week
+            </label>
+            <a href="{{ route('password.request') }}" class="text-indigo-400 hover:underline">Forgot Password?</a>
+          </div>
+        </fieldset>
 
         <!-- Google reCAPTCHA Integration -->
-        <div class="flex justify-center mb-4" id="recaptchaWrapper">
+        <div class="flex justify-center mb-4">
           <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"
-               data-callback="recaptchaClicked"></div>
+               data-callback="recaptchaSuccess" data-expired-callback="recaptchaExpired"></div>
           @if ($errors->has('g-recaptcha-response'))
               <span class="text-red-500 text-sm mt-1 block">
                   {{ $errors->first('g-recaptcha-response') }}
@@ -119,10 +123,6 @@
   </div>
 
   <script>
-    // Blade -> JS
-    let loginErrors = @json($errors->any());
-    let loggedInStatus = @json(session('status') === 'logged_in');
-
     // Toggle password visibility
     const togglePassword = document.getElementById("togglePassword");
     const passwordInput = document.getElementById("password");
@@ -132,16 +132,18 @@
       togglePassword.classList.toggle("text-indigo-500");
     });
 
+    // Blade -> JS
+    let loginErrors = @json($errors->any());
+    let loggedInStatus = @json(session('status') === 'logged_in');
+
     // Lockout logic
     const loginForm = document.getElementById("loginForm");
     const loginBtn = document.getElementById("loginBtn");
-
     let attempts = parseInt(localStorage.getItem("login_attempts")) || 0;
     let lockUntil = parseInt(localStorage.getItem("lock_until")) || null;
 
     function showLockAlert(seconds) {
       loginBtn.classList.add("disabled");
-
       let timerInterval;
       Swal.fire({
         title: 'Account Locked',
@@ -186,11 +188,9 @@
         e.preventDefault();
         return;
       }
-
       if (loginErrors) {
         attempts++;
         localStorage.setItem("login_attempts", attempts);
-
         if (attempts >= 3) {
           let lockTime = Date.now() + 60 * 1000; // 1 min lock
           localStorage.setItem("lock_until", lockTime);
@@ -208,9 +208,14 @@
       localStorage.removeItem("lock_until");
     }
 
-    // ReCAPTCHA callback: hide it when clicked
-    function recaptchaClicked() {
-      document.getElementById('recaptchaWrapper').style.display = 'none';
+    // ✅ reCAPTCHA callbacks
+    function recaptchaSuccess() {
+      document.getElementById('loginFieldset').disabled = false;
+    }
+
+    function recaptchaExpired() {
+      document.getElementById('loginFieldset').disabled = true;
+      grecaptcha.reset();
     }
   </script>
 
