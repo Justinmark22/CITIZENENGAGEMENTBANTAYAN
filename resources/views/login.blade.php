@@ -25,42 +25,10 @@
     @keyframes fadeInUp { 0% {opacity:0; transform: translateY(30px);} 100% {opacity:1; transform: translateY(0);} }
     .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
     .disabled { opacity: 0.6; pointer-events: none; }
-
-    /* Spinner overlay */
-    #recaptchaSpinner {
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0,0,0,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-      display: none;
-    }
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid #e5e7eb;
-      border-top: 4px solid #6366f1; /* Indigo */
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg);}
-      100% { transform: rotate(360deg);}
-    }
   </style>
 </head>
 
 <body class="bg-gray-900 flex items-center justify-center min-h-screen px-4">
-
-  <!-- Spinner overlay -->
-  <div id="recaptchaSpinner">
-    <div class="flex flex-col items-center gap-2">
-      <div class="spinner"></div>
-      <span class="text-white font-semibold">Verifying...</span>
-    </div>
-  </div>
 
   <div class="w-full max-w-4xl bg-gray-800 rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
 
@@ -91,7 +59,7 @@
       <form id="loginForm" method="POST" action="{{ route('login.submit') }}" class="space-y-4">
         @csrf
 
-        <!-- Disable form until reCAPTCHA verified -->
+        <!-- Disable form until reCAPTCHA verifies -->
         <fieldset id="loginFieldset" disabled>
           <div>
             <label for="email" class="block text-gray-300 text-sm mb-1">Email</label>
@@ -204,28 +172,26 @@
     // Check lock on page load
     checkLock();
 
-    // reCAPTCHA v3 logic
-    loginForm.addEventListener("submit", function(e) {
+    loginForm.addEventListener("submit", function (e) {
       if (checkLock()) {
         e.preventDefault();
         return;
       }
 
+      // Disable form until recaptcha token is retrieved
       e.preventDefault();
-      const spinner = document.getElementById('recaptchaSpinner');
-      spinner.style.display = 'flex';
-
       grecaptcha.ready(function() {
         grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', {action: 'login'}).then(function(token) {
+          // Add token as hidden input
           let input = document.createElement('input');
           input.type = 'hidden';
           input.name = 'g-recaptcha-response';
           input.value = token;
           loginForm.appendChild(input);
 
+          // Enable inputs before submitting
           document.getElementById('loginFieldset').disabled = false;
 
-          spinner.style.display = 'none';
           loginForm.submit();
         });
       });
