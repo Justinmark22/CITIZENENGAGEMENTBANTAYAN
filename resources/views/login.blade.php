@@ -59,7 +59,7 @@
       <form id="loginForm" method="POST" action="{{ route('login.submit') }}" class="space-y-4">
         @csrf
 
-        <!-- Input fields (enabled by default) -->
+        <!-- Input fields (always enabled) -->
         <fieldset id="loginFieldset">
           <div>
             <label for="email" class="block text-gray-300 text-sm mb-1">Email</label>
@@ -122,85 +122,50 @@
       togglePassword.classList.toggle("text-indigo-500");
     });
 
-    // Blade -> JS
+    // Track failed login attempts
     let loginErrors = @json($errors->any());
     let loggedInStatus = @json(session('status') === 'logged_in');
-
-    // Lockout logic
     const loginForm = document.getElementById("loginForm");
-    const loginBtn = document.getElementById("loginBtn");
+
     let attempts = parseInt(localStorage.getItem("login_attempts")) || 0;
-    let lockUntil = parseInt(localStorage.getItem("lock_until")) || null;
 
-    function showLockAlert(seconds) {
-      loginBtn.classList.add("disabled");
-      let timerInterval;
-      Swal.fire({
-        title: 'Account Locked',
-        html: `Please wait <b>${seconds}</b> seconds before trying again.`,
-        icon: 'error',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        didOpen: () => {
-          const b = Swal.getHtmlContainer().querySelector('b');
-          timerInterval = setInterval(() => {
-            const remaining = Math.ceil((lockUntil - Date.now()) / 1000);
-            if (remaining <= 0) {
-              clearInterval(timerInterval);
-              Swal.close();
-              loginBtn.classList.remove("disabled");
-              localStorage.removeItem("lock_until");
-              localStorage.removeItem("login_attempts");
-            } else {
-              b.textContent = remaining;
-            }
-          }, 1000);
-        }
-      });
-    }
+    // Form submit handler
+    loginForm.addEventListener("submit", function(e){
+      if(loggedInStatus) return; // Successful login resets attempts
 
-    function checkLock() {
-      if (lockUntil && Date.now() < lockUntil) {
-        const remaining = Math.ceil((lockUntil - Date.now()) / 1000);
-        showLockAlert(remaining);
-        return true;
-      } else {
-        loginBtn.classList.remove("disabled");
-        return false;
-      }
-    }
-
-    // Check lock on page load
-    checkLock();
-
-    // Handle form submission with reCAPTCHA v3
-    loginForm.addEventListener("submit", function(e) {
-      if (checkLock()) {
+      // Only trigger reCAPTCHA v3 after 3 failed attempts
+      if(attempts >= 3){
         e.preventDefault();
-        return;
-      }
-
-      e.preventDefault();
-
-      grecaptcha.ready(function() {
-        grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', {action: 'login'}).then(function(token) {
-          // Append token to form
-          let input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = 'g-recaptcha-response';
-          input.value = token;
-          loginForm.appendChild(input);
-
-          // Submit form
-          loginForm.submit();
+        Swal.fire({
+          icon: 'info',
+          title: 'ReCAPTCHA Required',
+          text: 'Multiple failed attempts detected. Please verify with reCAPTCHA.',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then(() => {
+          grecaptcha.ready(function() {
+            grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', {action: 'login'}).then(function(token) {
+              let input = document.createElement('input');
+              input.type = 'hidden';
+              input.name = 'g-recaptcha-response';
+              input.value = token;
+              loginForm.appendChild(input);
+              loginForm.submit();
+            });
+          });
         });
-      });
+      }
     });
 
-    // Reset lock if login succeeds
-    if (loggedInStatus) {
+    // Increment attempts on failed login
+    if(loginErrors){
+      attempts++;
+      localStorage.setItem("login_attempts", attempts);
+    }
+
+    // Reset attempts on successful login
+    if(loggedInStatus){
       localStorage.removeItem("login_attempts");
-      localStorage.removeItem("lock_until");
     }
   </script>
 
