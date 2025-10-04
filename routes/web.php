@@ -48,7 +48,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\MDRRMOController;
 use App\Http\Controllers\WasteDashboardController;
 use App\Http\Controllers\WaterDashboardController;
-use Illuminate\Support\Facades\Mail;
+
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
@@ -103,21 +103,12 @@ Route::post('/register', function (Request $request) {
 
     return redirect()->route('login')->with('success', 'Registration successful!');
 })->name('register.submit');
-
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
-    $credentials = $request->validate([
-        'email' => ['required', 'email', 'max:255'],
-        'password' => ['required', 'string', 'max:255'],
-        'otp' => ['nullable', 'numeric'], // OTP optional field
-    ]);
-
-    $key = Str::lower($credentials['email']).'|'.$request->ip();
-    $attempts = RateLimiter::attempts($key);
-
-    // ✅ Verify Google reCAPTCHA v3
+      // ✅ Verify Google reCAPTCHA
     $recaptchaResponse = $request->input('g-recaptcha-response');
+
     if (!$recaptchaResponse) {
         return back()->withErrors([
             'captcha' => 'Please complete the reCAPTCHA verification.'
@@ -131,11 +122,26 @@ Route::post('/login', function (Request $request) {
     ]);
 
     $captchaSuccess = $verify->json();
-    if (empty($captchaSuccess['success']) || !$captchaSuccess['success'] || $captchaSuccess['score'] < 0.5) {
+
+    if (empty($captchaSuccess['success']) || !$captchaSuccess['success']) {
         return back()->withErrors([
-            'captcha' => 'reCAPTCHA verification failed.'
+            'captcha' => 'reCAPTCHA verification failed. Please try again.'
         ])->onlyInput('email');
     }
+    // ✅ Apply throttling based on IP + email
+    $key = Str::lower($request->input('email')).'|'.$request->ip();
+
+    if (RateLimiter::tooManyAttempts($key, 5)) {
+        $seconds = RateLimiter::availableIn($key);
+        throw ValidationException::withMessages([
+            'email' => "Too many login attempts. Try again in $seconds seconds.",
+        ]);
+    }
+
+    $credentials = $request->validate([
+        'email' => ['required', 'email', 'max:255'],
+        'password' => ['required', 'string', 'max:255'],
+    ]);
 
     $user = \App\Models\User::where('email', $credentials['email'])->first();
 
@@ -147,29 +153,7 @@ Route::post('/login', function (Request $request) {
         ])->onlyInput('email');
     }
 
-    // 3️⃣ OTP logic after 3 failed attempts
-    if ($attempts >= 3) {
-        if (!$request->has('otp')) {
-            // Generate OTP and send email
-            $otp = rand(100000, 999999);
-            session(['otp' => $otp, 'otp_email' => $credentials['email']]);
-            Mail::raw("Your OTP code: $otp", function ($message) use ($credentials) {
-                $message->to($credentials['email'])->subject('Your Login OTP');
-            });
-
-            return back()->withErrors([
-                'otp' => 'Too many failed attempts. An OTP has been sent to your email.'
-            ])->onlyInput('email');
-        } else {
-            // Validate OTP
-            if ($request->otp != session('otp') || $credentials['email'] != session('otp_email')) {
-                RateLimiter::hit($key, 60);
-                return back()->withErrors(['otp' => 'Invalid OTP'])->onlyInput('email');
-            }
-        }
-    }
-
-    // ✅ Attempt login
+    // ✅ Attempt login (uses bcrypt hashed password check)
     if (Auth::attempt($credentials, $request->boolean('remember'))) {
         $request->session()->regenerate();
         $user = Auth::user();
@@ -178,64 +162,62 @@ Route::post('/login', function (Request $request) {
         $user->status = 'active';
         $user->save();
 
-        RateLimiter::clear($key);
-        session()->forget(['otp','otp_email']); // Clear OTP session
+        RateLimiter::clear($key); // ✅ Reset attempts on success
 
-        // ✅ Redirect based on role/location
-        if (strtolower($user->role) === 'admin') {
-            return match ($user->location) {
-                'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
-                'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
-                'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
-                'Admin'      => redirect()->route('dashboard.admin'),
-                default      => redirect('/dashboard'),
-            };
-        }
+       // ✅ Redirect based on role and location
+if (strtolower($user->role) === 'admin') {
+    return match ($user->location) {
+        'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
+        'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
+        'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
+        'Admin'      => redirect()->route('dashboard.admin'),
+        default      => redirect('/dashboard'),
+    };
+}
 
-        if (strtolower($user->role) === 'mdrrmo') {
-            return match ($user->location) {
-                'Santa.Fe'    => redirect()->route('dashboard.mdrrmo-santafe'),
-                'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
-                'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
-                default      => redirect('/dashboard'),
-            };
-        }
+if (strtolower($user->role) === 'mdrrmo') {
+    return match ($user->location) {
+        'Santa.Fe'    => redirect()->route('dashboard.mdrrmo-santafe'),
+        'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
+        'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
+        default      => redirect('/dashboard'),
+    };
+}
+if (strtolower($user->role) === 'waste') {
+    return match ($user->location) {
+        'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
+        'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
+        'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
+        default      => redirect('/dashboard'),
+    };
+}
+if (strtolower($user->role) === 'water') {
+    return match ($user->location) {
+        'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
+        'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
+        'Madridejos' => redirect()->route('dashboard.water-madridejos'),
+        default      => redirect('/dashboard'),
+    };
+}
 
-        if (strtolower($user->role) === 'waste') {
-            return match ($user->location) {
-                'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
-                'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
-                'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
-                default      => redirect('/dashboard'),
-            };
-        }
 
-        if (strtolower($user->role) === 'water') {
-            return match ($user->location) {
-                'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
-                'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
-                'Madridejos' => redirect()->route('dashboard.water-madridejos'),
-                default      => redirect('/dashboard'),
-            };
-        }
+// ✅ Citizens or fallback
+return match ($user->location) {
+    'Santa.Fe'   => redirect()->route('dashboard.santafe'),
+    'Bantayan'   => redirect()->route('dashboard.bantayan'),
+    'Madridejos' => redirect()->route('dashboard.madridejos'),
+    default      => redirect('/dashboard'),
+};
 
-        // Citizens or fallback
-        return match ($user->location) {
-            'Santa.Fe'   => redirect()->route('dashboard.santafe'),
-            'Bantayan'   => redirect()->route('dashboard.bantayan'),
-            'Madridejos' => redirect()->route('dashboard.madridejos'),
-            default      => redirect('/dashboard'),
-        };
     }
 
-    // Increment failed attempts
-    RateLimiter::hit($key, 60);
+    RateLimiter::hit($key, 60); // ✅ Increment failed attempts
 
     return back()->withErrors([
         'email' => 'The provided credentials do not match our records.',
     ])->onlyInput('email');
-
 })->name('login.submit');
+
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
     if ($user) {
