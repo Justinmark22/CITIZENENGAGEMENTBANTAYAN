@@ -16,7 +16,9 @@
     .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
     .disabled { opacity: 0.6; pointer-events: none; }
   </style>
-  {!! NoCaptcha::renderJs() !!}
+
+  {{-- Google reCAPTCHA JS --}}
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 
 <body class="bg-gray-900 flex items-center justify-center min-h-screen px-4">
@@ -95,7 +97,8 @@
 
         <!-- ✅ Google reCAPTCHA Integration -->
         <div class="flex justify-center mb-4">
-          {!! NoCaptcha::display() !!}
+          {{-- Plain HTML version with your site key --}}
+          <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
           @if ($errors->has('g-recaptcha-response'))
               <span class="text-red-500 text-sm mt-1 block">
                   {{ $errors->first('g-recaptcha-response') }}
@@ -169,7 +172,6 @@
         return;
       }
 
-      // Simulate wrong login attempt (frontend only; Laravel handles backend)
       @if ($errors->any())
         attempts++;
         localStorage.setItem("login_attempts", attempts);
