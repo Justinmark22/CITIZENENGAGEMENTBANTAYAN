@@ -25,18 +25,54 @@
 
   <!-- Right side items -->
   <div id="navbarLinks" class="hidden md:flex items-center gap-4 md:gap-5 flex-wrap text-sm absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none rounded-b-2xl md:rounded-none p-4 md:p-0">
-    
 <!-- 🔔 Alerts Dropdown -->
 <div class="relative w-full md:w-auto">
+  @php
+    use Illuminate\Support\Facades\Auth;
+    $userId = Auth::id();
+    $userLocation = Auth::user()->location;
+
+    // ✅ Fetch only the logged-in user's reports
+    $mddrmoAcceptedReports = \App\Models\ForwardedReport::where('location', $userLocation)
+        ->where('status', 'Accepted')
+        ->where('user_id', $userId)
+        ->latest()->get();
+
+    $mddrmoOngoingReports = \App\Models\ForwardedReport::where('location', $userLocation)
+        ->where('status', 'Ongoing')
+        ->where('user_id', $userId)
+        ->latest()->get();
+
+    $mddrmoResolvedReports = \App\Models\ForwardedReport::where('location', $userLocation)
+        ->where('status', 'Resolved')
+        ->where('user_id', $userId)
+        ->latest()->get();
+
+    $wasteAcceptedReports = \App\Models\WasteReport::where('location', $userLocation)
+        ->where('status', 'Accepted')
+        ->where('user_id', $userId)
+        ->latest()->get();
+
+    $wasteOngoingReports = \App\Models\WasteReport::where('location', $userLocation)
+        ->where('status', 'Ongoing')
+        ->where('user_id', $userId)
+        ->latest()->get();
+
+    $wasteResolvedReports = \App\Models\WasteReport::where('location', $userLocation)
+        ->where('status', 'Resolved')
+        ->where('user_id', $userId)
+        ->latest()->get();
+
+    // ✅ Compute total alerts
+    $totalAlerts = $alerts->count()
+        + $mddrmoAcceptedReports->count() + $wasteAcceptedReports->count()
+        + $mddrmoOngoingReports->count() + $wasteOngoingReports->count()
+        + $mddrmoResolvedReports->count() + $wasteResolvedReports->count();
+  @endphp
+
   <button onclick="toggleDropdown('alertsDropdown'); clearBadge();" 
           class="flex items-center justify-center md:justify-start w-10 h-10 md:w-auto md:px-4 rounded-full hover:bg-gray-100 transition relative text-gray-700">
     <i data-lucide="bell" class="w-5 h-5"></i>Notifications
-    @php 
-      $totalAlerts = $alerts->count() 
-                    + $mddrmoAcceptedReports->count() + $wasteAcceptedReports->count()
-                    + $mddrmoOngoingReports->count() + $wasteOngoingReports->count()
-                    + $mddrmoResolvedReports->count() + $wasteResolvedReports->count(); 
-    @endphp
     @if($totalAlerts > 0)
       <span id="alertsBadge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full shadow">{{ $totalAlerts }}</span>
     @endif
@@ -91,10 +127,10 @@
           @endforeach
         @endforeach
       @endforeach
-
     </div>
   </div>
 </div>
+
 
 
 

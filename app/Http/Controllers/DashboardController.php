@@ -17,17 +17,17 @@ class DashboardController extends Controller
 {
     public function dashboardSantaFe()
     {
-        $user = Auth::user();
-        $location = $user->location;
+        $user = Auth::user();  
+        $location = $user->location;  
 
-        // ✅ System alerts
-        $alerts = Alert::where(function ($query) use ($location) {
-                $query->where('location', $location)
-                      ->orWhere('location', 'All');
-            })
-            ->where('is_read', false)
-            ->latest()
-            ->get();
+        // ✅ System Alerts
+        $alerts = Alert::where(function($query) use ($location) {
+                        $query->where('location', $location)
+                              ->orWhere('location', 'All');
+                    })
+                    ->where('is_read', false)
+                    ->latest()
+                    ->get();
 
         // ✅ Only logged-in user's reports
         $reports = Report::where('user_id', $user->id)
@@ -45,7 +45,7 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
-        $forwardedEvents = ForwardedEvent::where(function ($query) use ($location) {
+        $forwardedEvents = ForwardedEvent::where(function($query) use ($location) {
                 $query->where('location', $location)
                       ->orWhere('barangay', $location);
             })
@@ -53,7 +53,7 @@ class DashboardController extends Controller
             ->orderBy('event_date')
             ->get();
 
-        // ✅ MDRRMO reports for this user
+        // ✅ MDRRMO Reports for logged-in user
         $mddrmoAcceptedReports = ForwardedReport::where('user_id', $user->id)
             ->where('location', $location)
             ->where('status', 'Accepted')
@@ -72,7 +72,7 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
-        // ✅ Waste Management reports for this user
+        // ✅ Waste Management Reports for logged-in user
         $wasteAcceptedReports = WasteReport::where('user_id', $user->id)
             ->where('location', $location)
             ->where('status', 'Accepted')
@@ -115,22 +115,24 @@ class DashboardController extends Controller
 
         if ($user->location === 'admin') {
             return redirect()->route('dashboard.admin');
-        }
+        }  
     }
 
     public function dashboardBantayan()
     {
-        $user = Auth::user();
-        $location = $user->location;
+        $user = Auth::user();  
+        $location = $user->location;  
 
-        $alerts = Alert::where(function ($query) use ($location) {
-                $query->where('location', $location)
-                      ->orWhere('location', 'All');
-            })
-            ->where('is_read', false)
-            ->latest()
-            ->get();
+        // ✅ System Alerts
+        $alerts = Alert::where(function($query) use ($location) {
+                        $query->where('location', $location)
+                              ->orWhere('location', 'All');
+                    })
+                    ->where('is_read', false)
+                    ->latest()
+                    ->get();
 
+        // ✅ Only logged-in user's reports
         $reports = Report::where('user_id', $user->id)
             ->where('location', $location)
             ->latest()
@@ -146,7 +148,7 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
-        $forwardedEvents = ForwardedEvent::where(function ($query) use ($location) {
+        $forwardedEvents = ForwardedEvent::where(function($query) use ($location) {
                 $query->where('location', $location)
                       ->orWhere('barangay', $location);
             })
@@ -154,6 +156,7 @@ class DashboardController extends Controller
             ->orderBy('event_date')
             ->get();
 
+        // ✅ MDRRMO Reports for logged-in user
         $mddrmoAcceptedReports = ForwardedReport::where('user_id', $user->id)
             ->where('location', $location)
             ->where('status', 'Accepted')
@@ -172,6 +175,7 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
+        // ✅ Waste Management Reports for logged-in user
         $wasteAcceptedReports = WasteReport::where('user_id', $user->id)
             ->where('location', $location)
             ->where('status', 'Accepted')
@@ -210,17 +214,19 @@ class DashboardController extends Controller
 
     public function dashboardMadridejos()
     {
-        $user = Auth::user();
-        $location = $user->location;
+        $user = Auth::user();  
+        $location = $user->location;  
 
-        $alerts = Alert::where(function ($query) use ($location) {
-                $query->where('location', $location)
-                      ->orWhere('location', 'All');
-            })
-            ->where('is_read', false)
-            ->latest()
-            ->get();
+        // ✅ System Alerts
+        $alerts = Alert::where(function($query) use ($location) {
+                        $query->where('location', $location)
+                              ->orWhere('location', 'All');
+                    })
+                    ->where('is_read', false)
+                    ->latest()
+                    ->get();
 
+        // ✅ Only logged-in user's reports
         $reports = Report::where('user_id', $user->id)
             ->where('location', $location)
             ->latest()
@@ -236,7 +242,7 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
-        $forwardedEvents = ForwardedEvent::where(function ($query) use ($location) {
+        $forwardedEvents = ForwardedEvent::where(function($query) use ($location) {
                 $query->where('location', $location)
                       ->orWhere('barangay', $location);
             })
@@ -244,6 +250,7 @@ class DashboardController extends Controller
             ->orderBy('event_date')
             ->get();
 
+        // ✅ MDRRMO Reports for logged-in user
         $mddrmoAcceptedReports = ForwardedReport::where('user_id', $user->id)
             ->where('location', $location)
             ->where('status', 'Accepted')
@@ -262,6 +269,7 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
+        // ✅ Waste Management Reports for logged-in user
         $wasteAcceptedReports = WasteReport::where('user_id', $user->id)
             ->where('location', $location)
             ->where('status', 'Accepted')
@@ -301,7 +309,6 @@ class DashboardController extends Controller
     public function index()
     {
         $forwardedAnnouncements = ForwardedAnnouncement::orderBy('created_at', 'desc')->get();
-
         return view('dashboard.admin', compact('forwardedAnnouncements'));
     }
 }
