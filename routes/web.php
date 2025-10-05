@@ -48,6 +48,8 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\MDRRMOController;
 use App\Http\Controllers\WasteDashboardController;
 use App\Http\Controllers\WaterDashboardController;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewUserRegistered;
 
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -73,7 +75,6 @@ Route::get('/', function () {
 });
 
 Route::get('/register', fn() => view('register'))->name('register');
-
 Route::post('/register', function (Request $request) {
     // ✅ Strict validation
     $validated = $request->validate([
@@ -97,12 +98,16 @@ Route::post('/register', function (Request $request) {
         'remember_token' => Str::random(60),
     ]);
 
+    // ✅ Send email notification to your email
+    Mail::to('your-email@example.com')->send(new NewUserRegistered($user));
+
     // ✅ Auto-login after registration
     Auth::login($user);
     $request->session()->regenerate(); // Prevent session fixation
 
     return redirect()->route('login')->with('success', 'Registration successful!');
 })->name('register.submit');
+
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
