@@ -9,6 +9,8 @@
         "anhskohbo/no-captcha": "*",
         "barryvdh/laravel-dompdf": "^3.1",
         "guzzlehttp/guzzle": "^7.2",
+        "illuminate/mail": "*",
+        "illuminate/queue": "*",
         "ladumor/laravel-pwa": "^0.0.5",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
