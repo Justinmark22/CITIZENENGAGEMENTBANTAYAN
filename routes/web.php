@@ -75,16 +75,14 @@ Route::get('/', function () {
 });
 
 Route::get('/register', fn() => view('register'))->name('register');
+
 Route::post('/register', function (Request $request) {
     // ✅ Strict validation
     $validated = $request->validate([
         'name' => ['required', 'string', 'max:100', 'regex:/^[a-zA-Z\s]+$/'],
         'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
         'location' => ['required', 'in:Bantayan,Santa.Fe,Madridejos,Admin'],
-        'password' => [
-            'required', 'confirmed',
-            Password::min(8)->mixedCase()->numbers()->symbols()
-        ],
+        'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
     ]);
 
     // ✅ Create user safely
@@ -98,16 +96,20 @@ Route::post('/register', function (Request $request) {
         'remember_token' => Str::random(60),
     ]);
 
-    // ✅ Send email notification to your email
-    Mail::to('your-email@example.com')->send(new NewUserRegistered($user));
+    // ✅ Send email to the user themselves
+    try {
+        Mail::to($user->email)->send(new NewUserRegistered($user));
+    } catch (\Exception $e) {
+        \Log::error('Email sending failed: '.$e->getMessage());
+        // Registration still succeeds even if email fails
+    }
 
     // ✅ Auto-login after registration
     Auth::login($user);
-    $request->session()->regenerate(); // Prevent session fixation
+    $request->session()->regenerate();
 
-    return redirect()->route('login')->with('success', 'Registration successful!');
+    return redirect()->route('login')->with('success', 'Registration successful! Please check your email.');
 })->name('register.submit');
-
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
