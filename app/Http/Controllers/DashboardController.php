@@ -117,99 +117,100 @@ class DashboardController extends Controller
             return redirect()->route('dashboard.admin');
         }  
     }
-public function dashboardBantayan()
-{
-    $user = Auth::user();
-    $location = $user->location;
 
-    // ✅ System Alerts
-    $alerts = Alert::where(function($query) use ($location) {
-                    $query->where('location', $location)
-                          ->orWhere('location', 'All');
-                })
-                ->where('is_read', false)
-                ->latest()
-                ->get();
+    public function dashboardBantayan()
+    {
+        $user = Auth::user();  
+        $location = $user->location;  
 
-    // ✅ Only logged-in user's reports
-    $reports = Report::where('user_id', $user->id)
-        ->where('location', $location)
-        ->latest()
-        ->take(5)
-        ->get();
+        // ✅ System Alerts
+        $alerts = Alert::where(function($query) use ($location) {
+                        $query->where('location', $location)
+                              ->orWhere('location', 'All');
+                    })
+                    ->where('is_read', false)
+                    ->latest()
+                    ->get();
 
-    $announcements = Announcement::where('location', $location)->latest()->take(5)->get();
-    $updates = Update::where('location', $location)->latest()->take(5)->get();
-    $events = Event::where('location', 'bantayan')->latest()->take(10)->get();
+        // ✅ Only logged-in user's reports
+        $reports = Report::where('user_id', $user->id)
+            ->where('location', $location)
+            ->latest()
+            ->take(5)
+            ->get();
 
-    $forwardedAnnouncements = ForwardedAnnouncement::where('location', $location)
-        ->orWhere('barangay', $location)
-        ->latest()
-        ->get();
+        $announcements = Announcement::where('location', $location)->latest()->take(5)->get();
+        $updates = Update::where('location', $location)->latest()->take(5)->get();
+        $events = Event::where('location', 'bantayan')->latest()->take(10)->get();
 
-    $forwardedEvents = ForwardedEvent::where(function($query) use ($location) {
-            $query->where('location', $location)
-                  ->orWhere('barangay', $location);
-        })
-        ->whereDate('event_date', '>=', now()->toDateString())
-        ->orderBy('event_date')
-        ->get();
+        $forwardedAnnouncements = ForwardedAnnouncement::where('location', $location)
+            ->orWhere('barangay', $location)
+            ->latest()
+            ->get();
 
-    // ✅ MDRRMO Reports - only for logged-in user
-    $mddrmoAcceptedReports = ForwardedReport::where('user_id', $user->id)
-        ->where('location', $location)
-        ->where('status', 'Accepted')
-        ->latest()
-        ->get();
+        $forwardedEvents = ForwardedEvent::where(function($query) use ($location) {
+                $query->where('location', $location)
+                      ->orWhere('barangay', $location);
+            })
+            ->whereDate('event_date', '>=', now()->toDateString())
+            ->orderBy('event_date')
+            ->get();
 
-    $mddrmoOngoingReports = ForwardedReport::where('user_id', $user->id)
-        ->where('location', $location)
-        ->where('status', 'Ongoing')
-        ->latest()
-        ->get();
+        // ✅ MDRRMO Reports for logged-in user
+        $mddrmoAcceptedReports = ForwardedReport::where('user_id', $user->id)
+            ->where('location', $location)
+            ->where('status', 'Accepted')
+            ->latest()
+            ->get();
 
-    $mddrmoResolvedReports = ForwardedReport::where('user_id', $user->id)
-        ->where('location', $location)
-        ->where('status', 'Resolved')
-        ->latest()
-        ->get();
+        $mddrmoOngoingReports = ForwardedReport::where('user_id', $user->id)
+            ->where('location', $location)
+            ->where('status', 'Ongoing')
+            ->latest()
+            ->get();
 
-    // ✅ Waste Management Reports - only for logged-in user
-    $wasteAcceptedReports = WasteReport::where('user_id', $user->id)
-        ->where('location', $location)
-        ->where('status', 'Accepted')
-        ->latest()
-        ->get();
+        $mddrmoResolvedReports = ForwardedReport::where('user_id', $user->id)
+            ->where('location', $location)
+            ->where('status', 'Resolved')
+            ->latest()
+            ->get();
 
-    $wasteOngoingReports = WasteReport::where('user_id', $user->id)
-        ->where('location', $location)
-        ->where('status', 'Ongoing')
-        ->latest()
-        ->get();
+        // ✅ Waste Management Reports for logged-in user
+        $wasteAcceptedReports = WasteReport::where('user_id', $user->id)
+            ->where('location', $location)
+            ->where('status', 'Accepted')
+            ->latest()
+            ->get();
 
-    $wasteResolvedReports = WasteReport::where('user_id', $user->id)
-        ->where('location', $location)
-        ->where('status', 'Resolved')
-        ->latest()
-        ->get();
+        $wasteOngoingReports = WasteReport::where('user_id', $user->id)
+            ->where('location', $location)
+            ->where('status', 'Ongoing')
+            ->latest()
+            ->get();
 
-    return view('dashboard.bantayan', compact(
-        'alerts',
-        'reports',
-        'announcements',
-        'updates',
-        'location',
-        'events',
-        'forwardedAnnouncements',
-        'forwardedEvents',
-        'mddrmoAcceptedReports',
-        'mddrmoOngoingReports',
-        'mddrmoResolvedReports',
-        'wasteAcceptedReports',
-        'wasteOngoingReports',
-        'wasteResolvedReports'
-    ));
-}
+        $wasteResolvedReports = WasteReport::where('user_id', $user->id)
+            ->where('location', $location)
+            ->where('status', 'Resolved')
+            ->latest()
+            ->get();
+
+        return view('dashboard.bantayan', compact(
+            'alerts',
+            'reports',
+            'announcements',
+            'updates',
+            'location',
+            'events',
+            'forwardedAnnouncements',
+            'forwardedEvents',
+            'mddrmoAcceptedReports',
+            'mddrmoOngoingReports',
+            'mddrmoResolvedReports',
+            'wasteAcceptedReports',
+            'wasteOngoingReports',
+            'wasteResolvedReports'
+        ));
+    }
 
     public function dashboardMadridejos()
     {
