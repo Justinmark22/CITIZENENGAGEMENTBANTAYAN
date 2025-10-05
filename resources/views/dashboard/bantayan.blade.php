@@ -180,10 +180,12 @@
           @php
             use Carbon\Carbon;
             $reports = \App\Models\ForwardedReport::with('user')
-                        ->where('location', 'Bantayan')
-                        ->where('status', 'Resolved')
-                        ->latest()
-                        ->get(['id', 'title', 'description', 'category', 'user_id', 'created_at', 'updated_at']);
+            ->where('location', 'Bantayan')
+            ->where('status', 'Resolved')
+            ->where('user_id', Auth::id()) // ✅ Only show the logged-in user’s reports
+            ->latest()
+            ->get(['id', 'title', 'description', 'category', 'user_id', 'created_at', 'updated_at']);
+
           @endphp
 
           @forelse ($reports as $report)
