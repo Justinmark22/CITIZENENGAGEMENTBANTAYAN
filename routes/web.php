@@ -48,7 +48,6 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\MDRRMOController;
 use App\Http\Controllers\WasteDashboardController;
 use App\Http\Controllers\WaterDashboardController;
-use Illuminate\Support\Facades\Http;
 
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -107,28 +106,6 @@ Route::post('/register', function (Request $request) {
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
-      // ✅ Verify Google reCAPTCHA
-    $recaptchaResponse = $request->input('g-recaptcha-response');
-
-    if (!$recaptchaResponse) {
-        return back()->withErrors([
-            'captcha' => 'Please complete the reCAPTCHA verification.'
-        ])->onlyInput('email');
-    }
-
-    $verify = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-        'secret' => env('RECAPTCHA_SECRET_KEY'),
-        'response' => $recaptchaResponse,
-        'remoteip' => $request->ip(),
-    ]);
-
-    $captchaSuccess = $verify->json();
-
-    if (empty($captchaSuccess['success']) || !$captchaSuccess['success']) {
-        return back()->withErrors([
-            'captcha' => 'reCAPTCHA verification failed. Please try again.'
-        ])->onlyInput('email');
-    }
     // ✅ Apply throttling based on IP + email
     $key = Str::lower($request->input('email')).'|'.$request->ip();
 
@@ -218,6 +195,7 @@ return match ($user->location) {
         'email' => 'The provided credentials do not match our records.',
     ])->onlyInput('email');
 })->name('login.submit');
+
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
     if ($user) {
