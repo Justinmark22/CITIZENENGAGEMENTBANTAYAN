@@ -1,4 +1,17 @@
-{{-- resources/views/dashboard/mdrrmo-santafe.blade.php --}}
+@php
+// Ensure variables exist to prevent errors
+$reports = $reports ?? collect();
+$announcements = $announcements ?? collect();
+$alerts = $alerts ?? collect();
+$events = $events ?? collect();
+$feedback = $feedback ?? collect();
+$totalReports = $totalReports ?? 0;
+$pendingReportsCount = $pendingReportsCount ?? 0;
+$ongoingReportsCount = $ongoingReportsCount ?? 0;
+$resolvedReportsCount = $resolvedReportsCount ?? 0;
+$totalUsers = $totalUsers ?? 0;
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,16 +50,13 @@ tailwind.config = {
 
 <aside class="fixed md:static inset-y-0 left-0 w-64 bg-gradient-to-b from-blue-200 to-blue-100 text-gray-800 p-6 transform transition-transform duration-300 z-40 shadow-lg"
        :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
-
  <div class="flex items-center justify-between mb-10">
-  <!-- Larger Circular Logo -->
-<img src="{{ asset('/images/mad.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
-    <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO BANTAYAN</span>
-  </div>
+  <img src="{{ asset('images/mad.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
+  <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO BANTAYAN</span>
   <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
-</div>
-  <nav class="flex flex-col gap-4">
-    <!-- Dashboard -->
+ </div>
+
+ <nav class="flex flex-col gap-4">
     <div>
       <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Dashboard</p>
       <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-300 hover:bg-blue-200 transition-all">
@@ -55,7 +65,6 @@ tailwind.config = {
       </a>
     </div>
 
-    <!-- Reports -->
     <div>
       <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Reports</p>
       <a href="{{ route('mdrrmo.reports-bantayan') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
@@ -64,7 +73,6 @@ tailwind.config = {
       </a>
     </div>
 
-    <!-- Communications -->
     <div>
       <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Communications</p>
       <a href="{{ route('mdrrmo.mdrrmo_bantayan-announcements') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
@@ -73,20 +81,16 @@ tailwind.config = {
       </a>
     </div>
 
-    <!-- Logout -->
     <form method="POST" action="{{ route('logout') }}" class="mt-auto pt-6">
       @csrf
       <button type="submit" class="w-full px-4 py-2 rounded-lg bg-red-400 hover:bg-red-500 font-semibold shadow transition-all">
         Logout
       </button>
     </form>
+ </nav>
 </aside>
 
-
-<!-- Main -->
 <main class="flex-1 flex flex-col overflow-y-auto">
-
-  <!-- Topbar -->
   <header class="sticky top-0 z-20 bg-white shadow-md border-b border-gray-200">
     <div class="flex justify-between items-center px-6 py-4">
       <h2 class="text-2xl font-bold text-gray-800">MDRRMO Dashboard</h2>
@@ -95,100 +99,88 @@ tailwind.config = {
   </header>
 
   <section class="px-6 py-8 space-y-8">
-
-   <!-- Metrics Cards -->
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
-  @foreach([
-    ['label'=>'Total Reports','value'=>$totalReports,'color'=>'mdrrmo.blue','icon'=>'bar-chart-2'],
-    ['label'=>'Pending','value'=>$pendingReportsCount,'color'=>'mdrrmo.amber','icon'=>'clock'],
-    ['label'=>'Ongoing','value'=>$ongoingReportsCount,'color'=>'mdrrmo.gray','icon'=>'refresh-cw'],
-    ['label'=>'Resolved','value'=>$resolvedReportsCount,'color'=>'mdrrmo.green','icon'=>'check-circle'],
-    ['label'=>'Users','value'=>$totalUsers,'color'=>'mdrrmo.blue','icon'=>'users'],
-  ] as $s)
-  <div class="relative bg-gradient-to-br from-white to-gray-50 shadow-lg rounded-xl border-l-4 border-{{ $s['color'] }} p-5 hover:shadow-2xl transition-transform transform hover:-translate-y-1 hover:scale-105 bg-card-texture">
-    
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-sm font-semibold text-gray-500">{{ $s['label'] }}</p>
-        <p class="mt-2 text-3xl font-bold {{ $s['color'] }}" 
-           x-data="{ count:0 }" 
-           x-init="let i=0; const interval=setInterval(()=>{ if(i<={{ $s['value'] }}) { count=i++; } else clearInterval(interval); },20)">
-          <span x-text="count"></span>
-        </p>
-      </div>
-      <div class="w-12 h-12 flex items-center justify-center rounded-full bg-{{ $s['color'] }}/10">
-        <i data-lucide="{{ $s['icon'] }}" class="w-6 h-6 text-{{ $s['color'] }}"></i>
-      </div>
-    </div>
-
-    <div class="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-      <div class="h-2 rounded-full bg-gradient-to-r from-{{ $s['color'] }}-400 to-{{ $s['color'] }}-600 transition-all duration-500"
-           :style="'width:' + ({{ $s['value'] }} > 100 ? 100 : {{ $s['value'] }}) + '%'">
-      </div>
-    </div>
-
-  </div>
-  @endforeach
-</div>
-
-
-   <!-- Recent Reports Table -->
-<div class="bg-white shadow-lg rounded-xl border border-gray-200 overflow-hidden">
-  <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
-    <h3 class="font-bold text-gray-800 text-lg">Recent Reports</h3>
-    <a href="{{ route('mdrrmo.reports-bantayan') }}" class="px-3 py-1 bg-gray-800 text-white rounded hover:bg-gray-700 transition text-sm">View All</a>
-  </div>
-
-  <div class="overflow-x-auto">
-    <table class="w-full min-w-[650px] text-left text-sm">
-      <thead class="bg-gray-100 text-gray-600 uppercase text-xs tracking-wider">
-        <tr>
-          <th class="px-4 py-2">ID</th>
-          <th class="px-4 py-2">Reported At</th>
-          <th class="px-4 py-2">Status</th>
-          <th class="px-4 py-2">Details</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        @forelse($reports as $r)
-        <tr class="hover:bg-gray-50 transition-all">
-          <td class="px-4 py-3 font-medium">#{{ $r->id }}</td>
-          <td class="px-4 py-3">{{ $r->created_at->format('M d, Y') }}</td>
-          <td class="px-4 py-3">
-            @php
-              $badge = match($r->status) {
-                'Resolved' => 'bg-green-100 text-green-700',
-                'Ongoing' => 'bg-gray-100 text-gray-700',
-                'Pending' => 'bg-amber-100 text-amber-700',
-                default => 'bg-gray-100 text-gray-700'
-              };
-            @endphp
-            <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $badge }}">{{ $r->status }}</span>
-          </td>
-          <td class="px-4 py-3">
-            <p class="text-gray-700 text-sm truncate" title="{{ $r->description ?? 'No details available' }}">
-              {{ $r->description ?? 'No details available' }}
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
+      @foreach([
+        ['label'=>'Total Reports','value'=>$totalReports,'color'=>'mdrrmo-blue','icon'=>'bar-chart-2'],
+        ['label'=>'Pending','value'=>$pendingReportsCount,'color'=>'mdrrmo-amber','icon'=>'clock'],
+        ['label'=>'Ongoing','value'=>$ongoingReportsCount,'color'=>'mdrrmo-gray','icon'=>'refresh-cw'],
+        ['label'=>'Resolved','value'=>$resolvedReportsCount,'color'=>'mdrrmo-green','icon'=>'check-circle'],
+        ['label'=>'Users','value'=>$totalUsers,'color'=>'mdrrmo-blue','icon'=>'users'],
+      ] as $s)
+      <div class="relative bg-gradient-to-br from-white to-gray-50 shadow-lg rounded-xl border-l-4 border-{{ $s['color'] }} p-5 hover:shadow-2xl transition-transform transform hover:-translate-y-1 hover:scale-105 bg-card-texture">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-semibold text-gray-500">{{ $s['label'] }}</p>
+            <p class="mt-2 text-3xl font-bold {{ $s['color'] }}" 
+               x-data="{ count:0 }" 
+               x-init="let i=0; const interval=setInterval(()=>{ if(i<={{ $s['value'] }}) { count=i++; } else clearInterval(interval); },20)">
+              <span x-text="count"></span>
             </p>
-          </td>
-        </tr>
-        @empty
-        <tr>
-          <td colspan="4" class="text-center py-6 text-gray-500 font-medium">No reports yet.</td>
-        </tr>
-        @endforelse
-      </tbody>
-    </table>
-  </div>
-</div>
+          </div>
+          <div class="w-12 h-12 flex items-center justify-center rounded-full bg-{{ $s['color'] }}/10">
+            <i data-lucide="{{ $s['icon'] }}" class="w-6 h-6 text-{{ $s['color'] }}"></i>
+          </div>
+        </div>
+      </div>
+      @endforeach
+    </div>
 
+    <!-- Recent Reports Table -->
+    <div class="bg-white shadow-lg rounded-xl border border-gray-200 overflow-hidden">
+      <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
+        <h3 class="font-bold text-gray-800 text-lg">Recent Reports</h3>
+        <a href="{{ route('mdrrmo.reports-bantayan') }}" class="px-3 py-1 bg-gray-800 text-white rounded hover:bg-gray-700 transition text-sm">View All</a>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[650px] text-left text-sm">
+          <thead class="bg-gray-100 text-gray-600 uppercase text-xs tracking-wider">
+            <tr>
+              <th class="px-4 py-2">ID</th>
+              <th class="px-4 py-2">Reported At</th>
+              <th class="px-4 py-2">Status</th>
+              <th class="px-4 py-2">Details</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            @forelse($reports as $r)
+            <tr class="hover:bg-gray-50 transition-all">
+              <td class="px-4 py-3 font-medium">#{{ $r->id }}</td>
+              <td class="px-4 py-3">{{ optional($r->created_at)->format('M d, Y') }}</td>
+              <td class="px-4 py-3">
+                @php
+                  $badge = match($r->status) {
+                    'Resolved' => 'bg-green-100 text-green-700',
+                    'Ongoing' => 'bg-gray-100 text-gray-700',
+                    'Pending' => 'bg-amber-100 text-amber-700',
+                    default => 'bg-gray-100 text-gray-700'
+                  };
+                @endphp
+                <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $badge }}">{{ $r->status ?? 'N/A' }}</span>
+              </td>
+              <td class="px-4 py-3">
+                <p class="text-gray-700 text-sm truncate" title="{{ $r->description ?? 'No details available' }}">
+                  {{ $r->description ?? 'No details available' }}
+                </p>
+              </td>
+            </tr>
+            @empty
+            <tr>
+              <td colspan="4" class="text-center py-6 text-gray-500 font-medium">No reports yet.</td>
+            </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+    </div>
 
     <!-- Widgets -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
       @foreach([
-        ['id'=>'announcements','title'=>'Announcements','items'=>$announcements ?? []],
-        ['id'=>'alerts','title'=>'Emergency Alerts','items'=>$alerts ?? []],
-        ['id'=>'events','title'=>'Upcoming Events','items'=>$events ?? []],
-        ['id'=>'feedback','title'=>'Citizen Feedback','items'=>$feedback ?? []],
+        ['id'=>'announcements','title'=>'Announcements','items'=>$announcements],
+        ['id'=>'alerts','title'=>'Emergency Alerts','items'=>$alerts],
+        ['id'=>'events','title'=>'Upcoming Events','items'=>$events],
+        ['id'=>'feedback','title'=>'Citizen Feedback','items'=>$feedback],
       ] as $widget)
       <div id="{{ $widget['id'] }}" class="bg-white shadow-xl rounded-lg border border-gray-200 overflow-hidden hover:shadow-2xl transition-all">
         <div class="p-4 border-b border-gray-200 bg-gray-50 font-bold text-gray-800 flex items-center justify-between">
@@ -199,13 +191,13 @@ tailwind.config = {
           @forelse($widget['items'] as $item)
           <li class="p-4 hover:bg-gray-50 cursor-pointer transition-all">
             @if($widget['id']==='feedback')
-              <p class="text-gray-700 font-medium">"{{ $item->message }}"</p>
-              <p class="text-xs text-gray-500 mt-1">— {{ $item->user->name ?? 'Anonymous' }}</p>
+              <p class="text-gray-700 font-medium">"{{ $item->message ?? '' }}"</p>
+              <p class="text-xs text-gray-500 mt-1">— {{ optional($item->user)->name ?? 'Anonymous' }}</p>
             @elseif($widget['id']==='alerts')
-              <p class="font-semibold text-red-600">🚨 {{ $item->message }}</p>
+              <p class="font-semibold text-red-600">🚨 {{ $item->message ?? '' }}</p>
             @else
-              <p class="font-medium">{{ $item->title }}</p>
-              <p class="text-xs text-gray-500">{{ optional($item->when ?? $item->date)->format('M d, Y') }}</p>
+              <p class="font-medium">{{ $item->title ?? '' }}</p>
+              <p class="text-xs text-gray-500">{{ optional(\Carbon\Carbon::parse($item->when ?? $item->date ?? now()))->format('M d, Y') }}</p>
             @endif
           </li>
           @empty
