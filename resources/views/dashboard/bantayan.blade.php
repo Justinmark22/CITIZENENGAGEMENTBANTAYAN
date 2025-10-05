@@ -29,39 +29,30 @@
 <div class="relative w-full md:w-auto">
   @php
     use Illuminate\Support\Facades\Auth;
-    $userId = Auth::id();
-    $userLocation = Auth::user()->location;
 
-    // ✅ Fetch only the logged-in user's reports
-    $mddrmoAcceptedReports = \App\Models\ForwardedReport::where('location', $userLocation)
-        ->where('status', 'Accepted')
-        ->where('user_id', $userId)
-        ->latest()->get();
+    $user = Auth::user();
+    $userId = $user->id;
+    $userLocation = $user->location;
+    $isAdmin = $user->role === 'admin'; // Make sure your users table has a 'role' field
 
-    $mddrmoOngoingReports = \App\Models\ForwardedReport::where('location', $userLocation)
-        ->where('status', 'Ongoing')
-        ->where('user_id', $userId)
-        ->latest()->get();
+    // ✅ Build base queries
+    $mddrmoQuery = \App\Models\ForwardedReport::where('location', $userLocation);
+    $wasteQuery = \App\Models\WasteReport::where('location', $userLocation);
 
-    $mddrmoResolvedReports = \App\Models\ForwardedReport::where('location', $userLocation)
-        ->where('status', 'Resolved')
-        ->where('user_id', $userId)
-        ->latest()->get();
+    // ✅ Filter by user if NOT admin
+    if (!$isAdmin) {
+        $mddrmoQuery->where('user_id', $userId);
+        $wasteQuery->where('user_id', $userId);
+    }
 
-    $wasteAcceptedReports = \App\Models\WasteReport::where('location', $userLocation)
-        ->where('status', 'Accepted')
-        ->where('user_id', $userId)
-        ->latest()->get();
+    // ✅ Fetch grouped reports
+    $mddrmoAcceptedReports = (clone $mddrmoQuery)->where('status', 'Accepted')->latest()->get();
+    $mddrmoOngoingReports  = (clone $mddrmoQuery)->where('status', 'Ongoing')->latest()->get();
+    $mddrmoResolvedReports = (clone $mddrmoQuery)->where('status', 'Resolved')->latest()->get();
 
-    $wasteOngoingReports = \App\Models\WasteReport::where('location', $userLocation)
-        ->where('status', 'Ongoing')
-        ->where('user_id', $userId)
-        ->latest()->get();
-
-    $wasteResolvedReports = \App\Models\WasteReport::where('location', $userLocation)
-        ->where('status', 'Resolved')
-        ->where('user_id', $userId)
-        ->latest()->get();
+    $wasteAcceptedReports = (clone $wasteQuery)->where('status', 'Accepted')->latest()->get();
+    $wasteOngoingReports  = (clone $wasteQuery)->where('status', 'Ongoing')->latest()->get();
+    $wasteResolvedReports = (clone $wasteQuery)->where('status', 'Resolved')->latest()->get();
 
     // ✅ Compute total alerts
     $totalAlerts = $alerts->count()
@@ -118,7 +109,7 @@
                   {{ $report->status }} {{ strpos($group,'Waste') !== false ? '♻' : '' }}
                 </p>
                 <p class="text-gray-600 text-xs mt-1">
-                  Your report "<span class="font-medium">{{ $report->title }}</span>" 
+                  {{ $isAdmin ? 'Report' : 'Your report' }} "<span class="font-medium">{{ $report->title }}</span>" 
                   {{ $group == 'Resolved Reports' ? 'was resolved by' : ($group == 'Ongoing Reports' ? 'is being handled by' : 'was forwarded to') }}
                   <span class="font-semibold">{{ $report->forwarded_to }}</span>.
                 </p>
