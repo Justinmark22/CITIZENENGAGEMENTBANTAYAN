@@ -25,21 +25,30 @@
 
   <!-- Right side items -->
   <div id="navbarLinks" class="hidden md:flex items-center gap-4 md:gap-5 flex-wrap text-sm absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none rounded-b-2xl md:rounded-none p-4 md:p-0">
+
 <!-- 🔔 Alerts Dropdown -->
 <div class="relative w-full md:w-auto">
   @php
     use Illuminate\Support\Facades\Auth;
+    use App\Models\ForwardedReport;
+    use App\Models\WasteReport;
 
     $user = Auth::user();
     $userId = $user->id;
-    $userLocation = $user->location;
-    $isAdmin = $user->role === 'admin'; // Make sure your users table has a 'role' field
+    $userLocation = $user->location ?? null;
+    $isAdmin = isset($user->role) && $user->role === 'admin';
 
-    // ✅ Build base queries
-    $mddrmoQuery = \App\Models\ForwardedReport::where('location', $userLocation);
-    $wasteQuery = \App\Models\WasteReport::where('location', $userLocation);
+    // ✅ Base queries
+    $mddrmoQuery = ForwardedReport::query();
+    $wasteQuery = WasteReport::query();
 
-    // ✅ Filter by user if NOT admin
+    // ✅ Filter by location if available
+    if ($userLocation) {
+        $mddrmoQuery->where('location', $userLocation);
+        $wasteQuery->where('location', $userLocation);
+    }
+
+    // ✅ Filter by user_id if not admin
     if (!$isAdmin) {
         $mddrmoQuery->where('user_id', $userId);
         $wasteQuery->where('user_id', $userId);
@@ -54,7 +63,7 @@
     $wasteOngoingReports  = (clone $wasteQuery)->where('status', 'Ongoing')->latest()->get();
     $wasteResolvedReports = (clone $wasteQuery)->where('status', 'Resolved')->latest()->get();
 
-    // ✅ Compute total alerts
+    // ✅ Total count
     $totalAlerts = $alerts->count()
         + $mddrmoAcceptedReports->count() + $wasteAcceptedReports->count()
         + $mddrmoOngoingReports->count() + $wasteOngoingReports->count()
@@ -105,9 +114,7 @@
                 <i data-lucide="check-circle" class="w-4 h-4"></i>
               </div>
               <div class="flex-1">
-                <p class="text-{{ $groupData['color'] }}-700 text-sm font-medium">
-                  {{ $report->status }} {{ strpos($group,'Waste') !== false ? '♻' : '' }}
-                </p>
+                <p class="text-{{ $groupData['color'] }}-700 text-sm font-medium">{{ $report->status }}</p>
                 <p class="text-gray-600 text-xs mt-1">
                   {{ $isAdmin ? 'Report' : 'Your report' }} "<span class="font-medium">{{ $report->title }}</span>" 
                   {{ $group == 'Resolved Reports' ? 'was resolved by' : ($group == 'Ongoing Reports' ? 'is being handled by' : 'was forwarded to') }}
@@ -121,8 +128,6 @@
     </div>
   </div>
 </div>
-
-
 
 
  <a href="{{ route('certificate.request') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
