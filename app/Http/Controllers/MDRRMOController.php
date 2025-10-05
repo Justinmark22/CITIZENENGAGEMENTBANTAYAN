@@ -65,7 +65,7 @@ class MDRRMOController extends Controller
 {
     $totalUsers = User::where('location', 'Bantayan')->count();
 
-    // ✅ Report counts (strictly for Madridejos)
+    // ✅ Report counts (strictly for Bantayan)
     $totalReports = ForwardedReport::where('location', 'Bantayan')->count();
 
     $pendingReportsCount = ForwardedReport::where('location', 'Bantayan')
@@ -97,7 +97,7 @@ class MDRRMOController extends Controller
         ->get();
 
     // Pass everything to Blade
-    return view('dashboard.mdrrmo-Bantayan', compact(
+    return view('dashboard.mdrrmo-bantayan', compact(
         'totalUsers',
         'totalReports',
         'pendingReportsCount',
