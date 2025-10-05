@@ -66,31 +66,41 @@
         <p class="text-gray-400 text-sm text-center py-4">No alerts available.</p>
       @endforelse
 
-      {{-- Reports Notifications --}}
-      @foreach(['Resolved Reports' => ['color'=>'purple','data'=>[$mddrmoResolvedReports,$wasteResolvedReports]],
-                'Ongoing Reports' => ['color'=>'blue','data'=>[$mddrmoOngoingReports,$wasteOngoingReports]],
-                'Accepted Reports' => ['color'=>'green','data'=>[$mddrmoAcceptedReports,$wasteAcceptedReports]]] as $group => $groupData)
-        @foreach($groupData['data'] as $reports)
-          @foreach($reports as $report)
-            <div onclick="openReportModal({{ $report->id }}, '{{ $report->title }}', '{{ $report->status }}', '{{ $report->forwarded_to }}')" 
-                 class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition bg-{{ $groupData['color'] }}-50 rounded-md m-2">
-              <div class="flex-shrink-0 w-8 h-8 bg-{{ $groupData['color'] }}-400 text-white rounded-full flex items-center justify-center">
-                <i data-lucide="check-circle" class="w-4 h-4"></i>
-              </div>
-              <div class="flex-1">
-                <p class="text-{{ $groupData['color'] }}-700 text-sm font-medium">
-                  {{ $report->status }} {{ strpos($group,'Waste') !== false ? '♻' : '' }}
-                </p>
-                <p class="text-gray-600 text-xs mt-1">
-                  Your report "<span class="font-medium">{{ $report->title }}</span>" 
-                  {{ $group == 'Resolved Reports' ? 'was resolved by' : ($group == 'Ongoing Reports' ? 'is being handled by' : 'was forwarded to') }}
-                  <span class="font-semibold">{{ $report->forwarded_to }}</span>.
-                </p>
-              </div>
-            </div>
-          @endforeach
-        @endforeach
+{{-- Reports Notifications --}}
+@if(
+    $mddrmoAcceptedReports->count() ||
+    $wasteAcceptedReports->count() ||
+    $mddrmoOngoingReports->count() ||
+    $wasteOngoingReports->count() ||
+    $mddrmoResolvedReports->count() ||
+    $wasteResolvedReports->count()
+)
+  @foreach(['Resolved Reports' => ['color'=>'purple','data'=>[$mddrmoResolvedReports,$wasteResolvedReports]],
+            'Ongoing Reports' => ['color'=>'blue','data'=>[$mddrmoOngoingReports,$wasteOngoingReports]],
+            'Accepted Reports' => ['color'=>'green','data'=>[$mddrmoAcceptedReports,$wasteAcceptedReports]]] as $group => $groupData)
+    @foreach($groupData['data'] as $reports)
+      @foreach($reports as $report)
+        <div onclick="openReportModal({{ $report->id }}, '{{ $report->title }}', '{{ $report->status }}', '{{ $report->forwarded_to }}')" 
+             class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition bg-{{ $groupData['color'] }}-50 rounded-md m-2">
+          <div class="flex-shrink-0 w-8 h-8 bg-{{ $groupData['color'] }}-400 text-white rounded-full flex items-center justify-center">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+          </div>
+          <div class="flex-1">
+            <p class="text-{{ $groupData['color'] }}-700 text-sm font-medium">{{ $report->status }}</p>
+            <p class="text-gray-600 text-xs mt-1">
+              Your report "<span class="font-medium">{{ $report->title }}</span>"
+              {{ $group == 'Resolved Reports' ? 'was resolved by' : ($group == 'Ongoing Reports' ? 'is being handled by' : 'was forwarded to') }}
+              <span class="font-semibold">{{ $report->forwarded_to }}</span>.
+            </p>
+          </div>
+        </div>
       @endforeach
+    @endforeach
+  @endforeach
+@else
+  <p class="text-gray-400 text-sm text-center py-4">No report progress yet.</p>
+@endif
+
 
     </div>
   </div>
