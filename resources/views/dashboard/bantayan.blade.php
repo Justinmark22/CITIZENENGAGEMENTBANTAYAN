@@ -249,12 +249,14 @@
 
         <div class="overflow-auto space-y-5 flex-1" style="max-height: 480px;">
           @php
-            $wasteReports = \App\Models\ForwardedReport::with('user')
-                              ->where('location', 'Bantayan')
-                              ->where('status', 'Resolved')
-                              ->where('category', 'Waste Management') // fetch only waste reports
-                              ->latest()
-                              ->get(['id', 'title', 'description', 'category', 'user_id', 'created_at', 'updated_at']);
+           $wasteReports = \App\Models\ForwardedReport::with('user')
+                  ->where('location', 'Bantayan')
+                  ->where('status', 'Resolved')
+                  ->where('category', 'Waste Management')
+                  ->where('user_id', Auth::id()) // ✅ Filter by user
+                  ->latest()
+                  ->get(['id', 'title', 'description', 'category', 'user_id', 'created_at', 'updated_at']);
+
           @endphp
 
           @forelse ($wasteReports as $report)

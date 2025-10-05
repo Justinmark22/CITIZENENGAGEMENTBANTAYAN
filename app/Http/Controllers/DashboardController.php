@@ -119,19 +119,19 @@ class DashboardController extends Controller
     }
 public function dashboardBantayan()
 {
-    $user = Auth::user();  
-    $location = $user->location;  
+    $user = Auth::user();
+    $location = $user->location;
 
-    // ✅ System Alerts (only location-wide, not user-specific)
+    // ✅ System Alerts
     $alerts = Alert::where(function($query) use ($location) {
-                        $query->where('location', $location)
-                              ->orWhere('location', 'All');
-                    })
-                    ->where('is_read', false)
-                    ->latest()
-                    ->get();
+                    $query->where('location', $location)
+                          ->orWhere('location', 'All');
+                })
+                ->where('is_read', false)
+                ->latest()
+                ->get();
 
-    // ✅ Reports — Only logged-in user's reports
+    // ✅ Only logged-in user's reports
     $reports = Report::where('user_id', $user->id)
         ->where('location', $location)
         ->latest()
@@ -142,7 +142,6 @@ public function dashboardBantayan()
     $updates = Update::where('location', $location)->latest()->take(5)->get();
     $events = Event::where('location', 'bantayan')->latest()->take(10)->get();
 
-    // ✅ Forwarded items (public for Bantayan only)
     $forwardedAnnouncements = ForwardedAnnouncement::where('location', $location)
         ->orWhere('barangay', $location)
         ->latest()
@@ -156,7 +155,7 @@ public function dashboardBantayan()
         ->orderBy('event_date')
         ->get();
 
-    // ✅ MDRRMO Reports — filtered by user_id + location
+    // ✅ MDRRMO Reports - only for logged-in user
     $mddrmoAcceptedReports = ForwardedReport::where('user_id', $user->id)
         ->where('location', $location)
         ->where('status', 'Accepted')
@@ -175,7 +174,7 @@ public function dashboardBantayan()
         ->latest()
         ->get();
 
-    // ✅ Waste Reports — filtered by user_id + location
+    // ✅ Waste Management Reports - only for logged-in user
     $wasteAcceptedReports = WasteReport::where('user_id', $user->id)
         ->where('location', $location)
         ->where('status', 'Accepted')
@@ -211,6 +210,7 @@ public function dashboardBantayan()
         'wasteResolvedReports'
     ));
 }
+
     public function dashboardMadridejos()
     {
         $user = Auth::user();  
