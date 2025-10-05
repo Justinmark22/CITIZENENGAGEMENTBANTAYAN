@@ -106,7 +106,7 @@ Route::post('/register', function (Request $request) {
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
-    // ✅ Verify Google reCAPTCHA
+      // ✅ Verify Google reCAPTCHA
     $recaptchaResponse = $request->input('g-recaptcha-response');
 
     if (!$recaptchaResponse) {
@@ -128,7 +128,6 @@ Route::post('/login', function (Request $request) {
             'captcha' => 'reCAPTCHA verification failed. Please try again.'
         ])->onlyInput('email');
     }
-
     // ✅ Apply throttling based on IP + email
     $key = Str::lower($request->input('email')).'|'.$request->ip();
 
@@ -144,7 +143,7 @@ Route::post('/login', function (Request $request) {
         'password' => ['required', 'string', 'max:255'],
     ]);
 
-    $user = User::where('email', $credentials['email'])->first();
+    $user = \App\Models\User::where('email', $credentials['email'])->first();
 
     // ✅ Disabled user check
     if ($user && $user->status === 'disabled') {
@@ -154,7 +153,7 @@ Route::post('/login', function (Request $request) {
         ])->onlyInput('email');
     }
 
-    // ✅ Attempt login
+    // ✅ Attempt login (uses bcrypt hashed password check)
     if (Auth::attempt($credentials, $request->boolean('remember'))) {
         $request->session()->regenerate();
         $user = Auth::user();
@@ -165,64 +164,51 @@ Route::post('/login', function (Request $request) {
 
         RateLimiter::clear($key); // ✅ Reset attempts on success
 
-        // ✅ Prepare user-specific dashboard data
-        $myReports = ForwardedReport::where('user_id', $user->id)
-                        ->latest()
-                        ->get();
+       // ✅ Redirect based on role and location
+if (strtolower($user->role) === 'admin') {
+    return match ($user->location) {
+        'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
+        'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
+        'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
+        'Admin'      => redirect()->route('dashboard.admin'),
+        default      => redirect('/dashboard'),
+    };
+}
 
-        // Optional: department or location-specific reports for admin/roles
-        $departmentReports = collect();
-        if (in_array(strtolower($user->role), ['mdrrmo', 'waste', 'water', 'admin'])) {
-            $departmentReports = ForwardedReport::where('location', $user->location)
-                                ->latest()
-                                ->get();
-        }
+if (strtolower($user->role) === 'mdrrmo') {
+    return match ($user->location) {
+        'Santa.Fe'    => redirect()->route('dashboard.mdrrmo-santafe'),
+        'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
+        'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
+        default      => redirect('/dashboard'),
+    };
+}
+if (strtolower($user->role) === 'waste') {
+    return match ($user->location) {
+        'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
+        'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
+        'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
+        default      => redirect('/dashboard'),
+    };
+}
+if (strtolower($user->role) === 'water') {
+    return match ($user->location) {
+        'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
+        'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
+        'Madridejos' => redirect()->route('dashboard.water-madridejos'),
+        default      => redirect('/dashboard'),
+    };
+}
 
-        // ✅ Redirect based on role and location
-        if (strtolower($user->role) === 'admin') {
-            return match ($user->location) {
-                'Santa.Fe'   => view('dashboard.santafeadmin', compact('user', 'myReports', 'departmentReports')),
-                'Bantayan'   => view('dashboard.bantayanadmin', compact('user', 'myReports', 'departmentReports')),
-                'Madridejos' => view('dashboard.madridejosadmin', compact('user', 'myReports', 'departmentReports')),
-                'Admin'      => view('dashboard.admin', compact('user', 'myReports', 'departmentReports')),
-                default      => redirect('/dashboard'),
-            };
-        }
 
-        if (strtolower($user->role) === 'mdrrmo') {
-            return match ($user->location) {
-                'Santa.Fe'   => view('dashboard.mdrrmo-santafe', compact('user', 'myReports', 'departmentReports')),
-                'Bantayan'   => view('dashboard.mdrrmo-bantayan', compact('user', 'myReports', 'departmentReports')),
-                'Madridejos' => view('dashboard.mdrrmo-madridejos', compact('user', 'myReports', 'departmentReports')),
-                default      => redirect('/dashboard'),
-            };
-        }
+// ✅ Citizens or fallback
+return match ($user->location) {
+    'Santa.Fe'   => redirect()->route('dashboard.santafe'),
+    'Bantayan'   => redirect()->route('dashboard.bantayan'),
+    'Madridejos' => redirect()->route('dashboard.madridejos'),
+    default      => redirect('/dashboard'),
+};
 
-        if (strtolower($user->role) === 'waste') {
-            return match ($user->location) {
-                'Santa.Fe'   => view('dashboard.waste-santafe', compact('user', 'myReports', 'departmentReports')),
-                'Bantayan'   => view('dashboard.waste-bantayan', compact('user', 'myReports', 'departmentReports')),
-                'Madridejos' => view('dashboard.waste-madridejos', compact('user', 'myReports', 'departmentReports')),
-                default      => redirect('/dashboard'),
-            };
-        }
-
-        if (strtolower($user->role) === 'water') {
-            return match ($user->location) {
-                'Santa.Fe'   => view('dashboard.water-santafe', compact('user', 'myReports', 'departmentReports')),
-                'Bantayan'   => view('dashboard.water-bantayan', compact('user', 'myReports', 'departmentReports')),
-                'Madridejos' => view('dashboard.water-madridejos', compact('user', 'myReports', 'departmentReports')),
-                default      => redirect('/dashboard'),
-            };
-        }
-
-        // ✅ Citizens or fallback
-        return match ($user->location) {
-            'Santa.Fe'   => view('dashboard.santafe', compact('user', 'myReports')),
-            'Bantayan'   => view('dashboard.bantayan', compact('user', 'myReports')),
-            'Madridejos' => view('dashboard.madridejos', compact('user', 'myReports')),
-            default      => redirect('/dashboard'),
-        };
     }
 
     RateLimiter::hit($key, 60); // ✅ Increment failed attempts
@@ -231,7 +217,6 @@ Route::post('/login', function (Request $request) {
         'email' => 'The provided credentials do not match our records.',
     ])->onlyInput('email');
 })->name('login.submit');
-
 
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
