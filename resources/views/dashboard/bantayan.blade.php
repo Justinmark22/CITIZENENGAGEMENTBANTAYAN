@@ -25,54 +25,18 @@
 
   <!-- Right side items -->
   <div id="navbarLinks" class="hidden md:flex items-center gap-4 md:gap-5 flex-wrap text-sm absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none rounded-b-2xl md:rounded-none p-4 md:p-0">
-
+    
 <!-- 🔔 Alerts Dropdown -->
 <div class="relative w-full md:w-auto">
-  @php
-    use Illuminate\Support\Facades\Auth;
-    use App\Models\ForwardedReport;
-    use App\Models\WasteReport;
-
-    $user = Auth::user();
-    $userId = $user->id;
-    $userLocation = $user->location ?? null;
-    $isAdmin = isset($user->role) && $user->role === 'admin';
-
-    // ✅ Base queries
-    $mddrmoQuery = ForwardedReport::query();
-    $wasteQuery = WasteReport::query();
-
-    // ✅ Filter by location if available
-    if ($userLocation) {
-        $mddrmoQuery->where('location', $userLocation);
-        $wasteQuery->where('location', $userLocation);
-    }
-
-    // ✅ Filter by user_id if not admin
-    if (!$isAdmin) {
-        $mddrmoQuery->where('user_id', $userId);
-        $wasteQuery->where('user_id', $userId);
-    }
-
-    // ✅ Fetch grouped reports
-    $mddrmoAcceptedReports = (clone $mddrmoQuery)->where('status', 'Accepted')->latest()->get();
-    $mddrmoOngoingReports  = (clone $mddrmoQuery)->where('status', 'Ongoing')->latest()->get();
-    $mddrmoResolvedReports = (clone $mddrmoQuery)->where('status', 'Resolved')->latest()->get();
-
-    $wasteAcceptedReports = (clone $wasteQuery)->where('status', 'Accepted')->latest()->get();
-    $wasteOngoingReports  = (clone $wasteQuery)->where('status', 'Ongoing')->latest()->get();
-    $wasteResolvedReports = (clone $wasteQuery)->where('status', 'Resolved')->latest()->get();
-
-    // ✅ Total count
-    $totalAlerts = $alerts->count()
-        + $mddrmoAcceptedReports->count() + $wasteAcceptedReports->count()
-        + $mddrmoOngoingReports->count() + $wasteOngoingReports->count()
-        + $mddrmoResolvedReports->count() + $wasteResolvedReports->count();
-  @endphp
-
   <button onclick="toggleDropdown('alertsDropdown'); clearBadge();" 
           class="flex items-center justify-center md:justify-start w-10 h-10 md:w-auto md:px-4 rounded-full hover:bg-gray-100 transition relative text-gray-700">
     <i data-lucide="bell" class="w-5 h-5"></i>Notifications
+    @php 
+      $totalAlerts = $alerts->count() 
+                    + $mddrmoAcceptedReports->count() + $wasteAcceptedReports->count()
+                    + $mddrmoOngoingReports->count() + $wasteOngoingReports->count()
+                    + $mddrmoResolvedReports->count() + $wasteResolvedReports->count(); 
+    @endphp
     @if($totalAlerts > 0)
       <span id="alertsBadge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full shadow">{{ $totalAlerts }}</span>
     @endif
@@ -114,9 +78,11 @@
                 <i data-lucide="check-circle" class="w-4 h-4"></i>
               </div>
               <div class="flex-1">
-                <p class="text-{{ $groupData['color'] }}-700 text-sm font-medium">{{ $report->status }}</p>
+                <p class="text-{{ $groupData['color'] }}-700 text-sm font-medium">
+                  {{ $report->status }} {{ strpos($group,'Waste') !== false ? '♻' : '' }}
+                </p>
                 <p class="text-gray-600 text-xs mt-1">
-                  {{ $isAdmin ? 'Report' : 'Your report' }} "<span class="font-medium">{{ $report->title }}</span>" 
+                  Your report "<span class="font-medium">{{ $report->title }}</span>" 
                   {{ $group == 'Resolved Reports' ? 'was resolved by' : ($group == 'Ongoing Reports' ? 'is being handled by' : 'was forwarded to') }}
                   <span class="font-semibold">{{ $report->forwarded_to }}</span>.
                 </p>
@@ -125,9 +91,11 @@
           @endforeach
         @endforeach
       @endforeach
+
     </div>
   </div>
 </div>
+
 
 
  <a href="{{ route('certificate.request') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
