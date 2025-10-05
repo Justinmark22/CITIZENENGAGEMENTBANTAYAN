@@ -48,6 +48,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\MDRRMOController;
 use App\Http\Controllers\WasteDashboardController;
 use App\Http\Controllers\WaterDashboardController;
+use Illuminate\Support\Facades\Http;
 
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
