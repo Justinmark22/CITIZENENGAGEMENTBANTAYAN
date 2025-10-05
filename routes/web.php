@@ -722,56 +722,52 @@ Route::get('/certificate/request', [CertificateController::class, 'showRequestFo
 Route::post('/certificate/request', [CertificateController::class, 'store'])->name('certificate.submit');
 //
 Route::post('/reports/forward', [SantaFeController::class, 'forward'])->name('reports.forward');
-//
-Route::get('/mdrrmo/santafe', [MDRRMOController::class, 'santafe'])->name('dashboard.mdrrmo-santafe');
-Route::get('/mdrrmo/bantayan', [MDRRMOController::class, 'bantayan'])->name('dashboard.mdrrmo-bantayan');
-Route::get('/mdrrmo/madridejos', [MDRRMOController::class, 'madridejos'])->name('dashboard.mdrrmo-madridejos');
-Route::get('/mdrrmo/reports/santafe', [MDRRMOController::class, 'reportsSantaFe'])->name('mdrrmo.reports-santafe');
-Route::get('/mdrrmo/reports/bantayan', [MDRRMOController::class, 'reportsBantayan'])->name('mdrrmo.reports-bantayan');
-Route::get('/mdrrmo/reports/madridejos', [MDRRMOController::class, 'reportsMadridejos'])->name('mdrrmo.reports-madridejos');
-Route::post('/rerouted-reports/{report}/update-status', [MDRRMOController::class, 'updateStatus']);
-Route::post('/forwarded-reports/{report}/update-status', [MDRRMOController::class, 'updateStatus']);
 
-Route::get('/dashboard/mdrrmo-santafe', [MDRRMOController::class, 'santafe'])->name('mdrrmo.santafe');
-Route::get('/mdrrmo/stats', [MDRRMOController::class, 'stats'])->name('mdrrmo.stats');
-//
-Route::get('/mdrrmo/santafe-announcements', [MDRRMOController::class, 'santafeAnnouncements'])
-    ->name('mdrrmo.mdrrmo_santafe-announcements');
-    Route::get('/resolved-reports', [MDRRMOController::class, 'getResolvedReports']);
-  Route::post('/post-announcement', [MDRRMOController::class, 'postAnnouncement']);
-//
-// ---------------- MADRIDEJOS ----------------
-Route::get('/mdrrmo/madridejos-announcements', [MDRRMOController::class, 'madridejosAnnouncements'])
-    ->name('mdrrmo.mdrrmo_madridejos-announcements');
+// -------------------- DASHBOARDS --------------------
+Route::prefix('mdrrmo')->group(function () {
+    Route::get('/santafe', [MDRRMOController::class, 'santafe'])->name('dashboard.mdrrmo-santafe');
+    Route::get('/bantayan', [MDRRMOController::class, 'bantayan'])->name('dashboard.mdrrmo-bantayan');
+    Route::get('/madridejos', [MDRRMOController::class, 'madridejos'])->name('dashboard.mdrrmo-madridejos');
 
-Route::get('/resolved-reports/madridejos', function () {
-    return app(\App\Http\Controllers\MDRRMOController::class)->getResolvedReports('Madridejos');
-})->name('mdrrmo.madridejos-resolved');
+    // Stats
+    Route::get('/stats', [MDRRMOController::class, 'stats'])->name('mdrrmo.stats');
 
-Route::post('/post-announcement/madridejos', [MDRRMOController::class, 'postAnnouncement'])
-    ->name('mdrrmo.madridejos-post-announcement');
-    // ---------------- MADRIDEJOS REPORTS / UPDATES ----------------
-Route::get('/mdrrmo/madridejos-updates', [MDRRMOController::class, 'reportsMadridejos'])
-    ->name('madridejos.updates');
-    //
-    Route::get('/api/resolved-reports/madridejos', [MDRRMOController::class, 'getResolvedReportsMadridejos']);
-//// ---------------- BANTAYAN ----------------
+    // -------------------- REPORTS --------------------
+    Route::prefix('reports')->group(function () {
+        Route::get('/santafe', [MDRRMOController::class, 'reportsSantaFe'])->name('mdrrmo.reports-santafe');
+        Route::get('/bantayan', [MDRRMOController::class, 'reportsBantayan'])->name('mdrrmo.reports-bantayan');
+        Route::get('/madridejos', [MDRRMOController::class, 'reportsMadridejos'])->name('mdrrmo.reports-madridejos');
 
-// Announcements page
-Route::get('/mdrrmo/bantayan-announcements', [MDRRMOController::class, 'bantayanAnnouncements'])
-    ->name('mdrrmo.mdrrmo_bantayan-announcements');
+        // Resolved reports APIs
+        Route::get('/resolved/santafe', [MDRRMOController::class, 'getResolvedReports'])->name('mdrrmo.santafe-resolved');
+        Route::get('/resolved/bantayan', [MDRRMOController::class, 'getResolvedReportsBantayan'])->name('mdrrmo.bantayan-resolved');
+        Route::get('/resolved/madridejos', [MDRRMOController::class, 'getResolvedReportsMadridejos'])->name('mdrrmo.madridejos-resolved');
+    });
 
-Route::get('/api/resolved-reports/bantayan', [MDRRMOController::class, 'getResolvedReportsBantayan'])
-    ->name('mdrrmo.bantayan-resolved');
+    // Update report status
+    Route::post('/rerouted-reports/{report}/update-status', [MDRRMOController::class, 'updateStatus']);
+    Route::post('/forwarded-reports/{report}/update-status', [MDRRMOController::class, 'updateStatus']);
 
+    // -------------------- ANNOUNCEMENTS --------------------
+    Route::get('/santafe-announcements', [MDRRMOController::class, 'santafeAnnouncements'])
+        ->name('mdrrmo.mdrrmo_santafe-announcements');
+    Route::get('/bantayan-announcements', [MDRRMOController::class, 'bantayanAnnouncements'])
+        ->name('mdrrmo.mdrrmo_bantayan-announcements');
+    Route::get('/madridejos-announcements', [MDRRMOController::class, 'madridejosAnnouncements'])
+        ->name('mdrrmo.mdrrmo_madridejos-announcements');
 
-// Post announcement
-Route::post('/post-announcement/bantayan', [MDRRMOController::class, 'postAnnouncement'])
-    ->name('mdrrmo.bantayan-post-announcement');
+    Route::post('/post-announcement/santafe', [MDRRMOController::class, 'postAnnouncement'])
+        ->name('mdrrmo.santafe-post-announcement');
+    Route::post('/post-announcement/bantayan', [MDRRMOController::class, 'postAnnouncement'])
+        ->name('mdrrmo.bantayan-post-announcement');
+    Route::post('/post-announcement/madridejos', [MDRRMOController::class, 'postAnnouncement'])
+        ->name('mdrrmo.madridejos-post-announcement');
 
-// Bantayan updates page
-Route::get('/mdrrmo/bantayan-updates', [MDRRMOController::class, 'reportsBantayan'])
-    ->name('bantayan.updates');
+    // -------------------- UPDATES --------------------
+    Route::get('/santafe-updates', [MDRRMOController::class, 'reportsSantaFe'])->name('santafe.updates');
+    Route::get('/bantayan-updates', [MDRRMOController::class, 'reportsBantayan'])->name('bantayan.updates');
+    Route::get('/madridejos-updates', [MDRRMOController::class, 'reportsMadridejos'])->name('madridejos.updates');
+});
 
 
 Route::middleware(['auth'])->group(function () {
