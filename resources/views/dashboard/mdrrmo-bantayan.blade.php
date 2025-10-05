@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MDRRMO Madridejos Dashboard</title>
+<title>MDRRMO Bantayan Dashboard</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -35,23 +35,21 @@ tailwind.config = {
 </head>
 <body class="bg-page-gradient font-sans h-screen flex overflow-hidden text-gray-800" x-data="{ mobileMenu:false }">
 
-<!-- Sidebar -->
-<aside 
-  class="fixed md:static inset-y-0 left-0 z-40 w-64 
-         bg-gradient-to-b from-blue-200 to-blue-100 
-         text-gray-800 p-6 transform transition-transform duration-300 
-         ease-in-out shadow-lg"
-  :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
+<aside class="fixed md:static inset-y-0 left-0 w-64 bg-gradient-to-b from-blue-200 to-blue-100 text-gray-800 p-6 transform transition-transform duration-300 z-40 shadow-lg"
+       :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
-  <div class="flex items-center justify-between mb-10">
-   <img src="{{ asset('/images/mad.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
-    <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO MADRIDEJOS</span>
+ <div class="flex items-center justify-between mb-10">
+  <!-- Larger Circular Logo -->
+<img src="{{ asset('/images/mad.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
+    <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO BANTAYAN</span>
   </div>
+  <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
+</div>
   <nav class="flex flex-col gap-4">
     <!-- Dashboard -->
     <div>
       <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Dashboard</p>
-       <a href="{{ route('dashboard.mdrrmo-madridejos') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-300 hover:bg-blue-200 transition-all">
+      <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-300 hover:bg-blue-200 transition-all">
         <i data-lucide="home" class="w-5 h-5"></i>
         <span class="font-medium">Overview</span>
       </a>
@@ -60,7 +58,7 @@ tailwind.config = {
     <!-- Reports -->
     <div>
       <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Reports</p>
-      <a href="{{ route('mdrrmo.reports-madridejos') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+      <a href="{{ route('mdrrmo.reports-bantayan') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
         <i data-lucide="file-text" class="w-5 h-5"></i>
         <span>All Reports</span>
       </a>
@@ -69,7 +67,7 @@ tailwind.config = {
     <!-- Communications -->
     <div>
       <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Communications</p>
-      <a href="{{ route('mdrrmo.mdrrmo_madridejos-announcements') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+      <a href="{{ route('mdrrmo.mdrrmo_bantayan-announcements') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
         <i data-lucide="megaphone" class="w-5 h-5"></i>
         <span>Announcements</span>
       </a>
@@ -82,8 +80,9 @@ tailwind.config = {
         Logout
       </button>
     </form>
-  </nav>
 </aside>
+
+
 <!-- Main -->
 <main class="flex-1 flex flex-col overflow-y-auto">
 
@@ -137,7 +136,7 @@ tailwind.config = {
 <div class="bg-white shadow-lg rounded-xl border border-gray-200 overflow-hidden">
   <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
     <h3 class="font-bold text-gray-800 text-lg">Recent Reports</h3>
-    <a href="{{ route('mdrrmo.reports-santafe') }}" class="px-3 py-1 bg-gray-800 text-white rounded hover:bg-gray-700 transition text-sm">View All</a>
+    <a href="{{ route('mdrrmo.reports-bantayan') }}" class="px-3 py-1 bg-gray-800 text-white rounded hover:bg-gray-700 transition text-sm">View All</a>
   </div>
 
   <div class="overflow-x-auto">
