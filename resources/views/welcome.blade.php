@@ -16,24 +16,24 @@
 </head>
 <body class="bg-gray-100 font-sans">
 <!-- Navbar -->
-<nav class="bg-[#006c42] shadow-md fixed top-0 inset-x-0 z-50">
+<nav class="bg-white shadow-md fixed top-0 inset-x-0 z-50">
   <div class="max-w-7xl mx-auto px-4">
     <div class="flex justify-between items-center h-16">
       <!-- Logo -->
       <div class="flex items-center gap-2">
         <img src="{{ asset('images/citizen.png') }}" alt="Citizen Logo" class="w-10 h-10 rounded-full shadow-md">
-        <span class="text-lg md:text-xl font-extrabold text-white tracking-tight">Bantayan 911</span>
+        <span class="text-lg md:text-xl font-extrabold text-gray-800 tracking-tight">Bantayan 911</span>
       </div>
 
       <!-- Desktop Menu -->
       <div class="hidden md:flex items-center space-x-4 text-sm font-medium">
-        <a href="{{ url('/') }}" class="text-white hover:text-[#00a99d] transition">Home</a>
-        <a href="{{ route('about') }}" class="text-white hover:text-[#00a99d] transition">About</a>
-        <a href="{{ route('contact') }}" class="text-white hover:text-[#00a99d] transition">Contact</a>
-        <a href="{{ route('faq') }}" class="text-white hover:text-[#00a99d] transition">FAQs</a>
+        <a href="{{ url('/') }}" class="text-gray-800 hover:text-[#006c42] transition">Home</a>
+        <a href="{{ route('about') }}" class="text-gray-800 hover:text-[#006c42] transition">About</a>
+        <a href="{{ route('contact') }}" class="text-gray-800 hover:text-[#006c42] transition">Contact</a>
+        <a href="{{ route('faq') }}" class="text-gray-800 hover:text-[#006c42] transition">FAQs</a>
         <!-- Login & Register -->
-        <a href="{{ route('login') }}" class="text-white hover:text-[#00a99d] transition">Login</a>
-        <a href="{{ route('register') }}" class="bg-white text-[#006c42] px-3 py-1 rounded-lg font-semibold hover:bg-[#00a99d] transition">Register</a>
+        <a href="{{ route('login') }}" class="text-gray-800 hover:text-[#006c42] transition">Login</a>
+        <a href="{{ route('register') }}" class="bg-[#006c42] text-white px-3 py-1 rounded-lg font-semibold hover:bg-[#004f33] transition">Register</a>
       </div>
     </div>
   </div>
