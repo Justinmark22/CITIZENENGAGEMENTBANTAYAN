@@ -114,7 +114,6 @@
       </form>
     </div>
   </div>
-
 <script>
   const togglePassword = document.getElementById("togglePassword");
   const passwordInput = document.getElementById("password");
@@ -124,50 +123,53 @@
     togglePassword.classList.toggle("text-indigo-500");
   });
 
+  const loginForm = document.getElementById("loginForm");
   let loginErrors = @json($errors->any());
   let loggedInStatus = @json(session('status') === 'logged_in');
-  const loginForm = document.getElementById("loginForm");
   let attempts = parseInt(localStorage.getItem("login_attempts")) || 0;
 
-  // ✅ Always get reCAPTCHA v3 token when the page loads
-  grecaptcha.ready(function() {
-    grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', { action: 'login' }).then(function(token) {
-      document.getElementById('g-recaptcha-response').value = token;
+  // 🧩 Always execute reCAPTCHA before submit
+  loginForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    grecaptcha.ready(function() {
+      grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', { action: 'login' }).then(function(token) {
+        document.getElementById('g-recaptcha-response').value = token;
+
+        // If 3+ failed attempts, show SweetAlert first
+        if (attempts >= 3) {
+          Swal.fire({
+            icon: 'info',
+            title: 'ReCAPTCHA Verification',
+            text: 'Multiple failed attempts detected. Please wait while we verify.',
+            showConfirmButton: false,
+            timer: 1500,
+            didOpen: () => {
+              Swal.showLoading();
+              setTimeout(() => loginForm.submit(), 1200);
+            }
+          });
+        } else {
+          loginForm.submit();
+        }
+      });
     });
   });
 
-  // ✅ Re-run token on submit after 3 failed attempts
-  loginForm.addEventListener("submit", function(e) {
-    if (loggedInStatus) return;
-
-    if (attempts >= 3) {
-      e.preventDefault();
-      Swal.fire({
-        icon: 'info',
-        title: 'ReCAPTCHA Required',
-        text: 'Multiple failed attempts detected. Please verify with reCAPTCHA.',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-      }).then(() => {
-        grecaptcha.ready(function() {
-          grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', { action: 'login' }).then(function(token) {
-            document.getElementById('g-recaptcha-response').value = token;
-            loginForm.submit();
-          });
-        });
-      });
-    }
-  });
-
-  // ✅ Increment or reset attempts
+  // 🔁 Manage attempt counter
   if (loginErrors) {
     attempts++;
     localStorage.setItem("login_attempts", attempts);
   }
+
   if (loggedInStatus) {
     localStorage.removeItem("login_attempts");
   }
+
+  // Optional: reset counter after 1 hour
+  setTimeout(() => localStorage.removeItem("login_attempts"), 3600000);
 </script>
+
 
 </body>
 </html>
