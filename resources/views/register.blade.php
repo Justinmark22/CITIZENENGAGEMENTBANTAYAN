@@ -1,167 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Register | Citizen Engagement Platform</title>
-
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-
-  <style>
-    body {
-      background-color: #111827;
-      color: white;
-      animation: fadeInBody 1s ease-in-out;
-    }
-
-    @keyframes fadeInBody {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes slideUp {
-      from {
-        transform: translateY(30px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .form-animate {
-      animation: slideUp 0.8s ease-out;
-    }
-
-    .form-control {
-      background-color: #374151;
-      border-color: #4b5563;
-      color: white;
-      transition: all 0.3s ease;
-    }
-
-    .form-control:focus {
-      background-color: #374151;
-      border-color: #6366f1;
-      color: white;
-      box-shadow: none;
-    }
-
-    .border-custom {
-      border-color: #4b5563 !important;
-    }
-
-    .text-muted-custom {
-      color: #9ca3af !important;
-    }
-
-    .btn-indigo {
-      background-color: #6366f1;
-      transition: all 0.3s ease;
-    }
-
-    .btn-indigo:hover {
-      background-color: #4f46e5;
-      transform: scale(1.02);
-    }
-
-    .logo-animate {
-      animation: slideUp 1s ease-in-out;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register | Bantayan 911</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="d-flex justify-content-center align-items-center min-vh-100">
-  <div class="container">
-    <div class="row bg-dark rounded-4 overflow-hidden shadow-lg form-animate">
-      <!-- Left Section -->
-      <div class="col-lg-6 p-5">
-        <div class="text-center mb-4">
-          <h1 class="fw-bold">Create an Account</h1>
-        </div>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
 
-        <div class="d-flex align-items-center text-muted-custom mb-4">
-          <div class="flex-grow-1 border-top border-custom"></div>
-          <div class="mx-3 small">Sign up below</div>
-          <div class="flex-grow-1 border-top border-custom"></div>
-        </div>
+  <div class="bg-gray-800 rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden">
+    <div class="grid md:grid-cols-2">
+      
+      <!-- Left Form Section -->
+      <div class="p-10 space-y-6">
+        <h2 class="text-3xl font-bold text-indigo-400 text-center">Create Your Account</h2>
 
         @if ($errors->any())
-        <div class="text-danger small mb-3">
-          <ul class="mb-0 ps-3">
-            @foreach ($errors->all() as $error)
-              <li>{{ $error }}</li>
-            @endforeach
-          </ul>
-        </div>
+          <div class="bg-red-600 text-sm p-3 rounded-lg">
+            <ul class="list-disc pl-4">
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
         @endif
-<form method="POST" action="{{ route('register.submit') }}">
-  @csrf
 
-  <div class="mb-3">
-    <label for="name" class="form-label small">Full Name</label>
-    <input type="text" id="name" name="name" value="{{ old('name') }}" 
-           required class="form-control"
-           oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
-           maxlength="100"
-           title="Only letters and spaces allowed"/>
-  </div>
+        <form method="POST" action="{{ route('register.submit') }}" class="space-y-4">
+          @csrf
 
-  <div class="mb-3">
-    <label for="email" class="form-label small">Email Address</label>
-    <input type="email" id="email" name="email" value="{{ old('email') }}" 
-           required class="form-control"
-           maxlength="255"
-           title="Enter a valid email address"/>
-  </div>
+          <div>
+            <label for="name" class="block text-sm mb-1">Full Name</label>
+            <input type="text" id="name" name="name" value="{{ old('name') }}"
+              required maxlength="100"
+              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+          </div>
 
-  <div class="mb-3">
-    <label for="location" class="form-label small">Municipality</label>
-    <select id="location" name="location" required class="form-control">
-      <option value="" disabled selected>Select your Municipality</option>
-      <option value="Bantayan" {{ old('location') == 'Bantayan' ? 'selected' : '' }}>Bantayan</option>
-      <option value="Santa.Fe" {{ old('location') == 'Santa.Fe' ? 'selected' : '' }}>Santa.Fe</option>
-      <option value="Madridejos" {{ old('location') == 'Madridejos' ? 'selected' : '' }}>Madridejos</option>
-    </select>
-  </div>
+          <div>
+            <label for="email" class="block text-sm mb-1">Email Address</label>
+            <input type="email" id="email" name="email" value="{{ old('email') }}"
+              required
+              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
 
-  <div class="mb-3">
-    <label for="password" class="form-label small">Password</label>
-    <input type="password" id="password" name="password" required class="form-control"
-           minlength="8"
-           pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@$!%*?&]).{8,}$"
-           title="At least 8 characters with uppercase, lowercase, number, and special character"/>
-  </div>
+          <div>
+            <label for="location" class="block text-sm mb-1">Municipality</label>
+            <select id="location" name="location" required
+              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="" disabled selected>Select Municipality</option>
+              <option value="Bantayan">Bantayan</option>
+              <option value="Santa.Fe">Santa.Fe</option>
+              <option value="Madridejos">Madridejos</option>
+            </select>
+          </div>
 
-  <div class="mb-3">
-    <label for="password_confirmation" class="form-label small">Confirm Password</label>
-    <input type="password" id="password_confirmation" name="password_confirmation" required class="form-control"/>
-  </div>
+          <div>
+            <label for="password" class="block text-sm mb-1">Password</label>
+            <input type="password" id="password" name="password" required
+              minlength="8"
+              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
 
-  <button type="submit" class="btn btn-indigo w-100 text-white">Register</button>
+          <div>
+            <label for="password_confirmation" class="block text-sm mb-1">Confirm Password</label>
+            <input type="password" id="password_confirmation" name="password_confirmation" required
+              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
 
-  <div class="text-center small mt-3">
-    Already have an account?
-    <a href="{{ route('login') }}" class="text-primary text-decoration-none">Login here</a>
-  </div>
-</form>
-  </div>
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-semibold transition transform hover:scale-105">
+            Register
+          </button>
 
-      <!-- Right Section -->
-      <div class="col-lg-6 d-none d-lg-flex flex-column justify-content-center align-items-center bg-black p-5 text-center logo-animate">
-        <h2 class="h4 fw-bold mb-3 text-white">A Platform with Purpose</h2>
-        <p class="text-muted-custom mb-4">
-          Collaborate with your barangay and contribute to decision-making by participating in surveys, reporting issues, and attending events.
-        </p>
-        <img src="{{ asset('images/citizen.png') }}" alt="Platform Preview"
-             class="img-fluid rounded-circle border border-custom shadow"
-             style="width: 160px; height: 160px; object-fit: cover;" />
+          <p class="text-center text-sm mt-4 text-gray-400">
+            Already have an account?
+            <a href="{{ route('login') }}" class="text-indigo-400 hover:text-indigo-300">Login here</a>
+          </p>
+        </form>
       </div>
+
+      <!-- Right Info Section -->
+      <div class="hidden md:flex flex-col items-center justify-center bg-gray-900 p-8 text-center">
+        <img src="{{ asset('images/citizen.png') }}" alt="Logo" class="w-32 h-32 rounded-full mb-4 border border-gray-700 shadow-lg">
+        <h3 class="text-2xl font-bold mb-2">Welcome to Bantayan 911</h3>
+        <p class="text-gray-400 text-sm max-w-xs">
+          Join our platform to stay updated, report emergencies, and help make Bantayan safer together.
+        </p>
+      </div>
+
     </div>
   </div>
-
-  <!-- Bootstrap Bundle JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
