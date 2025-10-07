@@ -16,7 +16,7 @@
 </head>
 <body class="bg-gray-100 font-sans">
 <!-- Navbar -->
-<nav class="bg-[#006747] shadow-md fixed top-0 inset-x-0 z-50">
+<nav class="bg-[#006c42] shadow-md fixed top-0 inset-x-0 z-50">
   <div class="max-w-7xl mx-auto px-4">
     <div class="flex justify-between items-center h-16">
       <!-- Logo -->
@@ -27,13 +27,13 @@
 
       <!-- Desktop Menu -->
       <div class="hidden md:flex items-center space-x-4 text-sm font-medium">
-        <a href="{{ url('/') }}" class="text-white hover:text-[#00A99D] transition">Home</a>
-        <a href="{{ route('about') }}" class="text-white hover:text-[#00A99D] transition">About</a>
-        <a href="{{ route('contact') }}" class="text-white hover:text-[#00A99D] transition">Contact</a>
-        <a href="{{ route('faq') }}" class="text-white hover:text-[#00A99D] transition">FAQs</a>
+        <a href="{{ url('/') }}" class="text-white hover:text-[#00a99d] transition">Home</a>
+        <a href="{{ route('about') }}" class="text-white hover:text-[#00a99d] transition">About</a>
+        <a href="{{ route('contact') }}" class="text-white hover:text-[#00a99d] transition">Contact</a>
+        <a href="{{ route('faq') }}" class="text-white hover:text-[#00a99d] transition">FAQs</a>
         <!-- Login & Register -->
-        <a href="{{ route('login') }}" class="text-white hover:text-[#00A99D] transition">Login</a>
-        <a href="{{ route('register') }}" class="bg-white text-[#006747] px-3 py-1 rounded-lg font-semibold hover:bg-[#00A99D] transition">Register</a>
+        <a href="{{ route('login') }}" class="text-white hover:text-[#00a99d] transition">Login</a>
+        <a href="{{ route('register') }}" class="bg-white text-[#006c42] px-3 py-1 rounded-lg font-semibold hover:bg-[#00a99d] transition">Register</a>
       </div>
     </div>
   </div>
