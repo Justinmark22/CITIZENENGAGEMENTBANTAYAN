@@ -54,10 +54,6 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeNewUserEmail;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\GoogleController;
-
-Route::get('auth/google/redirect', [GoogleController::class, 'redirectToGoogle'])->name('auth.google.redirect');
-Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
 
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');

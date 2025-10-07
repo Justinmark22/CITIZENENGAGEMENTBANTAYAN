@@ -101,19 +101,6 @@
         </form>
       </div>
 
-      <!-- Continue with Google Button -->
-      <div>
-        <a href="{{ route('auth.google.redirect') }}"
-           class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M21.35 11.1h-9.17v2.92h5.27c-.23 1.23-1.09 2.27-2.33 2.95v2.44h3.77c2.2-2.03 3.47-5 3.47-8.85 0-.64-.06-1.27-.18-1.87z"/>
-            <path d="M12.18 22c2.97 0 5.47-1.01 7.3-2.73l-3.77-2.44c-1.04.7-2.37 1.11-3.53 1.11-2.71 0-5-1.83-5.82-4.3H3.42v2.71C5.23 19.99 8.47 22 12.18 22z"/>
-            <path d="M6.84 13.65c-.24-.7-.38-1.44-.38-2.2s.14-1.5.38-2.2v-2.71H3.42c-.78 1.52-1.23 3.23-1.23 4.91s.45 3.39 1.23 4.91l3.42-2.71z"/>
-            <path d="M12.18 4.48c1.62 0 3.06.56 4.2 1.66l3.15-3.15C17.63 1.42 15.13.41 12.18.41 8.47.41 5.23 2.42 3.42 5.26l3.42 2.71c.82-2.47 3.11-4.3 5.34-4.3z"/>
-          </svg>
-          Continue with Google
-        </a>
-      </div>
       <!-- Right Section with Logo and Description -->
       <div class="col-lg-6 p-5 text-center logo-animate">
         <img src="{{ asset('images/citizen.png') }}"
