@@ -107,7 +107,8 @@
     </div>
   </div>
 </section><!-- Services -->
-<section id="services" class="relative py-24 bg-gray-50" x-data>
+<section id="services" class="relative py-24" 
+         style="background-color: rgba(144, 238, 144, 0.2);" x-data>
   <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
 
     <!-- Left Column (4 services) -->
