@@ -54,6 +54,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeNewUserEmail;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\OtpController;
+
 
 // ✅ Secure dashboard route (requires user login + OTP verification)
 Route::middleware(['auth', 'otp.verified'])->group(function () {
