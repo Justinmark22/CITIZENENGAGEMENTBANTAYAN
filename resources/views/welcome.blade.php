@@ -16,38 +16,33 @@
 </head>
 <body class="bg-gray-100 font-sans">
 
-<!-- Top Emergency Alert Bar -->
-<div class="bg-red-600 text-white text-center py-2 px-6 text-sm md:text-base font-semibold">
-  ⚠️ Emergency Alert: Stay informed. Follow local authorities for updates.
-</div>
-
 <!-- Navbar -->
-<nav class="bg-white shadow-md fixed top-0 inset-x-0 z-50 mt-8">
+<nav class="bg-green-600 shadow-md fixed top-0 inset-x-0 z-50">
   <div class="max-w-7xl mx-auto px-6">
     <div class="flex justify-between items-center h-20">
       <!-- Logo -->
       <div class="flex items-center gap-3">
         <img src="{{ asset('images/citizen.png') }}" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-md">
-        <span class="text-xl md:text-2xl font-extrabold text-blue-700 tracking-tight">Bantayan 911</span>
+        <span class="text-xl md:text-2xl font-extrabold text-white tracking-tight">Bantayan 911</span>
       </div>
 
       <!-- Desktop Menu -->
       <div class="hidden md:flex space-x-8 text-sm font-medium">
-        <a href="{{ url('/') }}" class="hover:text-blue-700 transition">Home</a>
-        <a href="{{ route('about') }}" class="hover:text-blue-700 transition">About</a>
-        <a href="{{ route('contact') }}" class="hover:text-blue-700 transition">Contact</a>
-        <a href="{{ route('faq') }}" class="hover:text-blue-700 transition">FAQs</a>
+        <a href="{{ url('/') }}" class="text-white hover:text-green-200 transition">Home</a>
+        <a href="{{ route('about') }}" class="text-white hover:text-green-200 transition">About</a>
+        <a href="{{ route('contact') }}" class="text-white hover:text-green-200 transition">Contact</a>
+        <a href="{{ route('faq') }}" class="text-white hover:text-green-200 transition">FAQs</a>
       </div>
 
       <!-- Desktop Auth -->
       <div class="hidden md:flex items-center gap-3">
-        <a href="{{ url('/login') }}" class="text-sm font-bold text-blue-700 hover:underline">Log In</a>
-        <a href="{{ url('/register') }}" class="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-lg font-semibold text-sm shadow-md transition">Register</a>
+        <a href="{{ url('/login') }}" class="text-white font-bold hover:underline">Log In</a>
+        <a href="{{ url('/register') }}" class="bg-white text-green-600 hover:bg-gray-100 px-5 py-2 rounded-lg font-semibold text-sm shadow-md transition">Register</a>
       </div>
 
       <!-- Mobile Menu Button -->
       <div class="md:hidden">
-        <button @click="open = !open" class="text-gray-800 focus:outline-none">
+        <button @click="open = !open" class="text-white focus:outline-none">
           <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
@@ -59,16 +54,17 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div x-show="open" x-transition class="md:hidden bg-white shadow-lg px-6 py-4 space-y-2">
-      <a href="{{ url('/') }}" class="block py-2 hover:text-blue-700">Home</a>
-      <a href="{{ route('about') }}" class="block py-2 hover:text-blue-700">About</a>
-      <a href="{{ route('contact') }}" class="block py-2 hover:text-blue-700">Contact</a>
-      <a href="{{ route('faq') }}" class="block py-2 hover:text-blue-700">FAQs</a>
-      <a href="{{ url('/login') }}" class="block py-2 font-bold text-blue-700">Log In</a>
-      <a href="{{ url('/register') }}" class="block py-2 bg-blue-700 text-white rounded-md text-center mt-2">Register</a>
+    <div x-show="open" x-transition class="md:hidden bg-green-600 px-6 py-4 space-y-2">
+      <a href="{{ url('/') }}" class="block py-2 text-white hover:text-green-200">Home</a>
+      <a href="{{ route('about') }}" class="block py-2 text-white hover:text-green-200">About</a>
+      <a href="{{ route('contact') }}" class="block py-2 text-white hover:text-green-200">Contact</a>
+      <a href="{{ route('faq') }}" class="block py-2 text-white hover:text-green-200">FAQs</a>
+      <a href="{{ url('/login') }}" class="block py-2 font-bold text-white">Log In</a>
+      <a href="{{ url('/register') }}" class="block py-2 bg-white text-green-600 rounded-md text-center mt-2">Register</a>
     </div>
   </div>
 </nav>
+
 
 <!-- Hero Section -->
 <section class="relative bg-gray-50 mt-20 lg:mt-24">
