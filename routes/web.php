@@ -110,7 +110,6 @@ Route::get('/', function () {
     $welcomePath = resource_path('views/welcome.blade.php');
     $hashFile = storage_path('app/security_hash.txt');
 
-    // Create a reference hash if it doesn’t exist
     if (!File::exists($hashFile)) {
         File::put($hashFile, hash_file('sha256', $welcomePath));
     }
@@ -118,13 +117,11 @@ Route::get('/', function () {
     $currentHash = hash_file('sha256', $welcomePath);
     $originalHash = trim(File::get($hashFile));
 
-    // ✅ Detect tampering or defacement
     if ($currentHash !== $originalHash) {
         Log::warning('⚠️ Defacement detected on welcome.blade.php');
         abort(403, 'System integrity check failed — unauthorized modification detected.');
     }
 
-    // ✅ Add HTTP security headers
     $response = response()->view('welcome');
     $response->headers->set('X-Frame-Options', 'DENY');
     $response->headers->set('X-Content-Type-Options', 'nosniff');
@@ -138,7 +135,6 @@ Route::get('/', function () {
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
-    // ✅ Throttling (limit 3 attempts per IP+email)
     $key = Str::lower($request->input('email')).'|'.$request->ip();
 
     if (RateLimiter::tooManyAttempts($key, 3)) {
@@ -150,7 +146,7 @@ Route::post('/login', function (Request $request) {
 
     // ✅ reCAPTCHA v3 verification
     $recaptchaResponse = $request->input('g-recaptcha-response');
-    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // your secret key
+    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // replace with your key
 
     if (!$recaptchaResponse) {
         return back()->withErrors(['captcha' => 'Please complete the reCAPTCHA verification.'])
@@ -178,7 +174,6 @@ Route::post('/login', function (Request $request) {
 
     $user = \App\Models\User::where('email', $credentials['email'])->first();
 
-    // ✅ Disabled user check
     if ($user && $user->status === 'disabled') {
         RateLimiter::hit($key, 60);
         return back()->withErrors([
@@ -186,18 +181,16 @@ Route::post('/login', function (Request $request) {
         ])->onlyInput('email');
     }
 
-    // ✅ Attempt login
     if (Auth::attempt($credentials, $request->boolean('remember'))) {
         $request->session()->regenerate();
         $user = Auth::user();
 
-        // ✅ Update user status
         $user->status = 'active';
         $user->save();
 
-        RateLimiter::clear($key); // Reset attempts on success
+        RateLimiter::clear($key);
 
-        // ✅ Generate OTP for extra verification
+        // ✅ Generate OTP
         $otp = rand(100000, 999999);
         session([
             'otp' => $otp,
@@ -205,15 +198,13 @@ Route::post('/login', function (Request $request) {
             'otp_user_id' => $user->id,
         ]);
 
-        // TODO: You can send this OTP via email or SMS here.
+        // Example: Send OTP via email
         // Mail::to($user->email)->send(new SendOtpMail($otp));
 
-        return redirect()->route('otp.verify.page')->with('status', 'OTP sent to your email.');
+        return redirect()->route('otp.verify')->with('status', 'OTP sent to your email.');
     }
 
-    // ❌ Failed login
     RateLimiter::hit($key, 60);
-
     return back()->withErrors([
         'email' => 'Invalid email or password.',
     ])->onlyInput('email');
@@ -222,7 +213,7 @@ Route::post('/login', function (Request $request) {
 // ✅ OTP VERIFICATION ROUTES
 Route::get('/verify-otp', function () {
     return view('auth.verify-otp');
-})->name('otp.verify.page');
+})->name('otp.verify'); // 👈 fixed the route name
 
 Route::post('/verify-otp', function (Request $request) {
     $request->validate(['otp' => 'required|numeric']);
@@ -241,7 +232,6 @@ Route::post('/verify-otp', function (Request $request) {
         return back()->withErrors(['otp' => 'Invalid OTP code.']);
     }
 
-    // ✅ OTP verified successfully
     session(['otp_verified' => true]);
     $user = \App\Models\User::find($userId);
 
