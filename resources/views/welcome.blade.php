@@ -25,7 +25,7 @@
     <div class="flex justify-between items-center h-20">
       <!-- Logo -->
       <div class="flex items-center gap-3">
-        <img src="{{ asset('images/citizen.png') }}" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-md">
+        <img src="{{ asset('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png') }}" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-md">
         <span class="text-xl md:text-2xl font-extrabold text-blue-700 tracking-tight">Bantayan 911</span>
       </div>
 
