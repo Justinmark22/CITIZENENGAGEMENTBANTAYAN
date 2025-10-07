@@ -195,7 +195,7 @@ document.addEventListener('alpine:init', () => {
       { title: 'Disaster Response', image: '{{ asset("images/dis.png") }}', texts: ['MDRRMO: Disaster Preparedness & Emergency Response'] },
       { title: 'Health Services', image: '{{ asset("images/asd.png") }}', texts: ['Accessible Care for Everyone'] },
       { title: 'Waste Management', image: '{{ asset("images/waste.png") }}', texts: ['Keeping Bantayan Clean & Safe'] },
-      { title: 'Water Management', image: '{{ asset("images/images/sunstar_import_uploads_images_2022_03_13_343648.avif") }}', texts: ['Clean Water Access for All'] }
+      { title: 'Water Management', image: '{{ asset("images/wat .png") }}', texts: ['Clean Water Access for All'] }
     ],
     rightServices: [
       { title: 'Public Safety', image: '{{ asset("images/SAN.PNG") }}', texts: ['Protecting Our Communities'] },
