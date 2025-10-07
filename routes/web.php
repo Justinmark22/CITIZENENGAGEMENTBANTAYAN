@@ -52,25 +52,14 @@ use App\Http\Controllers\WasteDashboardController;
 use App\Http\Controllers\WaterDashboardController;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeNewUserEmail;
-
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
-// Request reset form (enter email)
-Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])
-    ->name('password.request');
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
-// Send reset link to email
-Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
-    ->name('password.email');
-
-// Reset form (after clicking email link)
-Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])
-    ->name('password.reset');
-
-// Submit new password
-Route::post('password/reset', [ResetPasswordController::class, 'reset'])
-    ->name('password.update');
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 
 // ✅ Registration Page
