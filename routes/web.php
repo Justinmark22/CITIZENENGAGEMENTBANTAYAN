@@ -131,7 +131,6 @@ Route::get('/', function () {
 
     return $response;
 });
-
 // ✅ LOGIN ROUTES
 Route::get('/login', fn() => view('login'))->name('login');
 
@@ -190,18 +189,53 @@ Route::post('/login', function (Request $request) {
         $user->save();
 
         RateLimiter::clear($key);
-// ✅ Generate OTP
-$otp = rand(100000, 999999);
-session([
-    'otp' => $otp,
-    'otp_expires' => now()->addMinutes(3),
-    'otp_user_id' => $user->id,
-]);
 
-// ✅ Send OTP via email
-Mail::to($user->email)->send(new SendOtpMail($otp));
+        // ✅ Skip OTP for Admin, MDRRMO, Waste, and Water roles
+        $skipRoles = ['admin', 'mdrrmo', 'waste', 'water'];
 
-return redirect()->route('otp.verify')->with('status', 'OTP sent to your email.');
+        if (in_array(strtolower($user->role), $skipRoles)) {
+            return match (strtolower($user->role)) {
+                'admin' => match ($user->location) {
+                    'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
+                    'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
+                    'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
+                    'Admin'      => redirect()->route('dashboard.admin'),
+                    default      => redirect('/dashboard'),
+                },
+                'mdrrmo' => match ($user->location) {
+                    'Santa.Fe'   => redirect()->route('dashboard.mdrrmo-santafe'),
+                    'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
+                    'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
+                    default      => redirect('/dashboard'),
+                },
+                'waste' => match ($user->location) {
+                    'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
+                    'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
+                    'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
+                    default      => redirect('/dashboard'),
+                },
+                'water' => match ($user->location) {
+                    'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
+                    'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
+                    'Madridejos' => redirect()->route('dashboard.water-madridejos'),
+                    default      => redirect('/dashboard'),
+                },
+                default => redirect('/dashboard'),
+            };
+        }
+
+        // ✅ For citizen users only → generate OTP
+        $otp = rand(100000, 999999);
+        session([
+            'otp' => $otp,
+            'otp_expires' => now()->addMinutes(3),
+            'otp_user_id' => $user->id,
+        ]);
+
+        // ✅ Send OTP via email
+        Mail::to($user->email)->send(new SendOtpMail($otp));
+
+        return redirect()->route('otp.verify')->with('status', 'OTP sent to your email.');
     }
 
     RateLimiter::hit($key, 60);
@@ -211,9 +245,7 @@ return redirect()->route('otp.verify')->with('status', 'OTP sent to your email.'
 })->name('login.submit');
 
 // ✅ OTP VERIFICATION ROUTES
-Route::get('/verify-otp', function () {
-    return view('auth.verify-otp');
-})->name('otp.verify'); // 👈 fixed the route name
+Route::get('/verify-otp', fn() => view('auth.verify-otp'))->name('otp.verify');
 
 Route::post('/verify-otp', function (Request $request) {
     $request->validate(['otp' => 'required|numeric']);
@@ -242,41 +274,15 @@ Route::post('/verify-otp', function (Request $request) {
     Auth::login($user);
     session()->forget(['otp', 'otp_expires', 'otp_user_id']);
 
-    // ✅ Redirect based on role & location
-    return match (strtolower($user->role)) {
-        'admin' => match ($user->location) {
-            'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
-            'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
-            'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
-            'Admin'      => redirect()->route('dashboard.admin'),
-            default      => redirect('/dashboard'),
-        },
-        'mdrrmo' => match ($user->location) {
-            'Santa.Fe'   => redirect()->route('dashboard.mdrrmo-santafe'),
-            'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
-            'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
-            default      => redirect('/dashboard'),
-        },
-        'waste' => match ($user->location) {
-            'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
-            'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
-            'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
-            default      => redirect('/dashboard'),
-        },
-        'water' => match ($user->location) {
-            'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
-            'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
-            'Madridejos' => redirect()->route('dashboard.water-madridejos'),
-            default      => redirect('/dashboard'),
-        },
-        default => match ($user->location) {
-            'Santa.Fe'   => redirect()->route('dashboard.santafe'),
-            'Bantayan'   => redirect()->route('dashboard.bantayan'),
-            'Madridejos' => redirect()->route('dashboard.madridejos'),
-            default      => redirect('/dashboard'),
-        },
+    // ✅ Redirect based on role & location (citizens only)
+    return match ($user->location) {
+        'Santa.Fe'   => redirect()->route('dashboard.santafe'),
+        'Bantayan'   => redirect()->route('dashboard.bantayan'),
+        'Madridejos' => redirect()->route('dashboard.madridejos'),
+        default      => redirect('/dashboard'),
     };
 })->name('otp.verify.submit');
+
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
     if ($user) {
