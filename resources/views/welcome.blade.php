@@ -32,6 +32,9 @@
         <a href="{{ route('about') }}" class="text-white hover:text-[#064e3b] transition">About</a>
         <a href="{{ route('contact') }}" class="text-white hover:text-[#064e3b] transition">Contact</a>
         <a href="{{ route('faq') }}" class="text-white hover:text-[#064e3b] transition">FAQs</a>
+        <!-- Login & Register -->
+  <a href="{{ route('login') }}" class="text-white hover:text-[#a5f3d1] transition">Login</a>
+  <a href="{{ route('register') }}" class="bg-white text-[#064e3b] px-4 py-1 rounded-lg font-semibold hover:bg-[#a5f3d1] transition">Register</a>
       </div>
     </div>
   </div>
