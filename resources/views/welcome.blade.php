@@ -105,62 +105,61 @@
   <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
 </div>
 
-</section><section id="services" class="relative py-24 bg-gray-50 flex flex-col items-center gap-16">
+</section><section id="services" class="relative py-24 bg-gray-50">
+  <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 gap-16">
 
-  <!-- Card 1 -->
-  <div x-data="typingText([
-      'MDRRMO: Disaster Preparedness & Emergency Response',
-      'Waste Management: Keeping Bantayan Clean & Safe',
-      'Water Management: Clean Water Access for All',
-      'Community Engagement: Bridging Citizens and LGUs'
-    ])"
-    class="relative w-80 h-80 rounded-full overflow-hidden shadow-2xl flex items-center justify-center text-center text-white transform hover:scale-105 transition-transform duration-500">
+    <!-- Service Circles -->
+    <template x-for="(service, i) in services" :key="i">
+      <div class="flex justify-between items-center w-full">
+        <!-- Left side -->
+        <div x-show="i % 2 === 0" class="w-1/2 flex justify-end">
+          <div x-data="typingText(service.texts)"
+               class="relative w-72 h-72 rounded-full overflow-hidden shadow-2xl flex items-center justify-center text-center text-white transform hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-cover bg-center" :style="`background-image: url(${service.image})`"></div>
+            <div class="absolute inset-0 bg-black/50 rounded-full"></div>
+            <div class="relative z-20 px-4">
+              <h2 class="text-xl font-bold mb-2" x-text="service.title"></h2>
+              <p class="text-center text-md">
+                <span x-text="displayText"></span><span class="blinking">|</span>
+              </p>
+            </div>
+          </div>
+        </div>
 
-    <!-- Static Background -->
-    <div class="absolute inset-0 w-full h-full bg-cover bg-center" 
-         style="background-image: url('{{ asset('images/gsd (1).png') }}');"></div>
+        <!-- Right side -->
+        <div x-show="i % 2 !== 0" class="w-1/2 flex justify-start">
+          <div x-data="typingText(service.texts)"
+               class="relative w-72 h-72 rounded-full overflow-hidden shadow-2xl flex items-center justify-center text-center text-white transform hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-cover bg-center" :style="`background-image: url(${service.image})`"></div>
+            <div class="absolute inset-0 bg-black/50 rounded-full"></div>
+            <div class="relative z-20 px-4">
+              <h2 class="text-xl font-bold mb-2" x-text="service.title"></h2>
+              <p class="text-center text-md">
+                <span x-text="displayText"></span><span class="blinking">|</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
 
-    <!-- Overlay -->
-    <div class="absolute inset-0 bg-black/50 rounded-full"></div>
-
-    <!-- Typing Text -->
-    <div class="relative z-20 px-4">
-      <h2 class="text-2xl font-bold mb-2">Our Key Services</h2>
-      <p class="text-center text-md">
-        <span x-text="displayText"></span><span class="blinking">|</span>
-      </p>
-    </div>
   </div>
-
-  <!-- Card 2 -->
-  <div x-data="typingText([
-      'Health Services: Accessible Care for Everyone',
-      'Public Safety: Protecting Our Communities',
-      'Infrastructure: Building Sustainable Facilities',
-      'Education: Learning & Growth Opportunities',
-      'Environmental Care: Preserving Natural Resources'
-    ])"
-    class="relative w-80 h-80 rounded-full overflow-hidden shadow-2xl flex items-center justify-center text-center text-white transform hover:scale-105 transition-transform duration-500">
-
-    <!-- Static Background -->
-    <div class="absolute inset-0 w-full h-full bg-cover bg-center" 
-         style="background-image: url('{{ asset('images/sta.fe.png') }}');"></div>
-
-    <!-- Overlay -->
-    <div class="absolute inset-0 bg-black/50 rounded-full"></div>
-
-    <!-- Typing Text -->
-    <div class="relative z-20 px-4">
-      <h2 class="text-2xl font-bold mb-2">Other Services</h2>
-      <p class="text-center text-md">
-        <span x-text="displayText"></span><span class="blinking">|</span>
-      </p>
-    </div>
-  </div>
-
 </section>
 
 <script>
+const app = Alpine.data('servicesData', () => ({
+  services: [
+    { title: 'Disaster Response', image: '{{ asset("images/service1.png") }}', texts: ['MDRRMO: Disaster Preparedness & Emergency Response'] },
+    { title: 'Health Services', image: '{{ asset("images/service2.png") }}', texts: ['Health Services: Accessible Care for Everyone'] },
+    { title: 'Waste Management', image: '{{ asset("images/service3.png") }}', texts: ['Keeping Bantayan Clean & Safe'] },
+    { title: 'Public Safety', image: '{{ asset("images/service4.png") }}', texts: ['Protecting Our Communities'] },
+    { title: 'Water Management', image: '{{ asset("images/service5.png") }}', texts: ['Clean Water Access for All'] },
+    { title: 'Education', image: '{{ asset("images/service6.png") }}', texts: ['Learning & Growth Opportunities'] },
+    { title: 'Community Engagement', image: '{{ asset("images/service7.png") }}', texts: ['Bridging Citizens and LGUs'] },
+    { title: 'Environmental Care', image: '{{ asset("images/service8.png") }}', texts: ['Preserving Natural Resources'] },
+  ]
+}));
+
 function typingText(texts) {
   return {
     texts,
@@ -172,14 +171,14 @@ function typingText(texts) {
       const current = this.texts[this.textIndex];
       if(this.charIndex < current.length){
         this.displayText += current[this.charIndex++];
-        setTimeout(() => this.type(), 80);
-      } else { setTimeout(() => this.delete(), 1500); }
+        setTimeout(() => this.type(), 50);
+      } else { setTimeout(() => this.delete(), 1000); }
     },
     delete() {
       if(this.charIndex > 0){
         this.displayText = this.displayText.slice(0, -1);
         this.charIndex--;
-        setTimeout(() => this.delete(), 50);
+        setTimeout(() => this.delete(), 25);
       } else {
         this.textIndex = (this.textIndex + 1) % this.texts.length;
         setTimeout(() => this.type(), 500);
