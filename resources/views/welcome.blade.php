@@ -65,47 +65,60 @@
     </div>
   </div>
 </nav>
-<!-- Hero -->
-<section class="relative pt-32 pb-24 bg-gray-900 text-white overflow-hidden">
-  <!-- Patterned Background -->
-  <div class="absolute inset-0 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/double-bubble-dark.png')] opacity-30"></div>
-  <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"></div>
-
-  <div class="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
-   <!-- Left (Updated Text) -->
-<div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
-  <h2 class="text-xl lg:text-2xl font-semibold text-yellow-400 mb-2">Welcome to Bantayan Island</h2>
-  <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-white">
-    Strengthening Citizen Engagement Across Communities
-  </h1>
-  <p class="text-lg text-gray-300 mb-8 leading-relaxed">
-    Discover a <span class="font-semibold text-yellow-400">transparent digital platform</span> that connects citizens, LGUs, and local communities in Bantayan, Santa Fe, and Madridejos.
-  </p>
-  <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-    <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">
-      Explore Services
-    </a>
-    <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">
-      Contact Us
-    </a>
+<!-- Hero Section (Ready.gov-inspired) -->
+<section class="relative isolate bg-gray-900 text-white overflow-hidden">
+  <!-- Background Image Slider -->
+  <div class="absolute inset-0" 
+       x-data="{
+         images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/sta.fe.png') }}', '{{ asset('images/madridejos.png') }}'],
+         index: 0,
+         init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 4000) }
+       }">
+    <template x-for="(img, i) in images" :key="i">
+      <img :src="img"
+           class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+           :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
+    </template>
+    <!-- Dark gradient overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
   </div>
-</div>
 
-<div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
-     x-data="{
-       images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/sta.fe.png') }}', '{{ asset('images/madridejos.png') }}'],
-       index: 0,
-       init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) }
-     }">
-  <template x-for="(img, i) in images" :key="i">
-    <img :src="img"
-         class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-         :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
-  </template>
-  <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-</div>
+  <!-- Content -->
+  <div class="relative z-20 max-w-6xl mx-auto px-6 py-40 flex flex-col items-center text-center lg:items-start lg:text-left">
+    <div class="max-w-2xl space-y-6 animate-fadeInUp">
+      <h2 class="text-yellow-400 font-semibold text-xl uppercase tracking-wide">
+        Welcome to Bantayan Island
+      </h2>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight">
+        Strengthening Citizen Engagement <br class="hidden sm:block">
+        Across Communities
+      </h1>
+      <p class="text-lg text-gray-200 max-w-xl leading-relaxed">
+        Discover a <span class="font-semibold text-yellow-400">transparent digital platform</span> 
+        that connects citizens, LGUs, and communities across Bantayan, Santa Fe, and Madridejos.
+      </p>
 
+      <div class="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start">
+        <a href="#services" 
+           class="px-8 py-4 bg-yellow-400 text-gray-900 rounded-lg font-semibold shadow-md hover:bg-yellow-500 transition">
+          Explore Services
+        </a>
+        <a href="{{ route('contact') }}" 
+           class="px-8 py-4 bg-white/10 border border-white/30 rounded-lg font-semibold text-white hover:bg-white/20 transition">
+          Contact Us
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decorative Bottom Shape (like Ready.gov subtle wave) -->
+  <div class="absolute bottom-0 left-0 right-0">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 200" class="w-full h-auto text-gray-900">
+      <path fill="currentColor" d="M0,64L48,69.3C96,75,192,85,288,85.3C384,85,480,75,576,74.7C672,75,768,85,864,90.7C960,96,1056,96,1152,90.7C1248,85,1344,75,1392,69.3L1440,64L1440,200L1392,200C1344,200,1248,200,1152,200C1056,200,960,200,864,200C768,200,672,200,576,200C480,200,384,200,288,200C192,200,96,200,48,200L0,200Z"></path>
+    </svg>
+  </div>
 </section>
+
 <!-- Advanced Services Section with Full-Width Patterned Black Background -->
 <section id="services" class="relative py-24">
   <!-- Full-width Patterned Black Background -->
