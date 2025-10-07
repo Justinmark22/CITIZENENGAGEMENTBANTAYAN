@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Register | Bantayan 911</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
 
@@ -54,11 +55,21 @@
             </select>
           </div>
 
-          <div>
+          <!-- Password with Suggest Button -->
+          <div class="relative">
             <label for="password" class="block text-sm mb-1">Password</label>
-            <input type="password" id="password" name="password" required
-              minlength="8"
-              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <div class="flex gap-2">
+              <input type="password" id="password" name="password" required
+                minlength="12"
+                class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <button type="button" id="suggestPassword" 
+                class="bg-indigo-500 hover:bg-indigo-400 text-white px-3 py-1 rounded-lg text-sm">
+                Suggest
+              </button>
+            </div>
+            <p id="passwordHelp" class="text-gray-400 text-sm mt-1">
+              Minimum 12 characters, including uppercase, lowercase, numbers, and symbols.
+            </p>
           </div>
 
           <div>
@@ -89,5 +100,56 @@
 
     </div>
   </div>
+
+  <script>
+    const passwordInput = document.getElementById('password');
+    const passwordHelp = document.getElementById('passwordHelp');
+    const suggestBtn = document.getElementById('suggestPassword');
+
+    // Password strength feedback
+    passwordInput.addEventListener('input', () => {
+      const val = passwordInput.value;
+      const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/;
+
+      if(strongPassword.test(val)) {
+        passwordHelp.textContent = "Strong password ✅";
+        passwordHelp.classList.replace("text-gray-400", "text-green-500");
+      } else {
+        passwordHelp.textContent = "Weak password ❌ Minimum 12 chars, uppercase, lowercase, number, symbol.";
+        passwordHelp.classList.replace("text-green-500", "text-red-500");
+      }
+    });
+
+    // ✅ Suggested random password popup
+    suggestBtn.addEventListener('click', () => {
+      const suggested = generateStrongPassword(16);
+      Swal.fire({
+        title: 'Suggested Password',
+        html: `<input type="text" id="suggestedPassword" class="w-full bg-gray-700 text-white px-2 py-1 rounded" value="${suggested}">`,
+        showCancelButton: true,
+        confirmButtonText: 'Use Password',
+        cancelButtonText: 'Cancel',
+        preConfirm: () => {
+          const val = document.getElementById('suggestedPassword').value;
+          return val;
+        }
+      }).then(result => {
+        if(result.isConfirmed) {
+          passwordInput.value = result.value;
+          passwordInput.dispatchEvent(new Event('input')); // trigger strength check
+        }
+      });
+    });
+
+    // Generate strong random password
+    function generateStrongPassword(length = 16) {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?";
+      let pass = "";
+      for(let i=0;i<length;i++){
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return pass;
+    }
+  </script>
 </body>
 </html>

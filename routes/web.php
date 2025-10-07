@@ -58,6 +58,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\OtpController;
 
 
+
 // ✅ Secure dashboard route (requires user login + OTP verification)
 Route::middleware(['auth', 'otp.verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -81,7 +82,15 @@ Route::post('/register', function (Request $request) {
         'name' => ['required', 'string', 'max:100', 'regex:/^[a-zA-Z\s]+$/'],
         'email' => ['required', 'email', 'max:255', 'unique:users,email'],
         'location' => ['required', 'in:Bantayan,Santa.Fe,Madridejos,Admin'],
-        'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
+        'password' => [
+            'required',
+            'confirmed',
+            Password::min(12)       // Minimum 12 characters
+                ->mixedCase()       // Must contain upper & lower case
+                ->numbers()         // Must contain numbers
+                ->symbols()         // Must contain symbols
+                ->uncompromised(),  // Prevent common/compromised passwords
+        ],
     ]);
 
     // 👤 Create User Securely
@@ -89,7 +98,7 @@ Route::post('/register', function (Request $request) {
         'name' => e($validated['name']),
         'email' => strtolower($validated['email']),
         'location' => $validated['location'],
-        'password' => Hash::make($validated['password']),
+        'password' => Hash::make($validated['password']), // Argon2id from config/hashing.php
         'role' => 'user',
         'status' => 'active',
         'remember_token' => Str::random(60),
@@ -103,7 +112,8 @@ Route::post('/register', function (Request $request) {
     $request->session()->regenerate();
 
     // ✅ Redirect to Login Page with Success Message
-    return redirect()->route('login')->with('success', 'Registration successful! Please check your email for a welcome message from Bantayan 911.');
+    return redirect()->route('login')
+        ->with('success', 'Registration successful! Please check your email for a welcome message from Bantayan 911.');
 })->name('register.submit');
 // HOME ROUTE (Integrity check disabled temporarily)
 Route::get('/', function () {
@@ -118,6 +128,7 @@ Route::get('/', function () {
 
     return $response;
 });
+
 
 // ✅ LOGIN ROUTES
 Route::get('/login', fn() => view('login'))->name('login');
@@ -169,54 +180,53 @@ Route::post('/login', function (Request $request) {
         ])->onlyInput('email');
     }
 
-   if (Auth::attempt($credentials, $request->boolean('remember'))) {
-    $request->session()->regenerate();
-    $user = Auth::user();
+    if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        $request->session()->regenerate();
+        $user = Auth::user();
 
-    // ✅ Example cookies
-    cookie()->queue(cookie('user_name', $user->name, 60)); // 60 minutes
-    cookie()->queue(cookie('user_role', $user->role, 60));
+        // ✅ Example cookies
+        cookie()->queue(cookie('user_name', $user->name, 60)); // 60 minutes
+        cookie()->queue(cookie('user_role', $user->role, 60));
+        cookie()->queue(cookie('secure_session', Str::random(32), 60, null, null, true, true));
 
-    // Optional: Use secure & HttpOnly flags
-    cookie()->queue(cookie('secure_session', Str::random(32), 60, null, null, true, true));
-
-    $user->status = 'active';
-    $user->save();
+        $user->status = 'active';
+        $user->save();
 
         RateLimiter::clear($key);
-// ✅ Skip OTP for Admin, MDRRMO, Waste, Water roles OR location 'Admin'
-$skipRoles = ['admin', 'mdrrmo', 'waste', 'water'];
 
-if (in_array(strtolower($user->role), $skipRoles) || strtolower($user->location) === 'admin') {
-    return match (strtolower($user->role)) {
-        'admin' => match (strtolower($user->location)) {
-            'santa.fe'   => redirect()->route('dashboard.santafeadmin'),
-            'bantayan'   => redirect()->route('dashboard.bantayanadmin'),
-            'madridejos' => redirect()->route('dashboard.madridejosadmin'),
-            'admin'      => redirect()->route('dashboard.admin'),
-            default      => redirect('/dashboard'),
-        },
-        'mdrrmo' => match (strtolower($user->location)) {
-            'santa.fe'   => redirect()->route('dashboard.mdrrmo-santafe'),
-            'bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
-            'madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
-            default      => redirect('/dashboard'),
-        },
-        'waste' => match (strtolower($user->location)) {
-            'santa.fe'   => redirect()->route('dashboard.waste-santafe'),
-            'bantayan'   => redirect()->route('dashboard.waste-bantayan'),
-            'madridejos' => redirect()->route('dashboard.waste-madridejos'),
-            default      => redirect('/dashboard'),
-        },
-        'water' => match (strtolower($user->location)) {
-            'santa.fe'   => redirect()->route('dashboard.water-santafe'),
-            'bantayan'   => redirect()->route('dashboard.water-bantayan'),
-            'madridejos' => redirect()->route('dashboard.water-madridejos'),
-            default      => redirect('/dashboard'),
-        },
-        default => redirect('/dashboard'),
-    };
-}
+        // ✅ Skip OTP for Admin, MDRRMO, Waste, Water roles OR location 'Admin'
+        $skipRoles = ['admin', 'mdrrmo', 'waste', 'water'];
+
+        if (in_array(strtolower($user->role), $skipRoles) || strtolower($user->location) === 'admin') {
+            return match (strtolower($user->role)) {
+                'admin' => match (strtolower($user->location)) {
+                    'santa.fe'   => redirect()->route('dashboard.santafeadmin'),
+                    'bantayan'   => redirect()->route('dashboard.bantayanadmin'),
+                    'madridejos' => redirect()->route('dashboard.madridejosadmin'),
+                    'admin'      => redirect()->route('dashboard.admin'),
+                    default      => redirect('/dashboard'),
+                },
+                'mdrrmo' => match (strtolower($user->location)) {
+                    'santa.fe'   => redirect()->route('dashboard.mdrrmo-santafe'),
+                    'bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
+                    'madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
+                    default      => redirect('/dashboard'),
+                },
+                'waste' => match (strtolower($user->location)) {
+                    'santa.fe'   => redirect()->route('dashboard.waste-santafe'),
+                    'bantayan'   => redirect()->route('dashboard.waste-bantayan'),
+                    'madridejos' => redirect()->route('dashboard.waste-madridejos'),
+                    default      => redirect('/dashboard'),
+                },
+                'water' => match (strtolower($user->location)) {
+                    'santa.fe'   => redirect()->route('dashboard.water-santafe'),
+                    'bantayan'   => redirect()->route('dashboard.water-bantayan'),
+                    'madridejos' => redirect()->route('dashboard.water-madridejos'),
+                    default      => redirect('/dashboard'),
+                },
+                default => redirect('/dashboard'),
+            };
+        }
 
         // ✅ For citizen users only → generate OTP
         $otp = rand(100000, 999999);
@@ -237,6 +247,7 @@ if (in_array(strtolower($user->role), $skipRoles) || strtolower($user->location)
         'email' => 'Invalid email or password.',
     ])->onlyInput('email');
 })->name('login.submit');
+
 
 // ✅ OTP VERIFICATION ROUTES
 Route::get('/verify-otp', fn() => view('auth.verify-otp'))->name('otp.verify');

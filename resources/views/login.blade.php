@@ -70,23 +70,31 @@
                    title="Only letters, numbers, @, and . are allowed">
           </div>
 
-          <div>
-            <label for="password" class="block text-gray-300 text-sm mb-1">Password</label>
-            <div class="relative">
-              <input type="password" id="password" name="password" required
-                     class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <button type="button" id="togglePassword"
-                      class="absolute right-3 top-2.5 text-gray-400 hover:text-indigo-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5
-                           c4.478 0 8.268 2.943 9.542 7
-                           -1.274 4.057-5.064 7-9.542 7
-                           -4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </button>
+<div>
+  <label for="password" class="block text-gray-300 text-sm mb-1">Password</label>
+  <div class="relative">
+    <input type="password" id="password" name="password" required
+           class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+           title="Use at least 12 characters, with uppercase, lowercase, numbers, and symbols.">
+    <button type="button" id="togglePassword"
+            class="absolute right-3 top-2.5 text-gray-400 hover:text-indigo-500">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5
+                 c4.478 0 8.268 2.943 9.542 7
+                 -1.274 4.057-5.064 7-9.542 7
+                 -4.477 0-8.268-2.943-9.542-7z" />
+      </svg>
+    </button>
+  </div>
+  
+  <!-- Password Strength Message -->
+  <p id="passwordHelp" class="text-gray-400 text-xs mt-1">
+    Use at least 12 characters, with uppercase, lowercase, numbers, and symbols.
+  </p>
+</div>
             </div>
           </div>
 
@@ -118,9 +126,10 @@
   const togglePassword = document.getElementById("togglePassword");
   const passwordInput = document.getElementById("password");
   const loginForm = document.getElementById("loginForm");
+  const passwordHelp = document.getElementById("passwordHelp");
+
   let attempts = parseInt(localStorage.getItem("login_attempts")) || 0;
   let lockoutUntil = parseInt(localStorage.getItem("lockout_until")) || 0;
-
   const now = Date.now();
 
   // ✅ Toggle password visibility
@@ -128,6 +137,22 @@
     const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
     passwordInput.setAttribute("type", type);
     togglePassword.classList.toggle("text-indigo-500");
+  });
+
+  // ✅ Password strength indicator
+  passwordInput.addEventListener('input', () => {
+    const val = passwordInput.value;
+    const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/;
+
+    if (strongPassword.test(val)) {
+      passwordHelp.textContent = "Strong password ✅";
+      passwordHelp.classList.remove("text-red-500");
+      passwordHelp.classList.add("text-green-400");
+    } else {
+      passwordHelp.textContent = "Weak password ❌";
+      passwordHelp.classList.remove("text-green-400");
+      passwordHelp.classList.add("text-red-500");
+    }
   });
 
   // ✅ Check lockout
@@ -142,7 +167,6 @@
     });
     disableForm();
   } else if (lockoutUntil && now >= lockoutUntil) {
-    // Unlock after 60 seconds
     localStorage.removeItem("lockout_until");
     localStorage.removeItem("login_attempts");
     attempts = 0;
@@ -168,7 +192,6 @@
       return;
     }
 
-    // Increment attempts only if errors exist later (from backend)
     localStorage.setItem("last_submit", Date.now());
   });
 
@@ -206,7 +229,6 @@
     document.querySelectorAll("#loginForm input, #loginForm button").forEach(el => el.disabled = true);
   }
 </script>
-
 
 </body>
 </html>  
