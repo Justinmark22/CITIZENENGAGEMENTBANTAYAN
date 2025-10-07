@@ -6,11 +6,11 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class NewUserRegistered extends Mailable
+class welcomenewuseremail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $user; // The new user
+    public $user;
 
     public function __construct($user)
     {
@@ -19,7 +19,8 @@ class NewUserRegistered extends Mailable
 
     public function build()
     {
-        return $this->subject('New User Registered')
-                    ->view('emails.new_user_registered');
+        return $this->subject('Welcome to Bantayan 911!')
+                    ->view('emails.welcome')
+                    ->with(['user' => $this->user]);
     }
 }

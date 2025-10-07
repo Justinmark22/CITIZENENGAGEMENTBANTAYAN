@@ -51,7 +51,7 @@ use App\Http\Controllers\MDRRMOController;
 use App\Http\Controllers\WasteDashboardController;
 use App\Http\Controllers\WaterDashboardController;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\NewUserRegistered;
+use App\Mail\WelcomeNewUserEmail;
 
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -73,18 +73,20 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])
     ->name('password.update');
 
 
+// ✅ Registration Page
 Route::get('/register', fn() => view('register'))->name('register');
 
+// ✅ Registration Logic
 Route::post('/register', function (Request $request) {
-    // ✅ Strict validation
+    // 🔒 Strict Validation
     $validated = $request->validate([
         'name' => ['required', 'string', 'max:100', 'regex:/^[a-zA-Z\s]+$/'],
-        'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+        'email' => ['required', 'email', 'max:255', 'unique:users,email'],
         'location' => ['required', 'in:Bantayan,Santa.Fe,Madridejos,Admin'],
         'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
     ]);
 
-    // ✅ Create user safely
+    // 👤 Create User Securely
     $user = User::create([
         'name' => e($validated['name']),
         'email' => strtolower($validated['email']),
@@ -94,16 +96,18 @@ Route::post('/register', function (Request $request) {
         'status' => 'active',
         'remember_token' => Str::random(60),
     ]);
-    // ✅ SEND EMAIL TO THE REGISTERED USER
-    Mail::to($user->email)->send(new NewUserRegistered($user));
 
+    // 📩 Send the Bantayan 911 Welcome Email
+    Mail::to($user->email)->send(new WelcomeNewUserEmail($user));
 
-    // ✅ Auto-login after registration
+    // 🔐 Auto-login the User
     Auth::login($user);
     $request->session()->regenerate();
 
-    return redirect()->route('login')->with('success', 'Registration successful! Please check your email.');
+    // ✅ Redirect to Login Page with Success Message
+    return redirect()->route('login')->with('success', 'Registration successful! Please check your email for a welcome message from Bantayan 911.');
 })->name('register.submit');
+
 // ✅ Login routes
 Route::get('/login', fn() => view('login'))->name('login');
 
