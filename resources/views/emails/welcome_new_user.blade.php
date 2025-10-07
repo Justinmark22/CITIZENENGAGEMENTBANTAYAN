@@ -14,7 +14,7 @@ You can now:
 
 ---
 
-@component('mail::button', ['url' => 'https://bantayan911.com'])
+@component('mail::button', ['url' => 'https://bantayan-911.com'])
 Go to Dashboard
 @endcomponent
 
