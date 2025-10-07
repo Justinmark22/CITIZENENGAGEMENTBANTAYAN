@@ -106,37 +106,40 @@
       <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
     </div>
   </div>
-</section>
-<!-- Services -->
-<section id="services" class="relative py-24 bg-gray-50">
+</section><!-- Services -->
+<section id="services" class="relative py-24 bg-gray-50" x-data>
   <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
 
-    <!-- Left Column (4 circles) -->
-    <div class="flex flex-col items-center gap-16">
+    <!-- Left Column (4 services) -->
+    <div class="flex flex-col gap-16">
       <template x-for="service in $store.services.leftServices" :key="service.title">
-        <div class="flex flex-col items-center text-center">
+        <div class="flex items-center gap-6">
           <!-- Circle Image -->
-          <div class="w-32 h-32 rounded-full overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-500">
+          <div class="w-24 h-24 rounded-full overflow-hidden shadow-2xl flex-shrink-0 transform hover:scale-105 transition-transform duration-500">
             <img :src="service.image" class="w-full h-full object-cover">
           </div>
-          <!-- Text Outside -->
-          <h3 class="text-xl font-bold mt-4 text-gray-900" x-text="service.title"></h3>
-          <p class="text-gray-600 mt-2 text-sm" x-text="service.texts[0]"></p>
+          <!-- Text on Right -->
+          <div>
+            <h3 class="text-xl font-bold text-gray-900" x-text="service.title"></h3>
+            <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
+          </div>
         </div>
       </template>
     </div>
 
-    <!-- Right Column (4 circles) -->
-    <div class="flex flex-col items-center gap-16">
+    <!-- Right Column (4 services) -->
+    <div class="flex flex-col gap-16">
       <template x-for="service in $store.services.rightServices" :key="service.title">
-        <div class="flex flex-col items-center text-center">
+        <div class="flex items-center gap-6">
           <!-- Circle Image -->
-          <div class="w-32 h-32 rounded-full overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-500">
+          <div class="w-24 h-24 rounded-full overflow-hidden shadow-2xl flex-shrink-0 transform hover:scale-105 transition-transform duration-500">
             <img :src="service.image" class="w-full h-full object-cover">
           </div>
-          <!-- Text Outside -->
-          <h3 class="text-xl font-bold mt-4 text-gray-900" x-text="service.title"></h3>
-          <p class="text-gray-600 mt-2 text-sm" x-text="service.texts[0]"></p>
+          <!-- Text on Right -->
+          <div>
+            <h3 class="text-xl font-bold text-gray-900" x-text="service.title"></h3>
+            <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
+          </div>
         </div>
       </template>
     </div>
