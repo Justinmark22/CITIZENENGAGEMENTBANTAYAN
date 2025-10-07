@@ -12,8 +12,9 @@
           <tr>
             <td style="background: linear-gradient(135deg, #2563eb, #1e40af); padding: 25px 0; text-align: center;">
              <!-- Bantayan 911 Circle Logo -->
+<!-- Bantayan 911 Circle Logo -->
 <img 
-  src="{{ asset('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png') }}" 
+  src="{{ $message->embed(public_path('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png')) }}" 
   alt="Bantayan 911 Logo" 
   width="70" 
   style="border-radius: 50%; background: #fff; padding: 8px;"
@@ -21,6 +22,7 @@
 <h1 style="color: #fff; font-size: 22px; margin-top: 10px; letter-spacing: 1px;">
   BANTAYAN 911
 </h1>
+
 
             </td>
           </tr>
