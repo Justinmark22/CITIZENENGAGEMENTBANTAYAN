@@ -107,45 +107,82 @@
     </div>
   </div>
 </section>
-
 <!-- Services -->
-<section id="services" class="relative py-24 bg-gray-50" x-data>
+<section id="services" class="relative py-24 bg-gray-50">
   <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
 
-    <!-- Left Column -->
+    <!-- Left Column (4 circles) -->
     <div class="flex flex-col items-center gap-16">
       <template x-for="service in $store.services.leftServices" :key="service.title">
-        <div x-data="typingText(service.texts)"
-             x-init="init()"
-             class="relative w-72 h-72 rounded-full overflow-hidden shadow-2xl flex items-center justify-center text-center text-white transform hover:scale-105 transition-transform duration-500">
-          <div class="absolute inset-0 bg-cover bg-center" :style="`background-image: url(${service.image})`"></div>
-          <div class="absolute inset-0 bg-black/50 rounded-full"></div>
-          <div class="relative z-20 px-4">
-            <h2 class="text-xl font-bold mb-2" x-text="service.title"></h2>
-            <p class="text-md"><span x-text="displayText"></span><span class="blinking">|</span></p>
+        <div class="flex flex-col items-center text-center">
+          <!-- Circle Image -->
+          <div class="w-32 h-32 rounded-full overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-500">
+            <img :src="service.image" class="w-full h-full object-cover">
           </div>
+          <!-- Text Outside -->
+          <h3 class="text-xl font-bold mt-4 text-gray-900" x-text="service.title"></h3>
+          <p class="text-gray-600 mt-2 text-sm" x-text="service.texts[0]"></p>
         </div>
       </template>
     </div>
 
-    <!-- Right Column -->
+    <!-- Right Column (4 circles) -->
     <div class="flex flex-col items-center gap-16">
       <template x-for="service in $store.services.rightServices" :key="service.title">
-        <div x-data="typingText(service.texts)"
-             x-init="init()"
-             class="relative w-72 h-72 rounded-full overflow-hidden shadow-2xl flex items-center justify-center text-center text-white transform hover:scale-105 transition-transform duration-500">
-          <div class="absolute inset-0 bg-cover bg-center" :style="`background-image: url(${service.image})`"></div>
-          <div class="absolute inset-0 bg-black/50 rounded-full"></div>
-          <div class="relative z-20 px-4">
-            <h2 class="text-xl font-bold mb-2" x-text="service.title"></h2>
-            <p class="text-md"><span x-text="displayText"></span><span class="blinking">|</span></p>
+        <div class="flex flex-col items-center text-center">
+          <!-- Circle Image -->
+          <div class="w-32 h-32 rounded-full overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-500">
+            <img :src="service.image" class="w-full h-full object-cover">
           </div>
+          <!-- Text Outside -->
+          <h3 class="text-xl font-bold mt-4 text-gray-900" x-text="service.title"></h3>
+          <p class="text-gray-600 mt-2 text-sm" x-text="service.texts[0]"></p>
         </div>
       </template>
     </div>
 
   </div>
 </section>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-gray-300 mt-16">
+  <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
+    <div>
+      <h4 class="text-white text-lg font-bold mb-4">Quick Links</h4>
+      <ul class="space-y-3 text-sm">
+        <li><a href="#" class="hover:text-blue-400">Bantayan Updates</a></li>
+        <li><a href="#" class="hover:text-blue-400">Santa Fe Updates</a></li>
+        <li><a href="#" class="hover:text-blue-400">Madridejos Updates</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-white text-lg font-bold mb-4">Legal & Policies</h4>
+      <ul class="space-y-3 text-sm">
+        <li><a href="{{ route('privacy.policy') }}" class="hover:text-blue-400">Privacy Policy</a></li>
+        <li><a href="{{ route('terms.service') }}" class="hover:text-blue-400">Terms of Service</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-white text-lg font-bold mb-4">Contact</h4>
+      <p class="text-gray-400 text-sm">📍 Bantayan Island, Cebu<br>📧 info@citizenengage.ph<br>☎ +63 912 345 6789</p>
+    </div>
+    <div>
+      <h4 class="text-white text-lg font-bold mb-4">Stay Connected</h4>
+      <div class="flex flex-col space-y-2 text-sm">
+        <a href="#" class="hover:text-blue-400">🌐 Facebook</a>
+        <a href="#" class="hover:text-blue-400">🐦 Twitter</a>
+        <a href="#" class="hover:text-blue-400">📷 Instagram</a>
+        <a href="#" class="hover:text-blue-400">▶ YouTube</a>
+      </div>
+    </div>
+  </div>
+  <div class="border-t border-gray-700 mt-8">
+    <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
+      <p>&copy; 2025 Citizen Engagement Bantayan — Connecting People, Building Communities</p>
+      <p class="mt-2 md:mt-0">Powered by Local Government & Communities</p>
+    </div>
+  </div>
+</footer>
 
 <!-- Alpine Stores & Typing Function -->
 <script>
