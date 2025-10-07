@@ -16,14 +16,15 @@
       <div class="p-10 space-y-6">
         <h2 class="text-3xl font-bold text-indigo-400 text-center">Create Your Account</h2>
 
+        <!-- Display validation errors -->
         @if ($errors->any())
-        <div class="bg-red-600 text-sm p-3 rounded-lg">
-          <ul class="list-disc pl-4">
-            @foreach ($errors->all() as $error)
-              <li>{{ $error }}</li>
-            @endforeach
-          </ul>
-        </div>
+          <div class="bg-red-600 text-sm p-3 rounded-lg">
+            <ul class="list-disc pl-4">
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
         @endif
 
         <form method="POST" action="{{ route('register.submit') }}" class="space-y-4">
@@ -58,16 +59,18 @@
             </select>
           </div>
 
-          <!-- Password -->
+          <!-- Password with suggest & show/hide -->
           <div>
             <label for="password" class="block text-sm mb-1">Password</label>
             <div class="relative">
               <input type="password" id="password" name="password" required
-                minlength="8"
+                minlength="12"
                 class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <!-- Eye toggle -->
+              
+              <!-- Toggle visibility -->
               <button type="button" id="togglePassword"
                 class="absolute right-10 top-2.5 text-gray-400 hover:text-indigo-500">👁️</button>
+              
               <!-- Suggest password -->
               <button type="button" id="suggestPassword"
                 class="absolute right-2 top-2.5 text-gray-400 hover:text-indigo-500">🔑</button>
@@ -77,7 +80,7 @@
             </p>
           </div>
 
-          <!-- Confirm Password -->
+          <!-- Confirm Password with toggle -->
           <div>
             <label for="password_confirmation" class="block text-sm mb-1">Confirm Password</label>
             <div class="relative">
@@ -88,6 +91,7 @@
             </div>
           </div>
 
+          <!-- Submit -->
           <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-semibold transition transform hover:scale-105">
             Register
           </button>
@@ -112,14 +116,22 @@
   </div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
     const passwordInput = document.getElementById('password');
     const confirmInput = document.getElementById('password_confirmation');
     const passwordHelp = document.getElementById('passwordHelp');
     const suggestBtn = document.getElementById('suggestPassword');
     const togglePassword = document.getElementById('togglePassword');
     const toggleConfirm = document.getElementById('toggleConfirm');
+
+    // Show/hide password
+    togglePassword.addEventListener('click', () => {
+      passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+    });
+    toggleConfirm.addEventListener('click', () => {
+      confirmInput.type = confirmInput.type === 'password' ? 'text' : 'password';
+    });
 
     // Password strength check
     passwordInput.addEventListener('input', () => {
@@ -136,7 +148,7 @@
       }
     });
 
-    // Suggest password popup
+    // Suggested password popup
     suggestBtn.addEventListener('click', () => {
       const suggested = generateStrongPassword(16);
       Swal.fire({
@@ -146,14 +158,14 @@
         confirmButtonText: 'Use & Copy Password',
         cancelButtonText: 'Cancel',
         didOpen: () => {
-          document.getElementById('suggestedPassword').select();
+          const input = document.getElementById('suggestedPassword');
+          input.select();
         },
         preConfirm: () => document.getElementById('suggestedPassword').value
       }).then(result => {
         if(result.isConfirmed) {
           passwordInput.value = result.value;
-          confirmInput.value = result.value;
-          passwordInput.dispatchEvent(new Event('input'));
+          passwordInput.dispatchEvent(new Event('input')); // trigger strength check
           navigator.clipboard.writeText(result.value).then(() => {
             Swal.fire({
               icon: 'success',
@@ -167,23 +179,24 @@
       });
     });
 
-    // Toggle password visibility
-    togglePassword.addEventListener('click', () => {
-      passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
-    });
-    toggleConfirm.addEventListener('click', () => {
-      confirmInput.type = confirmInput.type === 'password' ? 'text' : 'password';
-    });
-
+    // Generate strong random password
     function generateStrongPassword(length = 16) {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?";
+      const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const lower = "abcdefghijklmnopqrstuvwxyz";
+      const numbers = "0123456789";
+      const symbols = "!@#$%^&*()_+[]{}|;:,.<>?";
       let pass = "";
-      for(let i=0; i<length; i++){
-        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      // Ensure at least one of each
+      pass += upper.charAt(Math.floor(Math.random()*upper.length));
+      pass += lower.charAt(Math.floor(Math.random()*lower.length));
+      pass += numbers.charAt(Math.floor(Math.random()*numbers.length));
+      pass += symbols.charAt(Math.floor(Math.random()*symbols.length));
+      const all = upper + lower + numbers + symbols;
+      for(let i = 4; i < length; i++){
+        pass += all.charAt(Math.floor(Math.random()*all.length));
       }
-      return pass;
+      return pass.split('').sort(() => 0.5 - Math.random()).join(''); // shuffle
     }
-  });
   </script>
 
 </body>
