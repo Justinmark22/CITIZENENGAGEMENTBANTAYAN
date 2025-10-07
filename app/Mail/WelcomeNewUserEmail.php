@@ -5,7 +5,6 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class WelcomeNewUserEmail extends Mailable
 {
@@ -20,7 +19,11 @@ class WelcomeNewUserEmail extends Mailable
 
     public function build()
     {
-        return $this->subject('Welcome to Bantayan 911')
-                    ->view('mail.welcomenewuseremail');
+        return $this->subject('Welcome to Bantayan 911 🚨')
+                    ->markdown('emails.welcome_new_user')
+                    ->with([
+                        'name' => $this->user->name,
+                        'email' => $this->user->email,
+                    ]);
     }
 }
