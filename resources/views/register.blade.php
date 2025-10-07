@@ -73,7 +73,7 @@
               
               <!-- Suggest password -->
               <button type="button" id="suggestPassword"
-                class="absolute right-2 top-2.5 text-gray-400 hover:text-indigo-500">🔑</button>
+                class="absolute right-2 top-2.5 text-gray-400 hover:text-indigo-500">suggested</button>
             </div>
             <p id="passwordHelp" class="text-gray-400 text-xs mt-1">
               Minimum 12 characters, including uppercase, lowercase, numbers, and symbols.
