@@ -67,11 +67,17 @@
     </div>
   </div>
 </nav>
-
 <!-- Hero -->
-<section class="relative pt-32 pb-24 bg-gray-900 text-white overflow-hidden">
-  <div class="absolute inset-0 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/double-bubble-dark.png')] opacity-30"></div>
-  <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"></div>
+<section class="relative pt-32 pb-24 text-white overflow-hidden">
+  <!-- Textured transparent black background -->
+  <div class="absolute inset-0"
+       style="background-color: rgba(0,0,0,0.5); 
+              background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/lines.png'); 
+              background-repeat: repeat;">
+  </div>
+
+  <!-- Optional gradient overlay for depth -->
+  <div class="absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/30"></div>
 
   <div class="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
     <div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
@@ -106,7 +112,8 @@
       <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
     </div>
   </div>
-</section><!-- Services -->
+</section>
+<!-- Services -->
 <section id="services" class="relative py-24" 
          style="background-color: rgba(144, 238, 144, 0.2);" x-data>
   <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
