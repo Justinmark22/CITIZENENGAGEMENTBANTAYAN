@@ -192,16 +192,16 @@
 document.addEventListener('alpine:init', () => {
   Alpine.store('services', {
     leftServices: [
-      { title: 'Disaster Response', image: '{{ asset("images/service1.png") }}', texts: ['MDRRMO: Disaster Preparedness & Emergency Response'] },
-      { title: 'Health Services', image: '{{ asset("images/service2.png") }}', texts: ['Accessible Care for Everyone'] },
-      { title: 'Waste Management', image: '{{ asset("images/service3.png") }}', texts: ['Keeping Bantayan Clean & Safe'] },
-      { title: 'Water Management', image: '{{ asset("images/service4.png") }}', texts: ['Clean Water Access for All'] }
+      { title: 'Disaster Response', image: '{{ asset("images/dis.png") }}', texts: ['MDRRMO: Disaster Preparedness & Emergency Response'] },
+      { title: 'Health Services', image: '{{ asset("images/asd.png") }}', texts: ['Accessible Care for Everyone'] },
+      { title: 'Waste Management', image: '{{ asset("images/waste.png") }}', texts: ['Keeping Bantayan Clean & Safe'] },
+      { title: 'Water Management', image: '{{ asset("images/images/sunstar_import_uploads_images_2022_03_13_343648.avif") }}', texts: ['Clean Water Access for All'] }
     ],
     rightServices: [
-      { title: 'Public Safety', image: '{{ asset("images/service5.png") }}', texts: ['Protecting Our Communities'] },
-      { title: 'Education', image: '{{ asset("images/service6.png") }}', texts: ['Learning & Growth Opportunities'] },
-      { title: 'Community Engagement', image: '{{ asset("images/service7.png") }}', texts: ['Bridging Citizens and LGUs'] },
-      { title: 'Environmental Care', image: '{{ asset("images/service8.png") }}', texts: ['Preserving Natural Resources'] }
+      { title: 'Public Safety', image: '{{ asset("images/SAN.PNG") }}', texts: ['Protecting Our Communities'] },
+      { title: 'Education', image: '{{ asset("images/as.png") }}', texts: ['Learning & Growth Opportunities'] },
+      { title: 'Community Engagement', image: '{{ asset("images/asdas (2).png") }}', texts: ['Bridging Citizens and LGUs'] },
+      { title: 'Environmental Care', image: '{{ asset("images/gsd (1).png") }}', texts: ['Preserving Natural Resources'] }
     ]
   })
 });
