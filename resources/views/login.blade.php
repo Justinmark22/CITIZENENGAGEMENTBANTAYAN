@@ -93,15 +93,27 @@
           <div class="flex flex-col md:flex-row md:justify-between md:items-center text-sm text-gray-300">
             <label class="inline-flex items-center gap-2 mb-2 md:mb-0">
               <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-500">
-              Remember me
+              Remember me for a week
             </label>
             <a href="{{ route('password.request') }}" class="text-indigo-400 hover:underline">Forgot Password?</a>
           </div>
-          <button type="submit" class="btn btn-indigo w-100 text-white" style="background-color: #6366f1;">Continue</button>
-        </form>
-      </div>
+        </fieldset>
 
-     
+        <!-- ✅ Added reCAPTCHA hidden field -->
+        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+
+        <!-- Submit button -->
+        <button id="loginBtn" type="submit"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition transform hover:scale-105">
+          Continue
+        </button>
+
+        <p class="text-center text-gray-400 text-sm mt-2">
+          Don't have an account? <a href="{{ route('register') }}" class="text-indigo-400 hover:underline">Register here</a>
+        </p>
+      </form>
+    </div>
+  </div>
 <script>
   const togglePassword = document.getElementById("togglePassword");
   const passwordInput = document.getElementById("password");
@@ -197,4 +209,4 @@
 
 
 </body>
-</html>
+</html>  
