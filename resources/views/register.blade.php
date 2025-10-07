@@ -17,31 +17,36 @@
         <h2 class="text-3xl font-bold text-indigo-400 text-center">Create Your Account</h2>
 
         @if ($errors->any())
-          <div class="bg-red-600 text-sm p-3 rounded-lg">
-            <ul class="list-disc pl-4">
-              @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-              @endforeach
-            </ul>
-          </div>
+        <div class="bg-red-600 text-sm p-3 rounded-lg">
+          <ul class="list-disc pl-4">
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
         @endif
 
         <form method="POST" action="{{ route('register.submit') }}" class="space-y-4">
           @csrf
 
+          <!-- Name -->
           <div>
             <label for="name" class="block text-sm mb-1">Full Name</label>
-            <input type="text" id="name" name="name" value="{{ old('name') }}" required maxlength="100"
+            <input type="text" id="name" name="name" value="{{ old('name') }}"
+              required maxlength="100"
               class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
           </div>
 
+          <!-- Email -->
           <div>
             <label for="email" class="block text-sm mb-1">Email Address</label>
-            <input type="email" id="email" name="email" value="{{ old('email') }}" required
+            <input type="email" id="email" name="email" value="{{ old('email') }}"
+              required
               class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
 
+          <!-- Location -->
           <div>
             <label for="location" class="block text-sm mb-1">Municipality</label>
             <select id="location" name="location" required
@@ -53,29 +58,34 @@
             </select>
           </div>
 
-          <!-- Password Field with Suggest & Toggle -->
-          <div class="relative">
+          <!-- Password -->
+          <div>
             <label for="password" class="block text-sm mb-1">Password</label>
-            <input type="password" id="password" name="password" required minlength="8"
-              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-
-            <div class="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-2">
-              <button type="button" id="togglePassword" class="text-gray-400 hover:text-indigo-500">👁️</button>
-              <button type="button" id="suggestPassword" class="text-gray-400 hover:text-indigo-500">🔑</button>
+            <div class="relative">
+              <input type="password" id="password" name="password" required
+                minlength="8"
+                class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <!-- Eye toggle -->
+              <button type="button" id="togglePassword"
+                class="absolute right-10 top-2.5 text-gray-400 hover:text-indigo-500">👁️</button>
+              <!-- Suggest password -->
+              <button type="button" id="suggestPassword"
+                class="absolute right-2 top-2.5 text-gray-400 hover:text-indigo-500">🔑</button>
             </div>
             <p id="passwordHelp" class="text-gray-400 text-xs mt-1">
-              Minimum 12 chars, uppercase, lowercase, number, symbol.
+              Minimum 12 characters, including uppercase, lowercase, numbers, and symbols.
             </p>
           </div>
 
           <!-- Confirm Password -->
-          <div class="relative">
+          <div>
             <label for="password_confirmation" class="block text-sm mb-1">Confirm Password</label>
-            <input type="password" id="password_confirmation" name="password_confirmation" required
-              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <button type="button" id="toggleConfirm" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-500">
-              👁️
-            </button>
+            <div class="relative">
+              <input type="password" id="password_confirmation" name="password_confirmation" required
+                class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <button type="button" id="toggleConfirm"
+                class="absolute right-2 top-2.5 text-gray-400 hover:text-indigo-500">👁️</button>
+            </div>
           </div>
 
           <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-semibold transition transform hover:scale-105">
@@ -101,86 +111,80 @@
     </div>
   </div>
 
+  <!-- Scripts -->
   <script>
-  const passwordInput = document.getElementById('password');
-  const confirmInput = document.getElementById('password_confirmation');
-  const passwordHelp = document.getElementById('passwordHelp');
-  const suggestBtn = document.getElementById('suggestPassword');
-  const togglePassword = document.getElementById('togglePassword');
-  const toggleConfirm = document.getElementById('toggleConfirm');
+  document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('password');
+    const confirmInput = document.getElementById('password_confirmation');
+    const passwordHelp = document.getElementById('passwordHelp');
+    const suggestBtn = document.getElementById('suggestPassword');
+    const togglePassword = document.getElementById('togglePassword');
+    const toggleConfirm = document.getElementById('toggleConfirm');
 
-  // Password strength feedback
-  passwordInput.addEventListener('input', () => {
-    const val = passwordInput.value;
-    const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/;
-
-    if(strongPassword.test(val)) {
-      passwordHelp.textContent = "Strong password ✅";
-      passwordHelp.classList.replace("text-gray-400", "text-green-500");
-      passwordHelp.classList.remove("text-red-500");
-    } else {
-      passwordHelp.textContent = "Weak password ❌ Minimum 12 chars, uppercase, lowercase, number, symbol.";
-      passwordHelp.classList.replace("text-green-500", "text-red-500");
-      passwordHelp.classList.add("text-gray-400");
-    }
-  });
-
-  // Toggle password visibility
-  togglePassword.addEventListener('click', () => {
-    passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
-  });
-  toggleConfirm.addEventListener('click', () => {
-    confirmInput.type = confirmInput.type === 'password' ? 'text' : 'password';
-  });
-
-  // Suggested random password popup with auto-copy and auto-fill confirm field
-  suggestBtn.addEventListener('click', () => {
-    const suggested = generateStrongPassword(16);
-    Swal.fire({
-      title: 'Suggested Password',
-      html: `<input type="text" id="suggestedPassword" class="w-full bg-gray-700 text-white px-2 py-1 rounded" value="${suggested}" readonly>`,
-      showCancelButton: true,
-      confirmButtonText: 'Use & Copy Password',
-      cancelButtonText: 'Cancel',
-      didOpen: () => {
-        const input = document.getElementById('suggestedPassword');
-        input.select();
-      },
-      preConfirm: () => document.getElementById('suggestedPassword').value
-    }).then(result => {
-      if(result.isConfirmed) {
-        // Fill both password and confirm password fields
-        passwordInput.value = result.value;
-        confirmInput.value = result.value;
-
-        // Trigger password strength check
-        passwordInput.dispatchEvent(new Event('input'));
-
-        // Copy to clipboard
-        navigator.clipboard.writeText(result.value).then(() => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Copied!',
-            text: 'Password copied to clipboard.',
-            timer: 1500,
-            showConfirmButton: false
-          });
-        });
+    // Password strength check
+    passwordInput.addEventListener('input', () => {
+      const val = passwordInput.value;
+      const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/;
+      if(strongPassword.test(val)) {
+        passwordHelp.textContent = "Strong password ✅";
+        passwordHelp.classList.replace("text-gray-400", "text-green-500");
+        passwordHelp.classList.remove("text-red-500");
+      } else {
+        passwordHelp.textContent = "Weak password ❌ Minimum 12 chars, uppercase, lowercase, number, symbol.";
+        passwordHelp.classList.replace("text-green-500", "text-red-500");
+        passwordHelp.classList.add("text-gray-400");
       }
     });
-  });
 
-  // Generate strong random password
-  function generateStrongPassword(length = 16) {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?";
-    let pass = "";
-    for(let i=0; i<length; i++){
-      pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    // Suggest password popup
+    suggestBtn.addEventListener('click', () => {
+      const suggested = generateStrongPassword(16);
+      Swal.fire({
+        title: 'Suggested Password',
+        html: `<input type="text" id="suggestedPassword" class="w-full bg-gray-700 text-white px-2 py-1 rounded" value="${suggested}" readonly>`,
+        showCancelButton: true,
+        confirmButtonText: 'Use & Copy Password',
+        cancelButtonText: 'Cancel',
+        didOpen: () => {
+          document.getElementById('suggestedPassword').select();
+        },
+        preConfirm: () => document.getElementById('suggestedPassword').value
+      }).then(result => {
+        if(result.isConfirmed) {
+          passwordInput.value = result.value;
+          confirmInput.value = result.value;
+          passwordInput.dispatchEvent(new Event('input'));
+          navigator.clipboard.writeText(result.value).then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Copied!',
+              text: 'Password copied to clipboard.',
+              timer: 1500,
+              showConfirmButton: false
+            });
+          });
+        }
+      });
+    });
+
+    // Toggle password visibility
+    togglePassword.addEventListener('click', () => {
+      passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+    });
+    toggleConfirm.addEventListener('click', () => {
+      confirmInput.type = confirmInput.type === 'password' ? 'text' : 'password';
+    });
+
+    function generateStrongPassword(length = 16) {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?";
+      let pass = "";
+      for(let i=0; i<length; i++){
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return pass;
     }
-    return pass;
-  }
-</script>
-
+  });
+  </script>
 
 </body>
 </html>
