@@ -14,41 +14,36 @@
     .animate-fadeInUp { animation: fadeInUp 1s ease-out forwards; }
   </style>
 </head>
-<body class="bg-gray-100 font-sans">
+
+<body class="bg-white text-gray-900">
+
 <!-- Navbar -->
-<nav class="bg-white shadow-md fixed top-0 inset-x-0 z-50">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="flex justify-between items-center h-16">
+<nav class="bg-white border-b border-gray-200 shadow-md fixed top-0 inset-x-0 z-50">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex justify-between items-center h-20">
       <!-- Logo -->
-      <div class="flex items-center gap-2">
-        <img src="{{ asset('images/citizen.png') }}" alt="Citizen Logo" class="w-10 h-10 rounded-full shadow-md">
-        <span class="text-lg md:text-xl font-extrabold text-gray-800 tracking-tight">Bantayan 911</span>
+      <div class="flex items-center gap-3">
+        <img src="{{ asset('images/citizen.png') }}" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-md">
+        <span class="text-xl md:text-2xl font-extrabold text-blue-700 tracking-tight">Bantayan 911</span>
       </div>
 
       <!-- Desktop Menu -->
-      <div class="hidden md:flex items-center space-x-4 text-sm font-medium">
-        <a href="{{ url('/') }}" class="text-gray-800 hover:text-[#006c42] transition">Home</a>
-        <a href="{{ route('about') }}" class="text-gray-800 hover:text-[#006c42] transition">About</a>
-        <a href="{{ route('contact') }}" class="text-gray-800 hover:text-[#006c42] transition">Contact</a>
-        <a href="{{ route('faq') }}" class="text-gray-800 hover:text-[#006c42] transition">FAQs</a>
-        <!-- Login & Register -->
-        <a href="{{ route('login') }}" class="text-gray-800 hover:text-[#006c42] transition">Login</a>
-        <a href="{{ route('register') }}" class="bg-[#006c42] text-white px-3 py-1 rounded-lg font-semibold hover:bg-[#004f33] transition">Register</a>
+      <div class="hidden md:flex space-x-8 text-sm font-medium">
+        <a href="{{ url('/') }}" class="hover:text-blue-700 transition">Home</a>
+        <a href="{{ route('about') }}" class="hover:text-blue-700 transition">About</a>
+        <a href="{{ route('contact') }}" class="hover:text-blue-700 transition">Contact</a>
+        <a href="{{ route('faq') }}" class="hover:text-blue-700 transition">FAQs</a>
       </div>
-    </div>
-  </div>
-</nav>
-
 
       <!-- Desktop Auth -->
       <div class="hidden md:flex items-center gap-3">
-        <a href="{{ url('/login') }}" class="text-white font-bold hover:underline">Log In</a>
-        <a href="{{ url('/register') }}" class="bg-white text-[#1a4480] hover:bg-gray-100 px-5 py-2 rounded-lg font-semibold text-sm shadow-md transition">Register</a>
+        <a href="{{ url('/login') }}" class="text-sm font-bold text-blue-700 hover:underline">Log In</a>
+        <a href="{{ url('/register') }}" class="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-lg font-semibold text-sm shadow-md transition">Register</a>
       </div>
 
       <!-- Mobile Menu Button -->
       <div class="md:hidden">
-        <button @click="open = !open" class="text-white focus:outline-none">
+        <button @click="open = !open" class="text-gray-800 focus:outline-none">
           <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
@@ -60,58 +55,60 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div x-show="open" x-transition class="md:hidden bg-[#1a4480] px-6 py-4 space-y-2">
-      <a href="{{ url('/') }}" class="block py-2 text-white hover:text-[#1a4480]">Home</a>
-      <a href="{{ route('about') }}" class="block py-2 text-white hover:text-[#1a4480]">About</a>
-      <a href="{{ route('contact') }}" class="block py-2 text-white hover:text-[#1a4480]">Contact</a>
-      <a href="{{ route('faq') }}" class="block py-2 text-white hover:text-[#1a4480]">FAQs</a>
-      <a href="{{ url('/login') }}" class="block py-2 font-bold text-white">Log In</a>
-      <a href="{{ url('/register') }}" class="block py-2 bg-white text-[#1a4480] rounded-md text-center mt-2">Register</a>
+    <div x-show="open" x-transition class="md:hidden bg-white shadow-lg px-6 py-4 space-y-2">
+      <a href="{{ url('/') }}" class="block py-2 hover:text-blue-700">Home</a>
+      <a href="{{ route('about') }}" class="block py-2 hover:text-blue-700">About</a>
+      <a href="{{ route('contact') }}" class="block py-2 hover:text-blue-700">Contact</a>
+      <a href="{{ route('faq') }}" class="block py-2 hover:text-blue-700">FAQs</a>
+      <a href="{{ url('/login') }}" class="block py-2 font-bold text-blue-700">Log In</a>
+      <a href="{{ url('/register') }}" class="block py-2 bg-blue-700 text-white rounded-md text-center mt-2">Register</a>
     </div>
   </div>
 </nav>
+<!-- Hero -->
+<section class="relative pt-32 pb-24 bg-gray-900 text-white overflow-hidden">
+  <!-- Patterned Background -->
+  <div class="absolute inset-0 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/double-bubble-dark.png')] opacity-30"></div>
+  <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"></div>
 
-
-<!-- Hero Section -->
-<section class="relative bg-gray-50 mt-20 lg:mt-24">
-  <div class="max-w-7xl mx-auto px-6 lg:flex lg:items-center lg:justify-between py-24 lg:py-32">
-    
-    <!-- Left Content -->
-    <div class="lg:w-1/2 space-y-6">
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
-        Strengthening Citizen Engagement
-      </h1>
-      <p class="text-lg text-gray-700 max-w-lg leading-relaxed">
-        Discover a <span class="font-semibold text-yellow-500">transparent digital platform</span> 
-        that connects citizens, LGUs, and communities across Bantayan, Santa Fe, and Madridejos.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 mt-6">
-        <a href="#services" class="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold rounded shadow-md transition">
-          Explore Services
-        </a>
-        <a href="{{ route('contact') }}" class="px-6 py-3 border border-gray-300 hover:bg-gray-100 text-gray-900 font-semibold rounded transition">
-          Contact Us
-        </a>
-      </div>
-    </div>
-
-    <!-- Right Image -->
-    <div class="lg:w-1/2 mt-10 lg:mt-0 relative">
-      <img src="{{ asset('images/bantayan.png') }}" alt="Bantayan Island" class="w-full rounded shadow-lg object-cover">
-    </div>
-
+  <div class="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
+   <!-- Left (Updated Text) -->
+<div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
+  <h2 class="text-xl lg:text-2xl font-semibold text-yellow-400 mb-2">Welcome to Bantayan Island</h2>
+  <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-white">
+    Strengthening Citizen Engagement Across Communities
+  </h1>
+  <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+    Discover a <span class="font-semibold text-yellow-400">transparent digital platform</span> that connects citizens, LGUs, and local communities in Bantayan, Santa Fe, and Madridejos.
+  </p>
+  <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+    <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">
+      Explore Services
+    </a>
+    <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">
+      Contact Us
+    </a>
   </div>
-</section>
-<section id="services" class="relative py-24 bg-gray-50 flex flex-col items-center gap-16">
+</div>
+
+<div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
+     x-data="{
+       images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/sta.fe.png') }}', '{{ asset('images/madridejos.png') }}'],
+       index: 0,
+       init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) }
+     }">
+  <template x-for="(img, i) in images" :key="i">
+    <img :src="img"
+         class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+         :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
+  </template>
+  <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+</div>
+
+</section><section id="services" class="relative py-24 bg-gray-50 flex flex-col items-center gap-16">
 
   <!-- Card 1 -->
-  <div x-data="serviceCard([
-      '{{ asset('images/gsd (1).png') }}',
-      '{{ asset('images/sta.fe.png') }}',
-      '{{ asset('images/mad.png') }}',
-      '{{ asset('images/hasd.png') }}',
-      '{{ asset('images/madri.png') }}'
-    ], [
+  <div x-data="typingText([
       'MDRRMO: Disaster Preparedness & Emergency Response',
       'Waste Management: Keeping Bantayan Clean & Safe',
       'Water Management: Clean Water Access for All',
@@ -119,12 +116,9 @@
     ])"
     class="relative w-80 h-80 rounded-full overflow-hidden shadow-2xl flex items-center justify-center text-center text-white transform hover:scale-105 transition-transform duration-500">
 
-    <!-- Background Images -->
-    <template x-for="(img, i) in images" :key="i">
-      <div :class="index === i ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-105'"
-           class="absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-1000 transform scale-105 animate-zoom-pan"
-           :style="`background-image: url(${img})`"></div>
-    </template>
+    <!-- Static Background -->
+    <div class="absolute inset-0 w-full h-full bg-cover bg-center" 
+         style="background-image: url('{{ asset('images/gsd (1).png') }}');"></div>
 
     <!-- Overlay -->
     <div class="absolute inset-0 bg-black/50 rounded-full"></div>
@@ -139,13 +133,7 @@
   </div>
 
   <!-- Card 2 -->
-  <div x-data="serviceCard([
-      '{{ asset('images/gsd (1).png') }}',
-      '{{ asset('images/sta.fe.png') }}',
-      '{{ asset('images/mad.png') }}',
-      '{{ asset('images/hasd.png') }}',
-      '{{ asset('images/madri.png') }}'
-    ], [
+  <div x-data="typingText([
       'Health Services: Accessible Care for Everyone',
       'Public Safety: Protecting Our Communities',
       'Infrastructure: Building Sustainable Facilities',
@@ -154,12 +142,9 @@
     ])"
     class="relative w-80 h-80 rounded-full overflow-hidden shadow-2xl flex items-center justify-center text-center text-white transform hover:scale-105 transition-transform duration-500">
 
-    <!-- Background Images -->
-    <template x-for="(img, i) in images" :key="i">
-      <div :class="index === i ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-105'"
-           class="absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-1000 transform scale-105 animate-zoom-pan"
-           :style="`background-image: url(${img})`"></div>
-    </template>
+    <!-- Static Background -->
+    <div class="absolute inset-0 w-full h-full bg-cover bg-center" 
+         style="background-image: url('{{ asset('images/sta.fe.png') }}');"></div>
 
     <!-- Overlay -->
     <div class="absolute inset-0 bg-black/50 rounded-full"></div>
@@ -176,16 +161,15 @@
 </section>
 
 <script>
-function serviceCard(images, typingTexts) {
+function typingText(texts) {
   return {
-    images, typingTexts,
-    index: 0, textIndex: 0, displayText: '', charIndex: 0,
-    init() {
-      setInterval(() => this.index = (this.index + 1) % this.images.length, 4000);
-      this.type();
-    },
+    texts,
+    textIndex: 0,
+    displayText: '',
+    charIndex: 0,
+    init() { this.type(); },
     type() {
-      const current = this.typingTexts[this.textIndex];
+      const current = this.texts[this.textIndex];
       if(this.charIndex < current.length){
         this.displayText += current[this.charIndex++];
         setTimeout(() => this.type(), 80);
@@ -197,13 +181,18 @@ function serviceCard(images, typingTexts) {
         this.charIndex--;
         setTimeout(() => this.delete(), 50);
       } else {
-        this.textIndex = (this.textIndex + 1) % this.typingTexts.length;
+        this.textIndex = (this.textIndex + 1) % this.texts.length;
         setTimeout(() => this.type(), 500);
       }
     }
   }
 }
 </script>
+
+<style>
+.blinking { animation: blink 1s infinite; }
+@keyframes blink { 0%,50%,100%{opacity:1;}25%,75%{opacity:0;} }
+</style>
 
      
 <!-- News & Updates -->
