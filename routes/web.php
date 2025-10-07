@@ -199,7 +199,7 @@ Route::post('/login', function (Request $request) {
                     'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
                     'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
                     'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
-                    'Admin'      => redirect()->route('dashboard.admin'),
+                    'admin'      => redirect()->route('dashboard.admin'),
                     default      => redirect('/dashboard'),
                 },
                 'mdrrmo' => match ($user->location) {
