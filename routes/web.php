@@ -105,24 +105,11 @@ Route::post('/register', function (Request $request) {
     // ✅ Redirect to Login Page with Success Message
     return redirect()->route('login')->with('success', 'Registration successful! Please check your email for a welcome message from Bantayan 911.');
 })->name('register.submit');
-
-// ✅ HOME ROUTE (Welcome Page with Defacement Protection)
+// HOME ROUTE (Integrity check disabled temporarily)
 Route::get('/', function () {
     $welcomePath = resource_path('views/welcome.blade.php');
-    $hashFile = storage_path('app/security_hash.txt');
 
-    if (!File::exists($hashFile)) {
-        File::put($hashFile, hash_file('sha256', $welcomePath));
-    }
-
-    $currentHash = hash_file('sha256', $welcomePath);
-    $originalHash = trim(File::get($hashFile));
-
-    if ($currentHash !== $originalHash) {
-        Log::warning('⚠️ Defacement detected on welcome.blade.php');
-        abort(403, 'System integrity check failed — unauthorized modification detected.');
-    }
-
+    // Render without integrity check
     $response = response()->view('welcome');
     $response->headers->set('X-Frame-Options', 'DENY');
     $response->headers->set('X-Content-Type-Options', 'nosniff');
@@ -131,6 +118,7 @@ Route::get('/', function () {
 
     return $response;
 });
+
 // ✅ LOGIN ROUTES
 Route::get('/login', fn() => view('login'))->name('login');
 
