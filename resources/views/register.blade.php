@@ -120,6 +120,9 @@
     const togglePassword = document.getElementById('togglePassword');
     const toggleConfirm = document.getElementById('toggleConfirm');
 
+    // Flag to ensure popup shows only once
+    let popupShown = false;
+
     // Show/hide password
     togglePassword.addEventListener('click', () => {
       passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
@@ -143,8 +146,11 @@
       }
     });
 
-    // Suggested password popup on password input focus
+    // Suggested password popup on password input focus (only once)
     passwordInput.addEventListener('focus', () => {
+      if(popupShown) return; // already shown, do nothing
+      popupShown = true;
+
       const suggested = generateStrongPassword(16);
       Swal.fire({
         title: 'Suggested Password',
