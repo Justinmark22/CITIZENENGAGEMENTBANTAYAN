@@ -108,43 +108,42 @@ Route::post('/register', function (Request $request) {
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
-// ✅ reCAPTCHA v3 verification
-$recaptchaResponse = $request->input('g-recaptcha-response');
-$secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // replace with your v3 secret key
-
-if (!$recaptchaResponse) {
-    return back()->withErrors([
-        'captcha' => 'Please complete the reCAPTCHA verification.',
-    ])->onlyInput('email');
-}
-
-// Send verification request to Google
-$verifyResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-    'secret' => $secretKey,
-    'response' => $recaptchaResponse,
-    'remoteip' => $request->ip(),
-]);
-
-$recaptchaData = $verifyResponse->json();
-
-// ✅ Check both success and score (v3 uses a score system)
-if (empty($recaptchaData['success']) || $recaptchaData['success'] !== true || $recaptchaData['score'] < 0.5) {
-    return back()->withErrors([
-        'captcha' => 'Suspicious activity detected. Please try again.',
-    ])->onlyInput('email');
-}
-
-
-    // ✅ Apply throttling based on IP + email
+    // ✅ Apply throttling based on IP + email (3 attempts)
     $key = Str::lower($request->input('email')).'|'.$request->ip();
 
-    if (RateLimiter::tooManyAttempts($key, 5)) {
+    if (RateLimiter::tooManyAttempts($key, 3)) {
         $seconds = RateLimiter::availableIn($key);
-        throw ValidationException::withMessages([
-            'email' => "Too many login attempts. Try again in $seconds seconds.",
-        ]);
+        return back()->withErrors([
+            'email' => "Too many login attempts. Please try again in {$seconds} seconds.",
+        ])->onlyInput('email');
     }
 
+    // ✅ reCAPTCHA v3 verification
+    $recaptchaResponse = $request->input('g-recaptcha-response');
+    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // your secret key
+
+    if (!$recaptchaResponse) {
+        return back()->withErrors([
+            'captcha' => 'Please complete the reCAPTCHA verification.',
+        ])->onlyInput('email');
+    }
+
+    $verifyResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+        'secret' => $secretKey,
+        'response' => $recaptchaResponse,
+        'remoteip' => $request->ip(),
+    ]);
+
+    $recaptchaData = $verifyResponse->json();
+
+    // ✅ Check both success and score
+    if (empty($recaptchaData['success']) || $recaptchaData['success'] !== true || $recaptchaData['score'] < 0.5) {
+        return back()->withErrors([
+            'captcha' => 'Suspicious activity detected. Please try again.',
+        ])->onlyInput('email');
+    }
+
+    // ✅ Validate credentials
     $credentials = $request->validate([
         'email' => ['required', 'email', 'max:255'],
         'password' => ['required', 'string', 'max:255'],
@@ -160,72 +159,60 @@ if (empty($recaptchaData['success']) || $recaptchaData['success'] !== true || $r
         ])->onlyInput('email');
     }
 
-    // ✅ Attempt login (uses bcrypt hashed password check)
+    // ✅ Attempt login
     if (Auth::attempt($credentials, $request->boolean('remember'))) {
         $request->session()->regenerate();
         $user = Auth::user();
 
-        // ✅ Mark user as active
+        // ✅ Mark as active
         $user->status = 'active';
         $user->save();
 
         RateLimiter::clear($key); // ✅ Reset attempts on success
 
-        // ✅ Redirect based on role and location
-        if (strtolower($user->role) === 'admin') {
-            return match ($user->location) {
+        // ✅ Redirect by role + location
+        return match (strtolower($user->role)) {
+            'admin' => match ($user->location) {
                 'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
                 'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
                 'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
                 'Admin'      => redirect()->route('dashboard.admin'),
                 default      => redirect('/dashboard'),
-            };
-        }
-
-        if (strtolower($user->role) === 'mdrrmo') {
-            return match ($user->location) {
+            },
+            'mdrrmo' => match ($user->location) {
                 'Santa.Fe'   => redirect()->route('dashboard.mdrrmo-santafe'),
                 'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
                 'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
                 default      => redirect('/dashboard'),
-            };
-        }
-
-        if (strtolower($user->role) === 'waste') {
-            return match ($user->location) {
+            },
+            'waste' => match ($user->location) {
                 'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
                 'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
                 'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
                 default      => redirect('/dashboard'),
-            };
-        }
-
-        if (strtolower($user->role) === 'water') {
-            return match ($user->location) {
+            },
+            'water' => match ($user->location) {
                 'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
                 'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
                 'Madridejos' => redirect()->route('dashboard.water-madridejos'),
                 default      => redirect('/dashboard'),
-            };
-        }
-
-        // ✅ Citizens or fallback
-        return match ($user->location) {
-            'Santa.Fe'   => redirect()->route('dashboard.santafe'),
-            'Bantayan'   => redirect()->route('dashboard.bantayan'),
-            'Madridejos' => redirect()->route('dashboard.madridejos'),
-            default      => redirect('/dashboard'),
+            },
+            default => match ($user->location) {
+                'Santa.Fe'   => redirect()->route('dashboard.santafe'),
+                'Bantayan'   => redirect()->route('dashboard.bantayan'),
+                'Madridejos' => redirect()->route('dashboard.madridejos'),
+                default      => redirect('/dashboard'),
+            },
         };
     }
 
-    RateLimiter::hit($key, 60); // ✅ Increment failed attempts
+    // ❌ Failed login: increment attempts and lock after 3 failures for 60s
+    RateLimiter::hit($key, 60);
 
     return back()->withErrors([
-        'email' => 'The provided credentials do not match our records.',
+        'email' => 'Invalid email or password.',
     ])->onlyInput('email');
 })->name('login.submit');
-
-
 // ✅ HOME ROUTE (Welcome Page with Defacement Protection)
 Route::get('/', function () {
     $welcomePath = resource_path('views/welcome.blade.php');
