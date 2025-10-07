@@ -19,7 +19,7 @@ class SendOtpMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Your Bantayan 911 OTP Code')
+        return $this->subject('Your One-Time Password (OTP) for Login')
                     ->view('emails.otp');
     }
 }

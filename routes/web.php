@@ -51,6 +51,7 @@ use App\Http\Controllers\MDRRMOController;
 use App\Http\Controllers\WasteDashboardController;
 use App\Http\Controllers\WaterDashboardController;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\SendOtpMail;
 use App\Mail\WelcomeNewUserEmail;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -189,19 +190,18 @@ Route::post('/login', function (Request $request) {
         $user->save();
 
         RateLimiter::clear($key);
+// ✅ Generate OTP
+$otp = rand(100000, 999999);
+session([
+    'otp' => $otp,
+    'otp_expires' => now()->addMinutes(3),
+    'otp_user_id' => $user->id,
+]);
 
-        // ✅ Generate OTP
-        $otp = rand(100000, 999999);
-        session([
-            'otp' => $otp,
-            'otp_expires' => now()->addMinutes(3),
-            'otp_user_id' => $user->id,
-        ]);
+// ✅ Send OTP via email
+Mail::to($user->email)->send(new SendOtpMail($otp));
 
-        // Example: Send OTP via email
-        // Mail::to($user->email)->send(new SendOtpMail($otp));
-
-        return redirect()->route('otp.verify')->with('status', 'OTP sent to your email.');
+return redirect()->route('otp.verify')->with('status', 'OTP sent to your email.');
     }
 
     RateLimiter::hit($key, 60);
