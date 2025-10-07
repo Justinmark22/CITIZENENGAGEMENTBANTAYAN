@@ -111,63 +111,59 @@
       </form>
     </div>
   </div>
+<script>
+  const togglePassword = document.getElementById("togglePassword");
+  const passwordInput = document.getElementById("password");
+  togglePassword.addEventListener("click", () => {
+    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+    passwordInput.setAttribute("type", type);
+    togglePassword.classList.toggle("text-indigo-500");
+  });
 
-  <script>
-    // Toggle password visibility
-    const togglePassword = document.getElementById("togglePassword");
-    const passwordInput = document.getElementById("password");
-    togglePassword.addEventListener("click", () => {
-      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-      passwordInput.setAttribute("type", type);
-      togglePassword.classList.toggle("text-indigo-500");
+  let loginErrors = @json($errors->any());
+  let loggedInStatus = @json(session('status') === 'logged_in');
+  const loginForm = document.getElementById("loginForm");
+  let attempts = parseInt(localStorage.getItem("login_attempts")) || 0;
+
+  // ✅ Always get reCAPTCHA v3 token when the page loads
+  grecaptcha.ready(function() {
+    grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', { action: 'login' }).then(function(token) {
+      document.getElementById('g-recaptcha-response').value = token;
     });
+  });
 
-    // Track failed login attempts
-    let loginErrors = @json($errors->any());
-    let loggedInStatus = @json(session('status') === 'logged_in');
-    const loginForm = document.getElementById("loginForm");
+  // ✅ Re-run token on submit after 3 failed attempts
+  loginForm.addEventListener("submit", function(e) {
+    if (loggedInStatus) return;
 
-    let attempts = parseInt(localStorage.getItem("login_attempts")) || 0;
-
-    // Form submit handler
-    loginForm.addEventListener("submit", function(e){
-      if(loggedInStatus) return; // Successful login resets attempts
-
-      // Only trigger reCAPTCHA v3 after 3 failed attempts
-      if(attempts >= 3){
-        e.preventDefault();
-        Swal.fire({
-          icon: 'info',
-          title: 'ReCAPTCHA Required',
-          text: 'Multiple failed attempts detected. Please verify with reCAPTCHA.',
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-        }).then(() => {
-          grecaptcha.ready(function() {
-            grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', {action: 'login'}).then(function(token) {
-              let input = document.createElement('input');
-              input.type = 'hidden';
-              input.name = 'g-recaptcha-response';
-              input.value = token;
-              loginForm.appendChild(input);
-              loginForm.submit();
-            });
+    if (attempts >= 3) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'info',
+        title: 'ReCAPTCHA Required',
+        text: 'Multiple failed attempts detected. Please verify with reCAPTCHA.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      }).then(() => {
+        grecaptcha.ready(function() {
+          grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', { action: 'login' }).then(function(token) {
+            document.getElementById('g-recaptcha-response').value = token;
+            loginForm.submit();
           });
         });
-      }
-    });
-
-    // Increment attempts on failed login
-    if(loginErrors){
-      attempts++;
-      localStorage.setItem("login_attempts", attempts);
+      });
     }
+  });
 
-    // Reset attempts on successful login
-    if(loggedInStatus){
-      localStorage.removeItem("login_attempts");
-    }
-  </script>
+  // ✅ Increment or reset attempts
+  if (loginErrors) {
+    attempts++;
+    localStorage.setItem("login_attempts", attempts);
+  }
+  if (loggedInStatus) {
+    localStorage.removeItem("login_attempts");
+  }
+</script>
 
 </body>
 </html>
