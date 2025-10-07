@@ -110,7 +110,7 @@ Route::get('/login', fn() => view('login'))->name('login');
 Route::post('/login', function (Request $request) {
 // ✅ reCAPTCHA v3 verification
 $recaptchaResponse = $request->input('g-recaptcha-response');
-$secretKey = 'YOUR_RECAPTCHA_SECRET_KEY'; // replace with your v3 secret key
+$secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // replace with your v3 secret key
 
 if (!$recaptchaResponse) {
     return back()->withErrors([
