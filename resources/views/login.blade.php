@@ -126,10 +126,9 @@
   const togglePassword = document.getElementById("togglePassword");
   const passwordInput = document.getElementById("password");
   const loginForm = document.getElementById("loginForm");
-  const passwordHelp = document.getElementById("passwordHelp");
-
   let attempts = parseInt(localStorage.getItem("login_attempts")) || 0;
   let lockoutUntil = parseInt(localStorage.getItem("lockout_until")) || 0;
+
   const now = Date.now();
 
   // ✅ Toggle password visibility
@@ -137,22 +136,6 @@
     const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
     passwordInput.setAttribute("type", type);
     togglePassword.classList.toggle("text-indigo-500");
-  });
-
-  // ✅ Password strength indicator
-  passwordInput.addEventListener('input', () => {
-    const val = passwordInput.value;
-    const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/;
-
-    if (strongPassword.test(val)) {
-      passwordHelp.textContent = "Strong password ✅";
-      passwordHelp.classList.remove("text-red-500");
-      passwordHelp.classList.add("text-green-400");
-    } else {
-      passwordHelp.textContent = "Weak password ❌";
-      passwordHelp.classList.remove("text-green-400");
-      passwordHelp.classList.add("text-red-500");
-    }
   });
 
   // ✅ Check lockout
@@ -167,6 +150,7 @@
     });
     disableForm();
   } else if (lockoutUntil && now >= lockoutUntil) {
+    // Unlock after 60 seconds
     localStorage.removeItem("lockout_until");
     localStorage.removeItem("login_attempts");
     attempts = 0;
@@ -192,6 +176,7 @@
       return;
     }
 
+    // Increment attempts only if errors exist later (from backend)
     localStorage.setItem("last_submit", Date.now());
   });
 
@@ -229,6 +214,7 @@
     document.querySelectorAll("#loginForm input, #loginForm button").forEach(el => el.disabled = true);
   }
 </script>
+
 
 </body>
 </html>  
