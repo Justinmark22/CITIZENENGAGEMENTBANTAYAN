@@ -93,7 +93,7 @@
           <div class="flex flex-col md:flex-row md:justify-between md:items-center text-sm text-gray-300">
             <label class="inline-flex items-center gap-2 mb-2 md:mb-0">
               <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-500">
-              Remember me for a week
+              Remember me
             </label>
             <a href="{{ route('password.request') }}" class="text-indigo-400 hover:underline">Forgot Password?</a>
           </div>
