@@ -16,7 +16,7 @@ class AdminUserSeeder extends Seeder
                 'name' => 'Admin User',
                 'email' => 'admin@gmail.com',
                 'password' => Hash::make('thisisadmin00'), // Secure password
-                'role' => 'Admin', // ✅ Added role field
+                'role' => 'admin', // ✅ Added role field
                 'location' => 'Admin', // ✅ Optional: matches your redirect logic
                 'status' => 'active', // ✅ Optional: ensures active login
             ]
