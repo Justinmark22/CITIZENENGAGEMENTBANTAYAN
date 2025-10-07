@@ -142,19 +142,47 @@ function disableForm() {
   loginBtn.disabled = true;
 }
 
+// Enable form
+function enableForm() {
+  loginFieldset.disabled = false;
+  loginBtn.disabled = false;
+  loginBtn.textContent = "Continue";
+}
+
+// Lockout countdown
+let countdownInterval;
+function startCountdown() {
+  const now = Date.now();
+  let secondsLeft = Math.ceil((lockoutUntil - now) / 1000);
+  disableForm();
+  loginBtn.textContent = `Locked. Try again in ${secondsLeft}s`;
+
+  countdownInterval = setInterval(() => {
+    secondsLeft--;
+    if (secondsLeft <= 0) {
+      clearInterval(countdownInterval);
+      localStorage.removeItem("lockout_until");
+      localStorage.removeItem("login_attempts");
+      attempts = 0;
+      enableForm();
+    } else {
+      loginBtn.textContent = `Locked. Try again in ${secondsLeft}s`;
+    }
+  }, 1000);
+}
+
 // Check lockout on page load
 function checkLockout() {
   const now = Date.now();
   if (lockoutUntil && now < lockoutUntil) {
-    const secondsLeft = Math.ceil((lockoutUntil - now) / 1000);
     Swal.fire({
       icon: 'error',
       title: 'Account Locked',
-      text: `Too many failed login attempts. Try again in ${secondsLeft} seconds.`,
+      text: 'Too many failed login attempts.',
       allowOutsideClick: false,
       allowEscapeKey: false,
     });
-    disableForm();
+    startCountdown();
     return true;
   } else if (lockoutUntil && now >= lockoutUntil) {
     localStorage.removeItem("lockout_until");
@@ -183,7 +211,7 @@ if (loginErrors) {
       title: 'Account Locked',
       text: 'Too many failed attempts. Please wait 60 seconds before trying again.',
     });
-    disableForm();
+    startCountdown();
   }
 }
 
@@ -193,10 +221,16 @@ if (loggedInStatus) {
   localStorage.removeItem("lockout_until");
 }
 
-// Form submit: prevent login if locked
+// Prevent submission if locked
 loginForm.addEventListener("submit", function(e) {
-  if (checkLockout()) {
+  const now = Date.now();
+  if (lockoutUntil && now < lockoutUntil) {
     e.preventDefault();
+    Swal.fire({
+      icon: 'error',
+      title: 'Account Locked',
+      text: 'Too many failed login attempts. Please wait.',
+    });
   }
 });
 
