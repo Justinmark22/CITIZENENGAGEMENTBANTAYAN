@@ -117,57 +117,94 @@
 <script>
   const togglePassword = document.getElementById("togglePassword");
   const passwordInput = document.getElementById("password");
+  const loginForm = document.getElementById("loginForm");
+  let attempts = parseInt(localStorage.getItem("login_attempts")) || 0;
+  let lockoutUntil = parseInt(localStorage.getItem("lockout_until")) || 0;
+
+  const now = Date.now();
+
+  // ✅ Toggle password visibility
   togglePassword.addEventListener("click", () => {
     const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
     passwordInput.setAttribute("type", type);
     togglePassword.classList.toggle("text-indigo-500");
   });
 
-  const loginForm = document.getElementById("loginForm");
-  let loginErrors = @json($errors->any());
-  let loggedInStatus = @json(session('status') === 'logged_in');
-  let attempts = parseInt(localStorage.getItem("login_attempts")) || 0;
+  // ✅ Check lockout
+  if (lockoutUntil && now < lockoutUntil) {
+    const secondsLeft = Math.ceil((lockoutUntil - now) / 1000);
+    Swal.fire({
+      icon: 'error',
+      title: 'Account Locked',
+      text: `Too many failed login attempts. Try again in ${secondsLeft} seconds.`,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+    disableForm();
+  } else if (lockoutUntil && now >= lockoutUntil) {
+    // Unlock after 60 seconds
+    localStorage.removeItem("lockout_until");
+    localStorage.removeItem("login_attempts");
+    attempts = 0;
+  }
 
-  // 🧩 Always execute reCAPTCHA before submit
-  loginForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    grecaptcha.ready(function() {
-      grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', { action: 'login' }).then(function(token) {
-        document.getElementById('g-recaptcha-response').value = token;
-
-        // If 3+ failed attempts, show SweetAlert first
-        if (attempts >= 3) {
-          Swal.fire({
-            icon: 'info',
-            title: 'ReCAPTCHA Verification',
-            text: 'Multiple failed attempts detected. Please wait while we verify.',
-            showConfirmButton: false,
-            timer: 1500,
-            didOpen: () => {
-              Swal.showLoading();
-              setTimeout(() => loginForm.submit(), 1200);
-            }
-          });
-        } else {
-          loginForm.submit();
-        }
-      });
+  // ✅ Always get reCAPTCHA v3 token when the page loads
+  grecaptcha.ready(function() {
+    grecaptcha.execute('{{ env("RECAPTCHA_SITE_KEY") }}', { action: 'login' }).then(function(token) {
+      document.getElementById('g-recaptcha-response').value = token;
     });
   });
 
-  // 🔁 Manage attempt counter
+  // ✅ Handle form submit
+  loginForm.addEventListener("submit", function(e) {
+    if (isLocked()) {
+      e.preventDefault();
+      const secondsLeft = Math.ceil((lockoutUntil - Date.now()) / 1000);
+      Swal.fire({
+        icon: 'error',
+        title: 'Account Locked',
+        text: `Too many failed login attempts. Try again in ${secondsLeft} seconds.`,
+      });
+      return;
+    }
+
+    // Increment attempts only if errors exist later (from backend)
+    localStorage.setItem("last_submit", Date.now());
+  });
+
+  // ✅ Handle login errors or success (Laravel flash messages)
+  let loginErrors = @json($errors->any());
+  let loggedInStatus = @json(session('status') === 'logged_in');
+
   if (loginErrors) {
     attempts++;
     localStorage.setItem("login_attempts", attempts);
+    if (attempts >= 3) {
+      const lockTime = 60 * 1000; // 60 seconds
+      localStorage.setItem("lockout_until", Date.now() + lockTime);
+      Swal.fire({
+        icon: 'error',
+        title: 'Account Locked',
+        text: 'Too many failed attempts. Please wait 60 seconds before trying again.',
+      });
+      disableForm();
+    }
   }
 
   if (loggedInStatus) {
     localStorage.removeItem("login_attempts");
+    localStorage.removeItem("lockout_until");
   }
 
-  // Optional: reset counter after 1 hour
-  setTimeout(() => localStorage.removeItem("login_attempts"), 3600000);
+  // ✅ Helper functions
+  function isLocked() {
+    const until = parseInt(localStorage.getItem("lockout_until")) || 0;
+    return Date.now() < until;
+  }
+
+  function disableForm() {
+    document.querySelectorAll("#loginForm input, #loginForm button").forEach(el => el.disabled = true);
+  }
 </script>
 
 
