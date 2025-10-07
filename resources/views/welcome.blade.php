@@ -17,7 +17,7 @@
 <body class="bg-gray-100 font-sans">
 
 <!-- Navbar -->
-<nav class="bg-[#1a4480] shadow-md fixed top-0 inset-x-0 z-50">
+<nav class="bg-[#064e3b] shadow-md fixed top-0 inset-x-0 z-50">
   <div class="max-w-7xl mx-auto px-6">
     <div class="flex justify-between items-center h-20">
       <!-- Logo -->
@@ -28,11 +28,14 @@
 
       <!-- Desktop Menu -->
       <div class="hidden md:flex space-x-8 text-sm font-medium">
-        <a href="{{ url('/') }}" class="text-white hover:text-[#1a4480] transition">Home</a>
-        <a href="{{ route('about') }}" class="text-white hover:text-[#1a4480] transition">About</a>
-        <a href="{{ route('contact') }}" class="text-white hover:text-[#1a4480] transition">Contact</a>
-        <a href="{{ route('faq') }}" class="text-white hover:text-[#1a4480] transition">FAQs</a>
+        <a href="{{ url('/') }}" class="text-white hover:text-[#064e3b] transition">Home</a>
+        <a href="{{ route('about') }}" class="text-white hover:text-[#064e3b] transition">About</a>
+        <a href="{{ route('contact') }}" class="text-white hover:text-[#064e3b] transition">Contact</a>
+        <a href="{{ route('faq') }}" class="text-white hover:text-[#064e3b] transition">FAQs</a>
       </div>
+    </div>
+  </div>
+</nav>
 
       <!-- Desktop Auth -->
       <div class="hidden md:flex items-center gap-3">
