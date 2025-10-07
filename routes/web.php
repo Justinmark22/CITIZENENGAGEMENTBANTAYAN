@@ -2,6 +2,8 @@
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
@@ -69,10 +71,7 @@ Route::get('password/reset/{token}', [ResetPasswordController::class, 'showReset
 // Submit new password
 Route::post('password/reset', [ResetPasswordController::class, 'reset'])
     ->name('password.update');
-// Home route
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 Route::get('/register', fn() => view('register'))->name('register');
 
@@ -95,14 +94,9 @@ Route::post('/register', function (Request $request) {
         'status' => 'active',
         'remember_token' => Str::random(60),
     ]);
+    // ✅ SEND EMAIL TO THE REGISTERED USER
+    Mail::to($user->email)->send(new NewUserRegistered($user));
 
-    // ✅ Send email to the user themselves
-    try {
-        Mail::to($user->email)->send(new NewUserRegistered($user));
-    } catch (\Exception $e) {
-        \Log::error('Email sending failed: '.$e->getMessage());
-        // Registration still succeeds even if email fails
-    }
 
     // ✅ Auto-login after registration
     Auth::login($user);
@@ -110,9 +104,37 @@ Route::post('/register', function (Request $request) {
 
     return redirect()->route('login')->with('success', 'Registration successful! Please check your email.');
 })->name('register.submit');
+// ✅ Login routes
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
+// ✅ reCAPTCHA v3 verification
+$recaptchaResponse = $request->input('g-recaptcha-response');
+$secretKey = 'YOUR_RECAPTCHA_SECRET_KEY'; // replace with your v3 secret key
+
+if (!$recaptchaResponse) {
+    return back()->withErrors([
+        'captcha' => 'Please complete the reCAPTCHA verification.',
+    ])->onlyInput('email');
+}
+
+// Send verification request to Google
+$verifyResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+    'secret' => $secretKey,
+    'response' => $recaptchaResponse,
+    'remoteip' => $request->ip(),
+]);
+
+$recaptchaData = $verifyResponse->json();
+
+// ✅ Check both success and score (v3 uses a score system)
+if (empty($recaptchaData['success']) || $recaptchaData['success'] !== true || $recaptchaData['score'] < 0.5) {
+    return back()->withErrors([
+        'captcha' => 'Suspicious activity detected. Please try again.',
+    ])->onlyInput('email');
+}
+
+
     // ✅ Apply throttling based on IP + email
     $key = Str::lower($request->input('email')).'|'.$request->ip();
 
@@ -149,51 +171,51 @@ Route::post('/login', function (Request $request) {
 
         RateLimiter::clear($key); // ✅ Reset attempts on success
 
-       // ✅ Redirect based on role and location
-if (strtolower($user->role) === 'admin') {
-    return match ($user->location) {
-        'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
-        'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
-        'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
-        'Admin'      => redirect()->route('dashboard.admin'),
-        default      => redirect('/dashboard'),
-    };
-}
+        // ✅ Redirect based on role and location
+        if (strtolower($user->role) === 'admin') {
+            return match ($user->location) {
+                'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
+                'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
+                'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
+                'Admin'      => redirect()->route('dashboard.admin'),
+                default      => redirect('/dashboard'),
+            };
+        }
 
-if (strtolower($user->role) === 'mdrrmo') {
-    return match ($user->location) {
-        'Santa.Fe'    => redirect()->route('dashboard.mdrrmo-santafe'),
-        'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
-        'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
-        default      => redirect('/dashboard'),
-    };
-}
-if (strtolower($user->role) === 'waste') {
-    return match ($user->location) {
-        'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
-        'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
-        'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
-        default      => redirect('/dashboard'),
-    };
-}
-if (strtolower($user->role) === 'water') {
-    return match ($user->location) {
-        'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
-        'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
-        'Madridejos' => redirect()->route('dashboard.water-madridejos'),
-        default      => redirect('/dashboard'),
-    };
-}
+        if (strtolower($user->role) === 'mdrrmo') {
+            return match ($user->location) {
+                'Santa.Fe'   => redirect()->route('dashboard.mdrrmo-santafe'),
+                'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
+                'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
+                default      => redirect('/dashboard'),
+            };
+        }
 
+        if (strtolower($user->role) === 'waste') {
+            return match ($user->location) {
+                'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
+                'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
+                'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
+                default      => redirect('/dashboard'),
+            };
+        }
 
-// ✅ Citizens or fallback
-return match ($user->location) {
-    'Santa.Fe'   => redirect()->route('dashboard.santafe'),
-    'Bantayan'   => redirect()->route('dashboard.bantayan'),
-    'Madridejos' => redirect()->route('dashboard.madridejos'),
-    default      => redirect('/dashboard'),
-};
+        if (strtolower($user->role) === 'water') {
+            return match ($user->location) {
+                'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
+                'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
+                'Madridejos' => redirect()->route('dashboard.water-madridejos'),
+                default      => redirect('/dashboard'),
+            };
+        }
 
+        // ✅ Citizens or fallback
+        return match ($user->location) {
+            'Santa.Fe'   => redirect()->route('dashboard.santafe'),
+            'Bantayan'   => redirect()->route('dashboard.bantayan'),
+            'Madridejos' => redirect()->route('dashboard.madridejos'),
+            default      => redirect('/dashboard'),
+        };
     }
 
     RateLimiter::hit($key, 60); // ✅ Increment failed attempts
@@ -202,6 +224,36 @@ return match ($user->location) {
         'email' => 'The provided credentials do not match our records.',
     ])->onlyInput('email');
 })->name('login.submit');
+
+
+// ✅ HOME ROUTE (Welcome Page with Defacement Protection)
+Route::get('/', function () {
+    $welcomePath = resource_path('views/welcome.blade.php');
+    $hashFile = storage_path('app/security_hash.txt');
+
+    // Create a reference hash if it doesn’t exist
+    if (!File::exists($hashFile)) {
+        File::put($hashFile, hash_file('sha256', $welcomePath));
+    }
+
+    $currentHash = hash_file('sha256', $welcomePath);
+    $originalHash = trim(File::get($hashFile));
+
+    // ✅ Detect tampering or defacement
+    if ($currentHash !== $originalHash) {
+        Log::warning('⚠️ Defacement detected on welcome.blade.php');
+        abort(403, 'System integrity check failed — unauthorized modification detected.');
+    }
+
+    // ✅ Add HTTP security headers
+    $response = response()->view('welcome');
+    $response->headers->set('X-Frame-Options', 'DENY');
+    $response->headers->set('X-Content-Type-Options', 'nosniff');
+    $response->headers->set('X-XSS-Protection', '1; mode=block');
+    $response->headers->set('Referrer-Policy', 'no-referrer');
+
+    return $response;
+});
 
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
