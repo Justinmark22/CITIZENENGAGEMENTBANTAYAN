@@ -119,7 +119,7 @@
 <a href="{{ route('auth.google') }}"
    class="w-full flex items-center justify-center bg-white hover:bg-gray-100 text-gray-900 font-semibold py-2 px-4 rounded-lg shadow-md transition transform hover:scale-105">
   <img src="{{ asset('images/google-logo.png') }}" alt="Google Logo" class="w-5 h-5 mr-2">
-  Continue with Google
+  login with Google
 </a>
 
 <p class="text-center text-gray-400 text-sm mt-2">
