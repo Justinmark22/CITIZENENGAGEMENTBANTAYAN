@@ -14,11 +14,10 @@
     .animate-fadeInUp { animation: fadeInUp 1s ease-out forwards; }
   </style>
 </head>
-
-<body class="bg-white text-gray-900">
+<body class="bg-gray-100 text-gray-900">
 
 <!-- Navbar -->
-<nav class="bg-white border-b border-gray-200 shadow-md fixed top-0 inset-x-0 z-50">
+<nav class="bg-white shadow-md fixed top-0 inset-x-0 z-50">
   <div class="max-w-7xl mx-auto px-6">
     <div class="flex justify-between items-center h-20">
       <!-- Logo -->
@@ -65,8 +64,9 @@
     </div>
   </div>
 </nav>
-<!-- Hero Section (Ready.gov-inspired) -->
-<section class="relative isolate bg-gray-900 text-white overflow-hidden">
+
+<!-- Hero Section -->
+<section class="relative isolate bg-gray-900 text-white overflow-hidden h-screen">
   <!-- Background Image Slider -->
   <div class="absolute inset-0" 
        x-data="{
@@ -79,45 +79,44 @@
            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
            :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
     </template>
-    <!-- Dark gradient overlay -->
-    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
+    <!-- Dark overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/80"></div>
   </div>
 
-  <!-- Content -->
-  <div class="relative z-20 max-w-6xl mx-auto px-6 py-40 flex flex-col items-center text-center lg:items-start lg:text-left">
+  <!-- Hero Content -->
+  <div class="relative z-20 max-w-6xl mx-auto px-6 flex flex-col items-center text-center lg:items-start lg:text-left h-full justify-center">
     <div class="max-w-2xl space-y-6 animate-fadeInUp">
-      <h2 class="text-yellow-400 font-semibold text-xl uppercase tracking-wide">
+      <h2 class="text-yellow-400 font-semibold text-lg uppercase tracking-widest">
         Welcome to Bantayan Island
       </h2>
       <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight">
-        Strengthening Citizen Engagement <br class="hidden sm:block">
+        Strengthening Citizen Engagement<br class="hidden sm:block">
         Across Communities
       </h1>
       <p class="text-lg text-gray-200 max-w-xl leading-relaxed">
-        Discover a <span class="font-semibold text-yellow-400">transparent digital platform</span> 
+        Discover a <span class="font-semibold text-yellow-400">transparent digital platform</span>
         that connects citizens, LGUs, and communities across Bantayan, Santa Fe, and Madridejos.
       </p>
 
       <div class="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start">
-        <a href="#services" 
-           class="px-8 py-4 bg-yellow-400 text-gray-900 rounded-lg font-semibold shadow-md hover:bg-yellow-500 transition">
+        <a href="#services" class="px-8 py-4 bg-yellow-400 text-gray-900 rounded-lg font-semibold shadow-md hover:bg-yellow-500 transition">
           Explore Services
         </a>
-        <a href="{{ route('contact') }}" 
-           class="px-8 py-4 bg-white/10 border border-white/30 rounded-lg font-semibold text-white hover:bg-white/20 transition">
+        <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/10 border border-white/30 rounded-lg font-semibold text-white hover:bg-white/20 transition">
           Contact Us
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Decorative Bottom Shape (like Ready.gov subtle wave) -->
+  <!-- Decorative Bottom Wave -->
   <div class="absolute bottom-0 left-0 right-0">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 200" class="w-full h-auto text-gray-900">
       <path fill="currentColor" d="M0,64L48,69.3C96,75,192,85,288,85.3C384,85,480,75,576,74.7C672,75,768,85,864,90.7C960,96,1056,96,1152,90.7C1248,85,1344,75,1392,69.3L1440,64L1440,200L1392,200C1344,200,1248,200,1152,200C1056,200,960,200,864,200C768,200,672,200,576,200C480,200,384,200,288,200C192,200,96,200,48,200L0,200Z"></path>
     </svg>
   </div>
 </section>
+
 
 <!-- Advanced Services Section with Full-Width Patterned Black Background -->
 <section id="services" class="relative py-24">
