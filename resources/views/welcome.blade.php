@@ -65,51 +65,31 @@
     </div>
   </div>
 </nav>
-<!-- Hero (Ready.gov Inspired) -->
-<section class="relative pt-32 pb-28 bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 text-white overflow-hidden">
-  <!-- Subtle overlay pattern -->
-  <div class="absolute inset-0 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/double-bubble-dark.png')] opacity-10"></div>
+<!-- Hero -->
+<section class="relative pt-32 pb-24 bg-gray-900 text-white overflow-hidden">
+  <!-- Patterned Background -->
+  <div class="absolute inset-0 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/double-bubble-dark.png')] opacity-30"></div>
+  <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"></div>
 
-  <div class="relative max-w-7xl mx-auto px-6 flex flex-col-reverse lg:flex-row items-center gap-14">
-    
-    <!-- Left Content (Text Area) -->
-    <div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
-      <h2 class="text-yellow-400 text-sm uppercase tracking-widest font-semibold mb-3">Official Citizen Engagement Platform</h2>
-      <h1 class="text-5xl md:text-6xl font-extrabold mb-6 leading-tight">
-        <span class="text-white">Be Ready, Stay Informed,</span><br>
-        <span class="text-yellow-400">Engage with Bantayan 911</span>
-      </h1>
-      <p class="text-lg text-blue-100 mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
-        Your trusted source for local updates, emergency coordination, and public engagement across Bantayan, Santa Fe, and Madridejos.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-        <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">
-          Explore Services
-        </a>
-        <a href="{{ route('contact') }}" class="px-8 py-4 bg-transparent border border-white hover:bg-white/10 rounded-lg font-bold shadow-md transition">
-          Contact Us
-        </a>
-      </div>
-    </div>
-
-    <!-- Right Content (Slideshow) -->
-    <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
-         x-data="{
-           images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/sta.fe.png') }}', '{{ asset('images/madridejos.png') }}'],
-           index: 0,
-           init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) }
-         }">
-      <template x-for="(img, i) in images" :key="i">
-        <img :src="img"
-             class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-             :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
-      </template>
-      <div class="absolute inset-0 bg-gradient-to-t from-blue-900/70 to-transparent"></div>
-    </div>
-
+  <div class="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
+   <!-- Left (Updated Text) -->
+<div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
+  <h2 class="text-xl lg:text-2xl font-semibold text-yellow-400 mb-2">Welcome to Bantayan Island</h2>
+  <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-white">
+    Strengthening Citizen Engagement Across Communities
+  </h1>
+  <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+    Discover a <span class="font-semibold text-yellow-400">transparent digital platform</span> that connects citizens, LGUs, and local communities in Bantayan, Santa Fe, and Madridejos.
+  </p>
+  <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+    <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">
+      Explore Services
+    </a>
+    <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">
+      Contact Us
+    </a>
   </div>
-</section>
-
+</div>
 
 <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
      x-data="{
