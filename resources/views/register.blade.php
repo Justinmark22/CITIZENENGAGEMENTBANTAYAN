@@ -56,16 +56,36 @@
           </div>
 
           <!-- Password with Suggest Button -->
-          <div class="relative">
-            <label for="password" class="block text-sm mb-1">Password</label>
-            <div class="flex gap-2">
-              <input type="password" id="password" name="password" required
-                minlength="12"
-                class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <button type="button" id="suggestPassword" 
-                class="bg-indigo-500 hover:bg-indigo-400 text-white px-3 py-1 rounded-lg text-sm">
-                Suggest
-              </button>
+         <div>
+  <label for="password" class="block text-sm mb-1">Password</label>
+  <div class="relative">
+    <input type="password" id="password" name="password" required
+      minlength="8"
+      class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+    <button type="button" id="togglePassword"
+      class="absolute right-10 top-2.5 text-gray-400 hover:text-indigo-500">
+      👁️
+    </button>
+    <button type="button" id="suggestPassword"
+      class="absolute right-2 top-2.5 text-gray-400 hover:text-indigo-500">
+      🔑
+    </button>
+  </div>
+  <p id="passwordHelp" class="text-gray-400 text-xs mt-1">Use a strong password</p>
+</div>
+
+<div>
+  <label for="password_confirmation" class="block text-sm mb-1">Confirm Password</label>
+  <div class="relative">
+    <input type="password" id="password_confirmation" name="password_confirmation" required
+      class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+    <button type="button" id="toggleConfirm"
+      class="absolute right-2 top-2.5 text-gray-400 hover:text-indigo-500">
+      👁️
+    </button>
+  </div>
+</div>
+
             </div>
             <p id="passwordHelp" class="text-gray-400 text-sm mt-1">
               Minimum 12 characters, including uppercase, lowercase, numbers, and symbols.
@@ -100,6 +120,9 @@
 
     </div>
   </div>
+  
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
     const passwordInput = document.getElementById('password');
@@ -114,21 +137,27 @@
       if(strongPassword.test(val)) {
         passwordHelp.textContent = "Strong password ✅";
         passwordHelp.classList.replace("text-gray-400", "text-green-500");
+        passwordHelp.classList.remove("text-red-500");
       } else {
         passwordHelp.textContent = "Weak password ❌ Minimum 12 chars, uppercase, lowercase, number, symbol.";
         passwordHelp.classList.replace("text-green-500", "text-red-500");
+        passwordHelp.classList.add("text-gray-400");
       }
     });
 
-    // ✅ Suggested random password popup
+    // Suggested random password popup with auto-copy
     suggestBtn.addEventListener('click', () => {
       const suggested = generateStrongPassword(16);
       Swal.fire({
         title: 'Suggested Password',
-        html: `<input type="text" id="suggestedPassword" class="w-full bg-gray-700 text-white px-2 py-1 rounded" value="${suggested}">`,
+        html: `<input type="text" id="suggestedPassword" class="w-full bg-gray-700 text-white px-2 py-1 rounded" value="${suggested}" readonly>`,
         showCancelButton: true,
-        confirmButtonText: 'Use Password',
+        confirmButtonText: 'Use & Copy Password',
         cancelButtonText: 'Cancel',
+        didOpen: () => {
+          const input = document.getElementById('suggestedPassword');
+          input.select();
+        },
         preConfirm: () => {
           const val = document.getElementById('suggestedPassword').value;
           return val;
@@ -137,6 +166,15 @@
         if(result.isConfirmed) {
           passwordInput.value = result.value;
           passwordInput.dispatchEvent(new Event('input')); // trigger strength check
+          navigator.clipboard.writeText(result.value).then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Copied!',
+              text: 'Password copied to clipboard.',
+              timer: 1500,
+              showConfirmButton: false
+            });
+          });
         }
       });
     });
@@ -151,5 +189,6 @@
       return pass;
     }
   </script>
+
 </body>
 </html>
