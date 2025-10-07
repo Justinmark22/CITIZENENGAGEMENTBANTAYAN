@@ -181,12 +181,19 @@ Route::post('/login', function (Request $request) {
         ])->onlyInput('email');
     }
 
-    if (Auth::attempt($credentials, $request->boolean('remember'))) {
-        $request->session()->regenerate();
-        $user = Auth::user();
+   if (Auth::attempt($credentials, $request->boolean('remember'))) {
+    $request->session()->regenerate();
+    $user = Auth::user();
 
-        $user->status = 'active';
-        $user->save();
+    // ✅ Example cookies
+    cookie()->queue(cookie('user_name', $user->name, 60)); // 60 minutes
+    cookie()->queue(cookie('user_role', $user->role, 60));
+
+    // Optional: Use secure & HttpOnly flags
+    cookie()->queue(cookie('secure_session', Str::random(32), 60, null, null, true, true));
+
+    $user->status = 'active';
+    $user->save();
 
         RateLimiter::clear($key);
 // ✅ Skip OTP for Admin, MDRRMO, Waste, Water roles OR location 'Admin'
@@ -281,13 +288,17 @@ Route::post('/verify-otp', function (Request $request) {
         default      => redirect('/dashboard'),
     };
 })->name('otp.verify.submit');
-
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
     if ($user) {
-        $user->status = 'offline';   // ✅ Mark user offline on logout
+        $user->status = 'offline';
         $user->save();
     }
+
+    // 🔥 Forget cookies
+    cookie()->queue(cookie()->forget('user_name'));
+    cookie()->queue(cookie()->forget('user_role'));
+    cookie()->queue(cookie()->forget('secure_session'));
 
     Auth::logout();
     $request->session()->invalidate();
