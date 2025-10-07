@@ -99,6 +99,9 @@
           </div>
         </fieldset>
 
+        <!-- ✅ Added reCAPTCHA hidden field -->
+        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+
         <!-- Submit button -->
         <button id="loginBtn" type="submit"
                 class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition transform hover:scale-105">
@@ -111,6 +114,7 @@
       </form>
     </div>
   </div>
+
 <script>
   const togglePassword = document.getElementById("togglePassword");
   const passwordInput = document.getElementById("password");
