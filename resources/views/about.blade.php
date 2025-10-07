@@ -13,26 +13,27 @@
 </head>
 
 <body class="bg-gray-50 text-gray-900 font-sans" x-data="{ open: false }">
+<!-- ✅ Navbar -->
+<nav class="bg-white shadow-lg sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
+    
+    <!-- Logo -->
+    <div class="flex items-center gap-3" data-aos="fade-right">
+      <img src="/images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png" alt="911 Logo" class="w-12 h-12 md:w-14 md:h-14 rounded-full border border-gray-200 shadow-sm">
+      <span class="text-lg md:text-2xl font-extrabold text-black">
+        911 Bantayan Island
+      </span>
+    </div>
 
-  <!-- ✅ Navbar -->
-  <nav class="bg-white shadow-lg sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
-      
-      <!-- Logo -->
-      <div class="flex items-center gap-3" data-aos="fade-right">
-        <img src="/images/911.png" alt="911 Logo" class="w-12 h-12 md:w-14 md:h-14 rounded-full border border-gray-200 shadow-sm">
-        <span class="text-lg md:text-2xl font-extrabold text-red-600">
-          911 Bantayan Island
-        </span>
-      </div>
-
-      <!-- Desktop Links -->
-      <div class="hidden md:flex space-x-6 lg:space-x-8" data-aos="fade-down">
-        <a href="{{ url('/') }}" class="text-gray-800 hover:text-red-600 font-medium transition">Home</a>
-        <a href="{{ route('about') }}" class="text-red-600 font-bold border-b-2 border-red-600">About</a>
-        <a href="{{ route('contact') }}" class="text-gray-800 hover:text-red-600 font-medium transition">Contact</a>
-        <a href="{{ route('faq') }}" class="text-gray-800 hover:text-red-600 font-medium transition">FAQs</a>
-      </div>
+    <!-- Desktop Links -->
+    <div class="hidden md:flex space-x-6 lg:space-x-8" data-aos="fade-down">
+      <a href="{{ url('/') }}" class="text-black hover:text-red-600 font-medium transition">Home</a>
+      <a href="{{ route('about') }}" class="text-black font-bold border-b-2 border-red-600">About</a>
+      <a href="{{ route('contact') }}" class="text-black hover:text-red-600 font-medium transition">Contact</a>
+      <a href="{{ route('faq') }}" class="text-black hover:text-red-600 font-medium transition">FAQs</a>
+    </div>
+  </div>
+</nav>
 
       <!-- ✅ Mobile Menu Button -->
       <button @click="open = !open" class="md:hidden focus:outline-none text-gray-700">
