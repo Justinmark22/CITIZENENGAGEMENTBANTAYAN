@@ -59,26 +59,29 @@
             </select>
           </div>
 
-          <!-- Password with suggest & show/hide -->
-          <div>
-            <label for="password" class="block text-sm mb-1">Password</label>
-            <div class="relative">
-              <input type="password" id="password" name="password" required
-                minlength="12"
-                class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              
-              <!-- Toggle visibility -->
-              <button type="button" id="togglePassword"
-                class="absolute right-10 top-2.5 text-gray-400 hover:text-indigo-500">👁️</button>
-              
-              <!-- Suggest password -->
-              <button type="button" id="suggestPassword"
-                class="absolute right-2 top-2.5 text-gray-400 hover:text-indigo-500">suggested</button>
-            </div>
-            <p id="passwordHelp" class="text-gray-400 text-xs mt-1">
-              Minimum 12 characters, including uppercase, lowercase, numbers, and symbols.
-            </p>
-          </div>
+         <!-- Password with show/hide -->
+<div>
+  <label for="password" class="block text-sm mb-1">Password</label>
+  <div class="relative">
+    <input type="password" id="password" name="password" required
+      minlength="12"
+      class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+    
+    <!-- Toggle visibility inside input -->
+    <button type="button" id="togglePassword"
+      class="absolute right-2 top-2.5 text-gray-400 hover:text-indigo-500">👁️</button>
+  </div>
+
+  <!-- Suggested password button OUTSIDE -->
+  <button type="button" id="suggestPassword"
+    class="mt-2 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-1 rounded-lg text-sm font-medium transition">
+    Suggested Password
+  </button>
+
+  <p id="passwordHelp" class="text-gray-400 text-xs mt-1">
+    Minimum 12 characters, including uppercase, lowercase, numbers, and symbols.
+  </p>
+</div>
 
           <!-- Confirm Password with toggle -->
           <div>
