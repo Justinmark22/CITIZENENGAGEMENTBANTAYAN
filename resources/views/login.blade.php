@@ -200,18 +200,22 @@ const loginErrors = @json($errors->any());
 const loggedInStatus = @json(session('status') === 'logged_in');
 
 if (loginErrors) {
-  attempts++;
+  // Increment attempts
+  attempts = (attempts || 0) + 1;
   localStorage.setItem("login_attempts", attempts);
 
-  if (attempts >= 3) {
-    lockoutUntil = Date.now() + 60000; // 60s lock
+  // Lock account after 3 failed attempts
+  if (attempts >= 3) { // Lock after 3 attempts
+    lockoutUntil = Date.now() + 60 * 1000; // 60 seconds = 1 minute
     localStorage.setItem("lockout_until", lockoutUntil);
+
     Swal.fire({
       icon: 'error',
       title: 'Account Locked',
-      text: 'Too many failed attempts. Please wait 60 seconds before trying again.',
+      text: 'Too many failed attempts. Please wait 1 minute before trying again.',
     });
-    startCountdown();
+
+    startCountdown(); // Start the live countdown on the login button
   }
 }
 
