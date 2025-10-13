@@ -1,10 +1,38 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-        # Redirect all requests to the public folder
-        RewriteRule ^(.*)$ public/$1 [L]
-<IfModule>
-<Filesmatch "^(\.env|\.git|composer\.json|artisan|server\.php|storage|vendor)">
-    Order allow,deny
-    Deny from all
-<Filesmatch>
+    # Redirect all requests to the public directory
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+</IfModule>
+
+# ==============================
+# SECURITY HEADERS
+# ==============================
+<IfModule mod_headers.c>
+    # Prevent MIME type sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Prevent clickjacking
+    Header always append X-Frame-Options "SAMEORIGIN"
+    
+    # Prevent XSS attacks
+    Header set X-XSS-Protection "1; mode=block"
+
+    # Disable caching of sensitive data
+    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+
+    # Strict Transport Security (only enable if using HTTPS)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+</IfModule>
+
+# ==============================
+# BLOCK SENSITIVE FILES
+# ==============================
+<FilesMatch "(^\.|composer\.(json|lock)|artisan|server\.php|.env|.htaccess|.htpasswd|storage|vendor)">
+    Require all denied
+</FilesMatch>
+
+# Prevent directory listing
+Options -Indexes
