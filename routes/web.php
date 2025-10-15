@@ -193,43 +193,50 @@ Route::post('/login', function (Request $request) {
         $user->save();
 
         RateLimiter::clear($key);
-// ✅ Define normalized role and location first
-$role = strtolower($user->role ?? '');
-$location = str_replace([' ', '.'], '', strtolower($user->location ?? '')); // normalize "Santa.Fe" → "santafe"
+// ✅ Mark as active
+$user->status = 'active';
+$user->save();
 
-// ✅ Skip OTP for Admin, MDRRMO, Waste, Water roles OR location 'Admin'
-$skipRoles = ['admin', 'mdrrmo', 'waste', 'water'];
+RateLimiter::clear($key); // ✅ Reset attempts on success
 
-if (in_array($role, $skipRoles) || $location === 'admin') {
-    return match ($role) {
-        'admin' => match ($location) {
-            'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
-            'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
-            'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
-            'admin'      => redirect()->route('dashboard.admin'),
-            default      => redirect('/dashboard'),
-        },
-        'mdrrmo' => match ($location) {
-            'Santa.Fe'   => redirect()->route('dashboard.mdrrmo-santafe'),
-            'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
-            'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
-            default      => redirect('/dashboard'),
-        },
-        'waste' => match ($location) {
-            'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
-            'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
-            'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
-            default      => redirect('/dashboard'),
-        },
-        'water' => match ($location) {
-            'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
-            'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
-            'Madridejos' => redirect()->route('dashboard.water-madridejos'),
-            default      => redirect('/dashboard'),
-        },
-        default => redirect('/dashboard'),
-    };
-}
+// ✅ Determine redirect route by role + location
+$route = match (strtolower($user->role)) {
+    'admin' => match ($user->location) {
+        'Santa.Fe' => 'dashboard.santafeadmin',
+        'Bantayan' => 'dashboard.bantayanadmin',
+        'Madridejos' => 'dashboard.madridejosadmin',
+        'Admin' => 'dashboard.admin',
+        default => 'dashboard',
+    },
+    'mdrrmo' => match ($user->location) {
+        'Santa.Fe' => 'dashboard.mdrrmo-santafe',
+        'Bantayan' => 'dashboard.mdrrmo-bantayan',
+        'Madridejos' => 'dashboard.mdrrmo-madridejos',
+        default => 'dashboard',
+    },
+    'waste' => match ($user->location) {
+        'Santa.Fe' => 'dashboard.waste-santafe',
+        'Bantayan' => 'dashboard.waste-bantayan',
+        'Madridejos' => 'dashboard.waste-madridejos',
+        default => 'dashboard',
+    },
+    'water' => match ($user->location) {
+        'Santa.Fe' => 'dashboard.water-santafe',
+        'Bantayan' => 'dashboard.water-bantayan',
+        'Madridejos' => 'dashboard.water-madridejos',
+        default => 'dashboard',
+    },
+    default => match ($user->location) {
+        'Santa.Fe' => 'dashboard.santafe',
+        'Bantayan' => 'dashboard.bantayan',
+        'Madridejos' => 'dashboard.madridejos',
+        default => 'dashboard',
+    },
+};
+
+// ✅ Redirect safely
+return redirect()->route($route);
+
 
 
         // ✅ For citizen users only → generate OTP
