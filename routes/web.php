@@ -193,40 +193,44 @@ Route::post('/login', function (Request $request) {
         $user->save();
 
         RateLimiter::clear($key);
+// ✅ Define normalized role and location first
+$role = strtolower($user->role ?? '');
+$location = str_replace([' ', '.'], '', strtolower($user->location ?? '')); // normalize "Santa.Fe" → "santafe"
 
-        // ✅ Skip OTP for Admin, MDRRMO, Waste, Water roles OR location 'Admin'
-        $skipRoles = ['admin', 'mdrrmo', 'waste', 'water'];
+// ✅ Skip OTP for Admin, MDRRMO, Waste, Water roles OR location 'Admin'
+$skipRoles = ['admin', 'mdrrmo', 'waste', 'water'];
 
-        if (in_array(strtolower($user->role), $skipRoles) || strtolower($user->location) === 'admin') {
-            return match (strtolower($user->role)) {
-                'admin' => match (strtolower($user->location)) {
-                    'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
-                    'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
-                    'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
-                    'admin'      => redirect()->route('dashboard.admin'),
-                    default      => redirect('/dashboard'),
-                },
-                'mdrrmo' => match (strtolower($user->location)) {
-                    'Santa.Fe'   => redirect()->route('dashboard.mdrrmo-santafe'),
-                    'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
-                    'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
-                    default      => redirect('/dashboard'),
-                },
-                'waste' => match (strtolower($user->location)) {
-                    'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
-                    'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
-                    'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
-                    default      => redirect('/dashboard'),
-                },
-                'water' => match (strtolower($user->location)) {
-                    'Santa.fe'   => redirect()->route('dashboard.water-santafe'),
-                    'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
-                    'Madridejos' => redirect()->route('dashboard.water-madridejos'),
-                    default      => redirect('/dashboard'),
-                },
-                default => redirect('/dashboard'),
-            };
-        }
+if (in_array($role, $skipRoles) || $location === 'admin') {
+    return match ($role) {
+        'admin' => match ($location) {
+            'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
+            'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
+            'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
+            'admin'      => redirect()->route('dashboard.admin'),
+            default      => redirect('/dashboard'),
+        },
+        'mdrrmo' => match ($location) {
+            'Santa.Fe'   => redirect()->route('dashboard.mdrrmo-santafe'),
+            'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
+            'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
+            default      => redirect('/dashboard'),
+        },
+        'waste' => match ($location) {
+            'Santa.Fe'   => redirect()->route('dashboard.waste-santafe'),
+            'Bantayan'   => redirect()->route('dashboard.waste-bantayan'),
+            'Madridejos' => redirect()->route('dashboard.waste-madridejos'),
+            default      => redirect('/dashboard'),
+        },
+        'water' => match ($location) {
+            'Santa.Fe'   => redirect()->route('dashboard.water-santafe'),
+            'Bantayan'   => redirect()->route('dashboard.water-bantayan'),
+            'Madridejos' => redirect()->route('dashboard.water-madridejos'),
+            default      => redirect('/dashboard'),
+        },
+        default => redirect('/dashboard'),
+    };
+}
+
 
         // ✅ For citizen users only → generate OTP
         $otp = rand(100000, 999999);
