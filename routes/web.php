@@ -193,40 +193,45 @@ Route::post('/login', function (Request $request) {
         $user->save();
 
         RateLimiter::clear($key);
+// ✅ Define these before checking roles
+    $role = strtolower($user->role ?? '');
+    $location = strtolower($user->location ?? '');
 
-        // ✅ Skip OTP for Admin, MDRRMO, Waste, Water roles OR location 'Admin'
-        $skipRoles = ['admin', 'mdrrmo', 'waste', 'water'];
-if (in_array($role, $skipRoles) || $location === 'admin') {
-    $routes = [
-        'admin' => [
-            'Santa.Fe'   => 'dashboard.santafeadmin',
-            'Bantayan'   => 'dashboard.bantayanadmin',
-            'Madridejos' => 'dashboard.madridejosadmin',
-            'Admin'      => 'dashboard.admin',
-        ],
-        'mdrrmo' => [
-            'Santa.Fe'   => 'dashboard.mdrrmo-santafe',
-            'Bantayan'   => 'dashboard.mdrrmo-bantayan',
-            'Madridejos' => 'dashboard.mdrrmo-madridejos',
-        ],
-        'waste' => [
-            'Santa.Fe'   => 'dashboard.waste-santafe',
-            'Bantayan'   => 'dashboard.waste-bantayan',
-            'Madridejos' => 'dashboard.waste-madridejos',
-        ],
-        'water' => [
-            'Santa.Fe'   => 'dashboard.water-santafe',
-            'Bantayan'   => 'dashboard.water-bantayan',
-            'Madridejos' => 'dashboard.water-madridejos',
-        ],
-    ];
+    // ✅ Skip OTP for Admin, MDRRMO, Waste, Water roles OR location 'Admin'
+    $skipRoles = ['admin', 'mdrrmo', 'waste', 'water'];
 
-    if (isset($routes[$role][$location])) {
-        return redirect()->route($routes[$role][$location]);
+    if (in_array($role, $skipRoles) || $location === 'admin') {
+        $routes = [
+            'admin' => [
+                'Santa.Fe'   => 'dashboard.santafeadmin',
+                'Bantayan'   => 'dashboard.bantayanadmin',
+                'Madridejos' => 'dashboard.madridejosadmin',
+                'admin'      => 'dashboard.admin',
+            ],
+            'mdrrmo' => [
+                'Santa.Fe'   => 'dashboard.mdrrmo-santafe',
+                'Bantayan'   => 'dashboard.mdrrmo-bantayan',
+                'Madridejos' => 'dashboard.mdrrmo-madridejos',
+            ],
+            'waste' => [
+                'Santa.Fe'   => 'dashboard.waste-santafe',
+                'Bantayan'   => 'dashboard.waste-bantayan',
+                'Madridejos' => 'dashboard.waste-madridejos',
+            ],
+            'water' => [
+                'Santa.Fe'   => 'dashboard.water-santafe',
+                'Bantayan'   => 'dashboard.water-bantayan',
+                'Madridejos' => 'dashboard.water-madridejos',
+            ],
+        ];
+
+        if (isset($routes[$role][$location])) {
+            return redirect()->route($routes[$role][$location]);
+        }
+
+        return redirect('/dashboard');
     }
 
-    return redirect('/dashboard');
-}
         // ✅ For citizen users only → generate OTP
         $otp = rand(100000, 999999);
         session([
