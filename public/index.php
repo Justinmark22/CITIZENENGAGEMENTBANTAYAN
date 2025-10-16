@@ -53,3 +53,9 @@ $response = $kernel->handle(
 )->send();
 
 $kernel->terminate($request, $response);
+// public/index.php — add at the very top (before require __DIR__.'/../vendor/autoload.php')
+if (file_exists(__DIR__ . '/.maintenance')) {
+    http_response_code(503);
+    echo file_get_contents(__DIR__ . '/maintenance.html'); // create maintenance.html as above
+    exit;
+}
