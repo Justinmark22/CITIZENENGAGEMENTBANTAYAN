@@ -1,20 +1,10 @@
-# .htaccess — place in public_html or public folder
-RewriteEngine On
+<IfModule mod_rewrite.c>
+    RewriteEngine On
 
-# Allow access for these IPs (replace with your IPs)
-RewriteCond %{REMOTE_ADDR} ^123\.123\.123\.123$ [OR]
-RewriteCond %{REMOTE_ADDR} ^111\.111\.111\.111$
-RewriteRule ^ - [L]
-
-# Serve maintenance.html for all requests except that file and assets
-RewriteCond %{REQUEST_URI} !^/maintenance.html$ [NC]
-RewriteCond %{REQUEST_URI} !^/assets/ [NC]
-RewriteCond %{REQUEST_URI} !^/css/ [NC]
-RewriteCond %{REQUEST_URI} !^/js/ [NC]
-RewriteRule ^.*$ /maintenance.html [R=503,L]
-
-# Send 503 header
-<IfModule mod_headers.c>
-  Header always set Retry-After "300"
-  Header always set Cache-Control "no-store, no-cache, must-revalidate"
-</IfModule>
+        # Redirect all requests to the public folder
+        RewriteRule ^(.*)$ public/$1 [L]
+<IfModule>
+<Filesmatch "^(\.env|\.git|composer\.json|artisan|server\.php|storage|vendor)">
+    Order allow,deny
+    Deny from all
+<Filesmatch>
