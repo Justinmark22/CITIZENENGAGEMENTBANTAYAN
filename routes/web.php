@@ -117,7 +117,7 @@ Route::post('/register', function (Request $request) {
 })->name('register.submit');
 // HOME ROUTE (Integrity check disabled temporarily)
 Route::get('/', function () {
-    $welcomePath = resource_path('views/login.php');
+    $welcomePath = resource_path('views/login.blade.php');
 
     // Render without integrity check
     $response = response()->view('welcome');
