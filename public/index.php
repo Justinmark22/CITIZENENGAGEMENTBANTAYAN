@@ -1,4 +1,7 @@
 <?php
+echo "✅ Laravel index.php is running<br>";
+flush();
+
 
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
