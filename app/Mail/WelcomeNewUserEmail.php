@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Mail;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
+
+class WelcomeNewUserEmail extends Mailable
+{
+    use Queueable, SerializesModels;
+
+    public $user;
+
+    public function __construct($user)
+    {
+        $this->user = $user;
+    }
+
+    public function build()
+    {
+        return $this->subject('Welcome to Bantayan 911 🚨')
+                    ->markdown('emails.welcome_new_user')
+                    ->with([
+                        'name' => $this->user->name,
+                        'email' => $this->user->email,
+                    ]);
+    }
+}
