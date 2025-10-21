@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Santa Fe Waste Management Dashboard</title>
+<title>Bantayan Water Management Dashboard</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
@@ -14,8 +14,8 @@
   <!-- Sidebar -->
   <aside class="w-64 bg-white shadow-lg flex flex-col">
       <div class="p-6 border-b border-gray-200">
-          <h2 class="text-2xl font-bold text-gray-900">WasteMgmt</h2>
-          <p class="text-gray-400 text-sm mt-1">Santa Fe</p>
+          <h2 class="text-2xl font-bold text-gray-900">WaterMgmt</h2>
+          <p class="text-gray-400 text-sm mt-1">Bantayan</p>
       </div>
       <nav class="mt-6 flex-1 space-y-2">
           <a href="#" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
@@ -24,7 +24,7 @@
               </svg>
               Dashboard
           </a>
-          <a href="{{ route('waste.reports-bantayan') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
+          <a href="{{ route('water.reports-bantayan') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13v6H9zM5 9V5h14v4H5z"/>
               </svg>
@@ -50,8 +50,8 @@
       <!-- Header -->
       <div class="flex justify-between items-center mb-8">
           <div>
-              <h1 class="text-4xl font-extrabold text-gray-900">Santa Fe Waste Dashboard</h1>
-              <p class="text-gray-500 mt-1">Welcome, Waste Admin</p>
+              <h1 class="text-4xl font-extrabold text-gray-900">Bantayan Water Dashboard</h1>
+              <p class="text-gray-500 mt-1">Welcome, Water Admin</p>
           </div>
           <div class="flex space-x-3">
               <button class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">Add Report</button>
@@ -100,7 +100,7 @@
 
       <!-- Recent Reports Table -->
       <div class="bg-white shadow-xl rounded-xl border border-gray-200 p-6">
-          <h2 class="text-2xl font-semibold text-gray-900 mb-6">Recent Waste Reports</h2>
+          <h2 class="text-2xl font-semibold text-gray-900 mb-6">Recent Water Reports</h2>
           <div class="overflow-x-auto">
               <table class="min-w-full divide-y divide-gray-200 table-auto">
                   <thead class="bg-gray-50">
