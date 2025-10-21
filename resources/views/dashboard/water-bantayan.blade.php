@@ -13,38 +13,38 @@
 <div class="flex min-h-screen">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-gradient-to-b from-blue-800 to-blue-900 text-white flex flex-col shadow-lg">
-        <div class="flex items-center space-x-3 px-6 py-5 border-b border-blue-700">
+    <aside class="w-64 bg-gradient-to-b from-sky-500/70 to-sky-700/70 text-white flex flex-col shadow-lg backdrop-blur-md border-r border-white/10">
+        <div class="flex items-center space-x-3 px-6 py-5 border-b border-white/20">
             <img src="{{ asset('images/water-logo.png') }}" alt="Logo" class="w-10 h-10 rounded-full shadow-md">
             <div>
-                <h2 class="text-xl font-bold">WaterMgmt</h2>
-                <p class="text-blue-300 text-sm">Bantayan</p>
+                <h2 class="text-xl font-bold text-white">WaterMgmt</h2>
+                <p class="text-blue-100 text-sm">Bantayan</p>
             </div>
         </div>
 
         <nav class="mt-6 flex-1 space-y-1">
-            <a href="#" class="flex items-center px-6 py-3 text-white-100 hover:bg-blue-700 hover:text-white rounded-lg transition">
+            <a href="#" class="flex items-center px-6 py-3 text-sky-50 hover:bg-sky-400/30 hover:text-white rounded-lg transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18"/>
                 </svg>
                 Dashboard
             </a>
 
-            <a href="{{ route('water.reports-bantayan') }}" class="flex items-center px-6 py-3 text-blue-100 hover:bg-blue-700 hover:text-white rounded-lg transition">
+            <a href="{{ route('water.reports-bantayan') }}" class="flex items-center px-6 py-3 text-sky-50 hover:bg-sky-400/30 hover:text-white rounded-lg transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13v6H9zM5 9V5h14v4H5z"/>
                 </svg>
                 Reports
             </a>
 
-            <a href="#" class="flex items-center px-6 py-3 text-blue-100 hover:bg-blue-700 hover:text-white rounded-lg transition">
+            <a href="#" class="flex items-center px-6 py-3 text-sky-50 hover:bg-sky-400/30 hover:text-white rounded-lg transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17a4 4 0 100-8 4 4 0 000 8z"/>
                 </svg>
                 Analytics
             </a>
 
-            <a href="#" class="flex items-center px-6 py-3 text-blue-100 hover:bg-blue-700 hover:text-white rounded-lg transition">
+            <a href="#" class="flex items-center px-6 py-3 text-sky-50 hover:bg-sky-400/30 hover:text-white rounded-lg transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/>
                 </svg>
@@ -52,14 +52,13 @@
             </a>
         </nav>
 
-        <div class="px-6 py-4 border-t border-blue-700 text-sm text-blue-200">
+        <div class="px-6 py-4 border-t border-white/20 text-sm text-blue-100">
             <p>&copy; 2025 Bantayan Water Board</p>
         </div>
     </aside>
 
     <!-- Main Content -->
     <main class="flex-1 bg-gray-50 p-8">
-        <!-- Header -->
         <div class="flex justify-between items-center mb-10 border-b pb-4">
             <div>
                 <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Bantayan Water Dashboard</h1>
