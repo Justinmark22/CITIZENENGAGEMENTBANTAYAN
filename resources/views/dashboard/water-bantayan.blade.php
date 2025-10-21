@@ -53,10 +53,7 @@
               <h1 class="text-4xl font-extrabold text-gray-900">Bantayan Water Dashboard</h1>
               <p class="text-gray-500 mt-1">Welcome, Water Admin</p>
           </div>
-          <div class="flex space-x-3">
-              <button class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">Add Report</button>
-              <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow hover:bg-gray-300 transition">Settings</button>
-          </div>
+
       </div>
 
       <!-- Dashboard Cards -->
