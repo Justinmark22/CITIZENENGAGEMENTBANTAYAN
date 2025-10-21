@@ -918,8 +918,8 @@ Route::middleware(['auth'])->group(function () {
 
 });
    Route::get('/reports-bantayan', [WaterDashboardController::class, 'reportsBantayan'])
-        ->name('water.reports-bantayan-page');
+        ->name('water.reports-bantayan');
    Route::get('/reports-santafe', [WaterDashboardController::class, 'reportsSantafe'])
-       ->name('water.reports-santafe-page');
+       ->name('water.reports-santafe');
    Route::get('/reports-madridejos', [WaterDashboardController::class, 'reportsMadridejos'])
-       ->name('water.reports-madridejos-page'); 
+       ->name('water.reports-madridejos');
