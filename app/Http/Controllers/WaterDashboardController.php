@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Report; // ✅ Make sure you import your Report model
-
+use App\Models\ForwardedReport;
 class WaterDashboardController extends Controller
 {
     public function santafe()
