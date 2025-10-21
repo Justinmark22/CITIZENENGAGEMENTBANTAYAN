@@ -85,102 +85,108 @@
    
 </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 bg-gray-50 p-8">
-        <div class="flex justify-between items-center mb-10 border-b pb-4">
-            <div>
-                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Bantayan Water Dashboard</h1>
-                <p class="text-gray-500 mt-1">Welcome, Water Administrator</p>
-            </div>
-            <div class="flex items-center space-x-3">
-                <img src="{{ asset('images/admin-avatar.png') }}" alt="Admin" class="w-10 h-10 rounded-full border border-gray-300">
-                <span class="text-gray-700 font-medium">Admin</span>
-            </div>
+   <!-- Main Content -->
+<main class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 p-8 h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-sky-500/60 scrollbar-track-transparent">
+    <div class="flex justify-between items-center mb-10 border-b pb-4 backdrop-blur-md bg-white/70 rounded-2xl shadow-sm px-4 py-2">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight drop-shadow-sm">Bantayan Water Dashboard</h1>
+            <p class="text-gray-600 mt-1">Welcome, Water Administrator</p>
         </div>
+        <div class="flex items-center space-x-3">
+            <img src="{{ asset('images/admin-avatar.png') }}" alt="Admin" class="w-11 h-11 rounded-full border border-gray-300 shadow-md">
+            <span class="text-gray-800 font-semibold text-lg">Admin</span>
+        </div>
+    </div>
 
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
-            <div class="bg-white shadow-md rounded-xl p-6 hover:shadow-xl transition">
-                <h2 class="text-gray-400 text-sm font-semibold">Total Reports</h2>
-                <div class="flex justify-between items-center mt-4">
-                    <p class="text-3xl font-bold text-gray-900">{{ $totalReports }}</p>
-                    <div class="text-blue-600 bg-blue-100 p-3 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13v6H9zM5 9V5h14v4H5z"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white shadow-md rounded-xl p-6 hover:shadow-xl transition">
-                <h2 class="text-gray-400 text-sm font-semibold">Pending Reports</h2>
-                <div class="flex justify-between items-center mt-4">
-                    <p class="text-3xl font-bold text-gray-900">{{ $pendingReportsCount }}</p>
-                    <div class="text-yellow-600 bg-yellow-100 p-3 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white shadow-md rounded-xl p-6 hover:shadow-xl transition">
-                <h2 class="text-gray-400 text-sm font-semibold">Resolved Reports</h2>
-                <div class="flex justify-between items-center mt-4">
-                    <p class="text-3xl font-bold text-gray-900">{{ $resolvedReportsCount }}</p>
-                    <div class="text-green-600 bg-green-100 p-3 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                    </div>
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-white/80 backdrop-blur-md shadow-lg hover:shadow-2xl rounded-2xl p-6 border border-sky-100 transition transform hover:-translate-y-1 hover:scale-[1.02]">
+            <h2 class="text-gray-500 text-sm font-semibold">Total Reports</h2>
+            <div class="flex justify-between items-center mt-4">
+                <p class="text-4xl font-extrabold text-gray-900">{{ $totalReports }}</p>
+                <div class="text-blue-600 bg-blue-100 p-3 rounded-lg shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13v6H9zM5 9V5h14v4H5z"/>
+                    </svg>
                 </div>
             </div>
         </div>
 
-        <!-- Reports Table -->
-        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
-            <h2 class="text-2xl font-semibold text-gray-900 mb-6">Recent Water Reports</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Report ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Category</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Description</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
+        <div class="bg-white/80 backdrop-blur-md shadow-lg hover:shadow-2xl rounded-2xl p-6 border border-yellow-100 transition transform hover:-translate-y-1 hover:scale-[1.02]">
+            <h2 class="text-gray-500 text-sm font-semibold">Pending Reports</h2>
+            <div class="flex justify-between items-center mt-4">
+                <p class="text-4xl font-extrabold text-gray-900">{{ $pendingReportsCount }}</p>
+                <div class="text-yellow-600 bg-yellow-100 p-3 rounded-lg shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white/80 backdrop-blur-md shadow-lg hover:shadow-2xl rounded-2xl p-6 border border-green-100 transition transform hover:-translate-y-1 hover:scale-[1.02]">
+            <h2 class="text-gray-500 text-sm font-semibold">Resolved Reports</h2>
+            <div class="flex justify-between items-center mt-4">
+                <p class="text-4xl font-extrabold text-gray-900">{{ $resolvedReportsCount }}</p>
+                <div class="text-green-600 bg-green-100 p-3 rounded-lg shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Table -->
+    <div class="bg-white/90 backdrop-blur-lg rounded-2xl shadow-lg border border-gray-100 p-6 transform transition hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.01]">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-sky-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13v6H9zM5 9V5h14v4H5z"/>
+            </svg>
+            Recent Water Reports
+        </h2>
+        <div class="overflow-x-auto max-h-[450px] overflow-y-auto rounded-lg border border-gray-100 shadow-inner">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-sky-50 sticky top-0 z-10">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-sky-700 uppercase tracking-wider">Report ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-sky-700 uppercase tracking-wider">Category</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-sky-700 uppercase tracking-wider">Description</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-sky-700 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-sky-700 uppercase tracking-wider">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($reports as $report)
+                        <tr class="hover:bg-sky-50 transition transform hover:translate-x-1 hover:shadow-sm">
+                            <td class="px-6 py-4 text-gray-700 font-semibold">#{{ $report->id }}</td>
+                            <td class="px-6 py-4 text-gray-700">{{ $report->category }}</td>
+                            <td class="px-6 py-4 text-gray-700">{{ $report->description }}</td>
+                            <td class="px-6 py-4">
+                                @php
+                                    $statusColors = [
+                                        'Pending' => 'bg-yellow-100 text-yellow-800',
+                                        'Accepted' => 'bg-blue-100 text-blue-800',
+                                        'Ongoing' => 'bg-orange-100 text-orange-800',
+                                        'Resolved' => 'bg-green-100 text-green-800',
+                                        'Rejected' => 'bg-red-100 text-red-800',
+                                    ];
+                                    $color = $statusColors[$report->status] ?? 'bg-gray-100 text-gray-800';
+                                @endphp
+                                <span class="px-3 py-1 inline-flex text-sm font-semibold rounded-full {{ $color }}">
+                                    {{ $report->status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-gray-700">{{ $report->created_at->format('M d, Y') }}</td>
                         </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($reports as $report)
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-gray-700 font-medium">#{{ $report->id }}</td>
-                                <td class="px-6 py-4 text-gray-700">{{ $report->category }}</td>
-                                <td class="px-6 py-4 text-gray-700">{{ $report->description }}</td>
-                                <td class="px-6 py-4">
-                                    @php
-                                        $statusColors = [
-                                            'Pending' => 'bg-yellow-100 text-yellow-800',
-                                            'Accepted' => 'bg-blue-100 text-blue-800',
-                                            'Ongoing' => 'bg-orange-100 text-orange-800',
-                                            'Resolved' => 'bg-green-100 text-green-800',
-                                            'Rejected' => 'bg-red-100 text-red-800',
-                                        ];
-                                        $color = $statusColors[$report->status] ?? 'bg-gray-100 text-gray-800';
-                                    @endphp
-                                    <span class="px-3 py-1 inline-flex text-sm font-semibold rounded-full {{ $color }}">
-                                        {{ $report->status }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-gray-700">{{ $report->created_at->format('M d, Y') }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-    </main>
-</div>
+    </div>
+</main>
+                                </div>
+                                
 
 </body>
 </html>
