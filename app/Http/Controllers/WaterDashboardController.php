@@ -61,7 +61,7 @@ class WaterDashboardController extends Controller
         })
         ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Water Management'])
         ->latest()
-        ->paginate(10);
+        ->paginate(10); // 👈 this enables $reports->links()
 
     return view('water.reports-bantayan', compact('reports'));
 }
