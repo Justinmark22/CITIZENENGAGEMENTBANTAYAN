@@ -915,4 +915,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/water-santafe', [WaterDashboardController::class, 'santafe'])->name('dashboard.water-santafe');
     Route::get('/dashboard/water-bantayan', [WaterDashboardController::class, 'bantayan'])->name('dashboard.water-bantayan');
     Route::get('/dashboard/water-madridejos', [WaterDashboardController::class, 'madridejos'])->name('dashboard.water-madridejos');
+    Route::prefix('water')->group(function () {
+    Route::get('/santafe', [WaterDashboardController::class, 'santafe'])->name('water.reports-santafe');
+    Route::get('/bantayan', [WaterDashboardController::class, 'bantayan'])->name('water.reports-bantayan');
+    Route::get('/madridejos', [WaterDashboardController::class, 'madridejos'])->name('water.reports-madridejos');
+});
 });
