@@ -51,4 +51,19 @@ class WaterDashboardController extends Controller
             'reports'
         ));
     }
+    public function reportsBantayan()
+{
+    $reports = Report::latest()->get();
+    return view('water.reports-bantayan', compact('reports'));
 }
+    public function reportsSantafe()
+{
+    $reports = Report::latest()->get();
+    return view('water.reports-santafe', compact('reports'));
+}
+
+    public function reportsMadridejos()
+{
+    $reports = Report::latest()->get();
+    return view('water.reports-madridejos', compact('reports'));
+}}
