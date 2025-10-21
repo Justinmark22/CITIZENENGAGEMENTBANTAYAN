@@ -51,11 +51,22 @@ class WaterDashboardController extends Controller
             'reports'
         ));
     }
-    public function reportsBantayan()
+   public function reportsBantayan()
 {
-    $reports = Report::latest()->get();
+    $reports = ForwardedReport::where('location', 'Bantayan')
+        ->where(function ($q) {
+            $q->where('category', 'Water Management')
+              ->orWhere('forwarded_to', 'Water Management')
+              ->orWhere('status', 'Rerouted to Water Management');
+        })
+        ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Water Management'])
+        ->latest()
+        ->paginate(10);
+
     return view('water.reports-bantayan', compact('reports'));
 }
+
+
     public function reportsSantafe()
 {
     $reports = Report::latest()->get();
