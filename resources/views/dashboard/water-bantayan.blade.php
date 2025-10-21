@@ -23,7 +23,7 @@
         </div>
 
         <nav class="mt-6 flex-1 space-y-1">
-            <a href="#" class="flex items-center px-6 py-3 text-blue-100 hover:bg-blue-700 hover:text-white rounded-lg transition">
+            <a href="#" class="flex items-center px-6 py-3 text-white-100 hover:bg-blue-700 hover:text-white rounded-lg transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18"/>
                 </svg>
