@@ -12,50 +12,78 @@
 
 <div class="flex min-h-screen">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-gradient-to-b from-sky-500/70 to-sky-700/70 text-white flex flex-col shadow-lg backdrop-blur-md border-r border-white/10">
-        <div class="flex items-center space-x-3 px-6 py-5 border-b border-white/20">
-            <img src="{{ asset('images/water-logo.png') }}" alt="Logo" class="w-10 h-10 rounded-full shadow-md">
-            <div>
-                <h2 class="text-xl font-bold text-white">WaterMgmt</h2>
-                <p class="text-blue-100 text-sm">Bantayan</p>
-            </div>
+<aside class="w-64 bg-gradient-to-b from-sky-500/70 to-sky-700/70 text-white flex flex-col shadow-lg backdrop-blur-md border-r border-white/10">
+    <!-- Logo -->
+    <div class="flex items-center space-x-3 px-6 py-5 border-b border-white/20">
+        <img src="{{ asset('images/water-logo.png') }}" alt="Logo" class="w-10 h-10 rounded-full shadow-md">
+        <div>
+            <h2 class="text-xl font-bold text-white">WaterMgmt</h2>
+            <p class="text-blue-100 text-sm">Bantayan</p>
         </div>
+    </div>
 
-        <nav class="mt-6 flex-1 space-y-1">
-            <a href="#" class="flex items-center px-6 py-3 text-sky-50 hover:bg-sky-400/30 hover:text-white rounded-lg transition">
+    <!-- Navigation Sections -->
+    <nav class="mt-6 flex-1 px-3 space-y-6">
+        <!-- Section 1: Overview -->
+        <div>
+            <h3 class="text-xs uppercase tracking-wider text-white/70 font-semibold px-3 mb-2">Overview</h3>
+            <a href="#" class="flex items-center px-4 py-3 text-sky-50 hover:bg-sky-400/30 hover:text-white rounded-lg transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18"/>
                 </svg>
                 Dashboard
             </a>
+        </div>
 
-            <a href="{{ route('water.reports-bantayan') }}" class="flex items-center px-6 py-3 text-sky-50 hover:bg-sky-400/30 hover:text-white rounded-lg transition">
+        <!-- Section 2: Reports -->
+        <div>
+            <h3 class="text-xs uppercase tracking-wider text-white/70 font-semibold px-3 mb-2">Reports</h3>
+            <a href="{{ route('water.reports-bantayan') }}" class="flex items-center px-4 py-3 text-sky-50 hover:bg-sky-400/30 hover:text-white rounded-lg transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13v6H9zM5 9V5h14v4H5z"/>
                 </svg>
                 Reports
             </a>
+        </div>
 
-            <a href="#" class="flex items-center px-6 py-3 text-sky-50 hover:bg-sky-400/30 hover:text-white rounded-lg transition">
+        <!-- Section 3: Analytics -->
+        <div>
+            <h3 class="text-xs uppercase tracking-wider text-white/70 font-semibold px-3 mb-2">Analytics</h3>
+            <a href="#" class="flex items-center px-4 py-3 text-sky-50 hover:bg-sky-400/30 hover:text-white rounded-lg transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17a4 4 0 100-8 4 4 0 000 8z"/>
                 </svg>
                 Analytics
             </a>
+        </div>
 
-            <a href="#" class="flex items-center px-6 py-3 text-sky-50 hover:bg-sky-400/30 hover:text-white rounded-lg transition">
+        <!-- Section 4: Settings -->
+        <div>
+            <h3 class="text-xs uppercase tracking-wider text-white/70 font-semibold px-3 mb-2">Settings</h3>
+            <a href="#" class="flex items-center px-4 py-3 text-sky-50 hover:bg-sky-400/30 hover:text-white rounded-lg transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/>
                 </svg>
-                Settings
+                Configuration
             </a>
-        </nav>
-
-        <div class="px-6 py-4 border-t border-white/20 text-sm text-blue-100">
-            <p>&copy; 2025 Bantayan Water Board</p>
         </div>
-    </aside>
+    </nav>
+
+    <!-- Logout Button -->
+    <div class="px-6 py-4 border-t border-white/20">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="w-full flex items-center justify-center px-4 py-3 bg-sky-600/60 hover:bg-sky-500/80 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 11-4 0v-1m4-8V7a2 2 0 10-4 0v1"/>
+                </svg>
+                Logout
+            </button>
+        </form>
+    </div>
+
+   
+</aside>
 
     <!-- Main Content -->
     <main class="flex-1 bg-gray-50 p-8">
