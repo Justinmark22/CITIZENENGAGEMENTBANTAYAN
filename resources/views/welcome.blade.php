@@ -14,6 +14,8 @@
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide-icons/dist/umd/lucide.min.js"></script>
+<!-- Include Lucide from CDN -->
+<script src="https://unpkg.com/lucide/dist/lucide.min.js"></script>
 
   <style>
     body { font-family: 'Roboto', sans-serif; scroll-behavior: smooth; }
@@ -191,7 +193,6 @@
   </div>
 </footer>
 
-<!-- Alpine Stores -->
 <script>
 document.addEventListener('alpine:init', () => {
   Alpine.store('services', {
@@ -209,6 +210,8 @@ document.addEventListener('alpine:init', () => {
     ]
   });
 });
+</script>
+<script>
 
 lucide.createIcons();
 </script>
