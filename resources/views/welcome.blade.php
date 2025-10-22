@@ -100,17 +100,24 @@
         </a>
       </div>
     </div>
-
-    <!-- Image Carousel -->
-    <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
-         x-data="{ images: ['{{ asset('images/bantayan.png') }}','{{ asset('images/sta.fe.png') }}','{{ asset('images/madridejos.png') }}'], index:0, init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) } }">
-      <template x-for="(img,i) in images" :key="i">
-        <img :src="img" alt="" loading="lazy"
-             class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-             :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
-      </template>
-      <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-    </div>
+<!-- Image Carousel -->
+<div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
+     x-data="{ 
+       images: [
+         'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...', 
+         'data:image/png;base64,AAAAAAABBBBCCCDD...', 
+         'data:image/png;base64,XXXYYYZZZ...'
+       ], 
+       index:0, 
+       init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) } 
+     }">
+  <template x-for="(img,i) in images" :key="i">
+    <img :src="img" alt="" loading="lazy"
+         class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+         :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
+  </template>
+  <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+</div>
   </div>
 </section>
 
