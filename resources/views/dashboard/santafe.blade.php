@@ -18,10 +18,16 @@
     <span class="text-lg md:text-xl font-bold text-gray-900 tracking-tight">Santa.Fe Dashboard</span>
   </a>
 
-  <!-- Mobile menu toggle -->
-  <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition">
-    <i data-lucide="menu" class="w-6 h-6"></i>
-  </button>
+  <!-- Optimized Mobile Menu Toggle -->
+<button 
+  id="mobileMenuBtn"
+  type="button"
+  class="md:hidden p-2 rounded-xl text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200"
+  aria-label="Toggle mobile menu"
+>
+  <i data-lucide="menu" class="w-6 h-6"></i>
+</button>
+
 
   <!-- Right side items -->
   <div id="navbarLinks" class="hidden md:flex items-center gap-4 md:gap-5 flex-wrap text-sm absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none rounded-b-2xl md:rounded-none p-4 md:p-0">
