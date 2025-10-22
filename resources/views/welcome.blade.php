@@ -96,100 +96,60 @@
       </div>
     </div>
   </nav>
+<!-- Hero Section -->
+<section class="relative pt-32 pb-24 text-white overflow-hidden">
+  <div class="absolute inset-0 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/lines.png')] bg-repeat bg-black/50"></div>
+  <div class="absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/30"></div>
 
-  <!-- Hero Section -->
-  <section class="relative pt-32 pb-24 text-white overflow-hidden">
-    <div class="absolute inset-0 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/lines.png')] bg-repeat bg-black/50"></div>
-    <div class="absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/30"></div>
+  <div class="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
 
-    <div class="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
-      <!-- Text -->
-      <div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
-        <h2 class="text-xl lg:text-2xl font-semibold text-yellow-400 mb-2">Welcome to Bantayan Island</h2>
-        <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-white">
-          Strengthening Citizen Engagement Across Communities
-        </h1>
-        <p class="text-lg text-gray-300 mb-8 leading-relaxed">
-          Discover a <span class="font-semibold text-yellow-400">transparent digital platform</span> that connects citizens, LGUs, and local communities in Bantayan, Santa Fe, and Madridejos.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-          <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">
-            Explore Services
-          </a>
-          <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">
-            Contact Us
-          </a>
-        </div>
-      </div>
-<!-- Image Carousel -->
-<div 
-  class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
-  x-data="
-    {
-      images: [
-        '{{ asset('images/bantayan.png') }}',
-        '{{ asset('images/sta.fe.png') }}',
-        '{{ asset('images/madridejos.png') }}'
-      ],
-      index: 0,
-      init() {
-        setInterval(() => {
-          this.index = (this.index + 1) % this.images.length
-        }, 3000)
-      }
-    }
-  "
->
-  <template x-for="(img, i) in images" :key="i">
-    <img 
-      :src="img"
-      alt="Municipality image"
-      loading="lazy"
-      class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-      :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'"
+    <!-- ✅ Image Carousel (Now visible on mobile) -->
+    <div 
+      class="w-full lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-64 sm:h-80 lg:h-96 order-1 lg:order-2"
+      x-data="{
+        images: [
+          '{{ asset('images/bantayan.png') }}',
+          '{{ asset('images/sta.fe.png') }}',
+          '{{ asset('images/madridejos.png') }}'
+        ],
+        index: 0,
+        init() {
+          setInterval(() => this.index = (this.index + 1) % this.images.length, 3000);
+        }
+      }"
     >
-  </template>
-
-  <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-</div>
+      <template x-for="(img, i) in images" :key="i">
+        <img 
+          :src="img"
+          alt="Municipality image"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+          :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'"
+        >
+      </template>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
     </div>
-  </section>
-  <!-- Services Section -->
-  <section id="services" class="relative py-24 bg-green-100/30" x-data>
-    <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
 
-      <!-- Left Column -->
-      <div class="flex flex-col gap-16">
-        <template x-for="service in $store.services.leftServices" :key="service.title">
-          <div class="flex items-center gap-6">
-            <div class="w-24 h-24 rounded-full overflow-hidden shadow-2xl flex-shrink-0 transform hover:scale-105 transition-transform duration-500">
-              <img :src="service.image" alt="" class="w-full h-full object-cover">
-            </div>
-            <div>
-              <h3 class="text-xl font-bold text-gray-900" x-text="service.title"></h3>
-              <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
-            </div>
-          </div>
-        </template>
+    <!-- Text -->
+    <div class="w-full lg:w-1/2 text-center lg:text-left animate-fadeInUp order-2 lg:order-1">
+      <h2 class="text-xl lg:text-2xl font-semibold text-yellow-400 mb-2">Welcome to Bantayan Island</h2>
+      <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-white">
+        Strengthening Citizen Engagement Across Communities
+      </h1>
+      <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+        Discover a <span class="font-semibold text-yellow-400">transparent digital platform</span> that connects citizens, LGUs, and local communities in Bantayan, Santa Fe, and Madridejos.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+        <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">
+          Explore Services
+        </a>
+        <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">
+          Contact Us
+        </a>
       </div>
-
-      <!-- Right Column -->
-      <div class="flex flex-col gap-16">
-        <template x-for="service in $store.services.rightServices" :key="service.title">
-          <div class="flex items-center gap-6">
-            <div class="w-24 h-24 rounded-full overflow-hidden shadow-2xl flex-shrink-0 transform hover:scale-105 transition-transform duration-500">
-              <img :src="service.image" alt="" class="w-full h-full object-cover">
-            </div>
-            <div>
-              <h3 class="text-xl font-bold text-gray-900" x-text="service.title"></h3>
-              <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
-            </div>
-          </div>
-        </template>
-      </div>
-
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- Footer -->
   <footer class="bg-gray-900 text-gray-300 mt-16">
