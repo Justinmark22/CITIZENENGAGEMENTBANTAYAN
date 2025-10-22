@@ -152,45 +152,57 @@
 </section>
 <!-- Services Section -->
 <section id="services" class="relative py-32 bg-gradient-to-b from-green-50 to-green-100 overflow-hidden">
-  <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-20">
-    
+  <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-24">
+
     <!-- Left Column -->
-    <div class="flex flex-col items-end gap-20">
+    <div class="flex flex-col items-end gap-24">
       <template x-for="service in $store.services.leftServices" :key="service.title">
-        <div class="flex items-center gap-8 transform hover:-translate-x-3 transition-transform duration-500">
-          <!-- Text Left -->
-          <div class="text-right max-w-[220px]">
-            <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900" x-text="service.title"></h3>
-            <p class="text-gray-600 mt-1 text-sm md:text-base" x-text="service.texts[0]"></p>
-          </div>
-          <!-- 3D Circle -->
-          <div class="w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.2)] bg-white transform hover:rotate-6 hover:scale-110 transition-all duration-500">
+        <div class="flex items-center gap-8">
+          <!-- Floating 3D Circle -->
+          <div 
+            class="w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.2)] bg-white transform transition-all duration-500 hover:rotate-6 hover:scale-110"
+            x-data="{ float: 0 }"
+            x-init="setInterval(() => float = (float + 1) % 360, 50)"
+            :style="`transform: translateY(${Math.sin(float/20)*8}px) rotate(${Math.sin(float/30)*4}deg);`"
+          >
             <img :src="service.image" alt="" class="w-full h-full object-cover">
+          </div>
+          <!-- Text Right -->
+          <div class="text-left max-w-[280px]">
+            <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900" x-text="service.title"></h3>
+            <p class="text-gray-600 mt-2 text-sm md:text-base leading-relaxed" x-text="service.texts[0]"></p>
+            <p class="text-gray-500 mt-1 text-sm md:text-sm leading-relaxed" x-text="service.texts[1] || ''"></p>
           </div>
         </div>
       </template>
     </div>
 
     <!-- Right Column -->
-    <div class="flex flex-col items-start gap-20">
+    <div class="flex flex-col items-start gap-24">
       <template x-for="service in $store.services.rightServices" :key="service.title">
-        <div class="flex items-center gap-8 transform hover:translate-x-3 transition-transform duration-500">
-          <!-- 3D Circle -->
-          <div class="w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.2)] bg-white transform hover:-rotate-6 hover:scale-110 transition-all duration-500">
+        <div class="flex items-center gap-8">
+          <!-- Floating 3D Circle -->
+          <div 
+            class="w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.2)] bg-white transform transition-all duration-500 hover:-rotate-6 hover:scale-110"
+            x-data="{ float: 0 }"
+            x-init="setInterval(() => float = (float + 1) % 360, 50)"
+            :style="`transform: translateY(${Math.sin(float/20)*8}px) rotate(${Math.sin(float/30)*4}deg);`"
+          >
             <img :src="service.image" alt="" class="w-full h-full object-cover">
           </div>
           <!-- Text Right -->
-          <div class="max-w-[220px]">
+          <div class="text-left max-w-[280px]">
             <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900" x-text="service.title"></h3>
-            <p class="text-gray-600 mt-1 text-sm md:text-base" x-text="service.texts[0]"></p>
+            <p class="text-gray-600 mt-2 text-sm md:text-base leading-relaxed" x-text="service.texts[0]"></p>
+            <p class="text-gray-500 mt-1 text-sm md:text-sm leading-relaxed" x-text="service.texts[1] || ''"></p>
           </div>
         </div>
       </template>
     </div>
 
-  
+  </div>
 </section>
-
+haha
   <!-- Footer -->
   <footer class="bg-gray-900 text-gray-300 mt-16">
     <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
