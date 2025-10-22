@@ -61,7 +61,7 @@
   <section class="relative h-[28rem] flex items-center justify-center bg-cover bg-center" style="background-image: url('/images/bantayan.png');">
     <div class="absolute inset-0 bg-black bg-opacity-70"></div>
     <div class="relative z-10 text-center text-white px-4" data-aos="zoom-in">
-      <img src="{{ asset('images/911.png') }}" alt="911 Logo" class="w-24 h-24 mx-auto mb-4 rounded-full shadow-xl border-4 border-white">
+      <img src="{{ asset('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png') }}" alt="911 Logo" class="w-24 h-24 mx-auto mb-4 rounded-full shadow-xl border-4 border-white">
       <h1 class="text-4xl md:text-5xl font-extrabold tracking-wide text-red-500">ABOUT US</h1>
       <p class="text-lg mt-2 opacity-90">Emergency Response for Bantayan Island</p>
     </div>
