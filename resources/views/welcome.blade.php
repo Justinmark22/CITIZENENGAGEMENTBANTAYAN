@@ -151,6 +151,43 @@
   </div>
 </section>
 
+  <!-- Services Section -->
+  <section id="services" class="relative py-24 bg-green-100/30" x-data>
+    <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
+
+      <!-- Left Column -->
+      <div class="flex flex-col gap-16">
+        <template x-for="service in $store.services.leftServices" :key="service.title">
+          <div class="flex items-center gap-6">
+            <div class="w-24 h-24 rounded-full overflow-hidden shadow-2xl flex-shrink-0 transform hover:scale-105 transition-transform duration-500">
+              <img :src="service.image" alt="" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900" x-text="service.title"></h3>
+              <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Right Column -->
+      <div class="flex flex-col gap-16">
+        <template x-for="service in $store.services.rightServices" :key="service.title">
+          <div class="flex items-center gap-6">
+            <div class="w-24 h-24 rounded-full overflow-hidden shadow-2xl flex-shrink-0 transform hover:scale-105 transition-transform duration-500">
+              <img :src="service.image" alt="" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900" x-text="service.title"></h3>
+              <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
+            </div>
+          </div>
+        </template>
+      </div>
+
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer class="bg-gray-900 text-gray-300 mt-16">
     <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
