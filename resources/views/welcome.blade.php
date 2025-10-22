@@ -151,45 +151,44 @@
   </div>
 </section>
 <!-- Services Section -->
-<section id="services" class="relative py-28 bg-gradient-to-br from-green-50 via-white to-green-100/60" x-data>
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center mb-16">
-      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-3">Our Services</h2>
-      <p class="text-lg text-gray-600 max-w-2xl mx-auto">Connecting citizens and LGUs with vital local services.</p>
+<section id="services" class="relative py-28 bg-gradient-to-b from-green-50 to-green-100 overflow-hidden">
+  <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
+    
+    <!-- Left Column -->
+    <div class="flex flex-col items-end gap-16">
+      <template x-for="service in $store.services.leftServices" :key="service.title">
+        <div class="flex items-center gap-6 transform hover:-translate-x-2 transition-transform duration-500">
+          <!-- Text Left -->
+          <div class="text-right">
+            <h3 class="text-2xl font-extrabold text-gray-900" x-text="service.title"></h3>
+            <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
+          </div>
+          <!-- 3D Circle -->
+          <div class="w-28 h-28 rounded-full overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.2)] bg-white transform hover:rotate-6 hover:scale-110 transition-all duration-500">
+            <img :src="service.image" alt="" class="w-full h-full object-cover">
+          </div>
+        </div>
+      </template>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
-      <!-- Left Column -->
-      <div class="flex flex-col items-center md:items-end gap-14">
-        <template x-for="service in $store.services.leftServices" :key="service.title">
-          <div class="flex flex-col items-center md:items-end text-center md:text-right">
-            <div class="w-32 h-32 rounded-full overflow-hidden shadow-2xl transform transition-all duration-700 hover:scale-110 hover:rotate-3 hover:shadow-green-300/70 border-4 border-white">
-              <img :src="service.image" alt="" class="w-full h-full object-cover">
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 mt-4 group-hover:text-green-700 transition" x-text="service.title"></h3>
-            <p class="text-gray-600 text-sm max-w-[200px]" x-text="service.texts[0]"></p>
+    <!-- Right Column -->
+    <div class="flex flex-col items-start gap-16">
+      <template x-for="service in $store.services.rightServices" :key="service.title">
+        <div class="flex items-center gap-6 transform hover:translate-x-2 transition-transform duration-500">
+          <!-- 3D Circle -->
+          <div class="w-28 h-28 rounded-full overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.2)] bg-white transform hover:-rotate-6 hover:scale-110 transition-all duration-500">
+            <img :src="service.image" alt="" class="w-full h-full object-cover">
           </div>
-        </template>
-      </div>
-
-      <!-- Right Column -->
-      <div class="flex flex-col items-center md:items-start gap-14">
-        <template x-for="service in $store.services.rightServices" :key="service.title">
-          <div class="flex flex-col items-center md:items-start text-center md:text-left">
-            <div class="w-32 h-32 rounded-full overflow-hidden shadow-2xl transform transition-all duration-700 hover:scale-110 hover:-rotate-3 hover:shadow-green-300/70 border-4 border-white">
-              <img :src="service.image" alt="" class="w-full h-full object-cover">
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 mt-4 group-hover:text-green-700 transition" x-text="service.title"></h3>
-            <p class="text-gray-600 text-sm max-w-[200px]" x-text="service.texts[0]"></p>
+          <!-- Text Right -->
+          <div>
+            <h3 class="text-2xl font-extrabold text-gray-900" x-text="service.title"></h3>
+            <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
           </div>
-        </template>
-      </div>
+        </div>
+      </template>
     </div>
+
   </div>
-
-  <!-- Decorative Floating Circles -->
-  <div class="absolute -top-20 -right-20 w-64 h-64 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-  <div class="absolute bottom-0 left-0 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse delay-300"></div>
 </section>
 
   <!-- Footer -->
