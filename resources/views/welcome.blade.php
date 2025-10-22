@@ -13,9 +13,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
   <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide-icons/dist/umd/lucide.min.js"></script>
-<!-- Include Lucide from CDN -->
-<script src="https://unpkg.com/lucide/dist/lucide.min.js"></script>
+  <script src="https://unpkg.com/lucide/dist/lucide.min.js"></script>
 
   <style>
     body { font-family: 'Roboto', sans-serif; scroll-behavior: smooth; }
@@ -193,25 +191,28 @@
   </div>
 </footer>
 
-<script>
-document.addEventListener('alpine:init', () => {
+<!-- Alpine Store & Lucide Fix -->
+<script defer>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Initialize Lucide Icons
+  lucide.createIcons();
+
+  // Alpine Store with embedded images (Base64 placeholders)
   Alpine.store('services', {
     leftServices: [
-      { title: 'Disaster Response', image: '{{ asset("images/dis.png") }}', texts: ['MDRRMO: Disaster Preparedness & Emergency Response'] },
-      { title: 'Health Services', image: '{{ asset("images/asd.png") }}', texts: ['Accessible Care for Everyone'] },
-      { title: 'Waste Management', image: '{{ asset("images/wat.png") }}', texts: ['Keeping Bantayan Clean & Safe'] },
-      { title: 'Water Management', image: '{{ asset("images/wat.png") }}', texts: ['Clean Water Access for All'] }
+      { title: 'Disaster Response', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...', texts: ['MDRRMO: Disaster Preparedness & Emergency Response'] },
+      { title: 'Health Services', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...', texts: ['Accessible Care for Everyone'] },
+      { title: 'Waste Management', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...', texts: ['Keeping Bantayan Clean & Safe'] },
+      { title: 'Water Management', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...', texts: ['Clean Water Access for All'] }
     ],
     rightServices: [
-      { title: 'Public Safety', image: '{{ asset("images/SAN.PNG") }}', texts: ['Protecting Our Communities'] },
-      { title: 'Education', image: '{{ asset("images/as.png") }}', texts: ['Learning & Growth Opportunities'] },
-      { title: 'Community Engagement', image: '{{ asset("images/asdas (2).png") }}', texts: ['Bridging Citizens and LGUs'] },
-      { title: 'Environmental Care', image: '{{ asset("images/gsd (1).png") }}', texts: ['Preserving Natural Resources'] }
+      { title: 'Public Safety', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...', texts: ['Protecting Our Communities'] },
+      { title: 'Education', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...', texts: ['Learning & Growth Opportunities'] },
+      { title: 'Community Engagement', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...', texts: ['Bridging Citizens and LGUs'] },
+      { title: 'Environmental Care', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...', texts: ['Preserving Natural Resources'] }
     ]
   });
-});
-</script>
-<script>
 
-lucide.createIcons();
+});
 </script>
