@@ -152,12 +152,12 @@
 </section>
 <!-- Services Section -->
 <section id="services" class="relative py-32 bg-gradient-to-b from-green-50 to-green-100 overflow-hidden">
-  <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-24">
+  <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-28">
 
     <!-- Left Column -->
-    <div class="flex flex-col items-end gap-24">
+    <div class="flex flex-col items-end gap-28">
       <template x-for="service in $store.services.leftServices" :key="service.title">
-        <div class="flex items-center gap-8">
+        <div class="flex items-start gap-8">
           <!-- Floating 3D Circle -->
           <div 
             class="w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.2)] bg-white transform transition-all duration-500 hover:rotate-6 hover:scale-110"
@@ -172,15 +172,16 @@
             <h3 class="text-xl md:text-2xl font-extrabold text-green-700/80" x-text="service.title"></h3>
             <p class="text-gray-600 mt-2 text-sm md:text-base leading-relaxed" x-text="service.texts[0]"></p>
             <p class="text-gray-500 mt-1 text-sm md:text-sm leading-relaxed" x-text="service.texts[1] || ''"></p>
+            <p class="text-gray-500 mt-1 text-sm md:text-sm leading-relaxed" x-text="service.texts[2] || ''"></p>
           </div>
         </div>
       </template>
     </div>
 
     <!-- Right Column -->
-    <div class="flex flex-col items-start gap-24">
+    <div class="flex flex-col items-start gap-28">
       <template x-for="service in $store.services.rightServices" :key="service.title">
-        <div class="flex items-center gap-8">
+        <div class="flex items-start gap-8">
           <!-- Floating 3D Circle -->
           <div 
             class="w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.2)] bg-white transform transition-all duration-500 hover:-rotate-6 hover:scale-110"
@@ -195,6 +196,7 @@
             <h3 class="text-xl md:text-2xl font-extrabold text-green-700/80" x-text="service.title"></h3>
             <p class="text-gray-600 mt-2 text-sm md:text-base leading-relaxed" x-text="service.texts[0]"></p>
             <p class="text-gray-500 mt-1 text-sm md:text-sm leading-relaxed" x-text="service.texts[1] || ''"></p>
+            <p class="text-gray-500 mt-1 text-sm md:text-sm leading-relaxed" x-text="service.texts[2] || ''"></p>
           </div>
         </div>
       </template>
