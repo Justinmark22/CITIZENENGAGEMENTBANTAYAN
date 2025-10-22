@@ -151,20 +151,20 @@
   </div>
 </section>
 <!-- Services Section -->
-<section id="services" class="relative py-28 bg-gradient-to-b from-green-50 to-green-100 overflow-hidden">
-  <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
+<section id="services" class="relative py-32 bg-gradient-to-b from-green-50 to-green-100 overflow-hidden">
+  <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-20">
     
     <!-- Left Column -->
-    <div class="flex flex-col items-end gap-16">
+    <div class="flex flex-col items-end gap-20">
       <template x-for="service in $store.services.leftServices" :key="service.title">
-        <div class="flex items-center gap-6 transform hover:-translate-x-2 transition-transform duration-500">
+        <div class="flex items-center gap-8 transform hover:-translate-x-3 transition-transform duration-500">
           <!-- Text Left -->
-          <div class="text-right">
-            <h3 class="text-2xl font-extrabold text-gray-900" x-text="service.title"></h3>
-            <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
+          <div class="text-right max-w-[220px]">
+            <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900" x-text="service.title"></h3>
+            <p class="text-gray-600 mt-1 text-sm md:text-base" x-text="service.texts[0]"></p>
           </div>
           <!-- 3D Circle -->
-          <div class="w-28 h-28 rounded-full overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.2)] bg-white transform hover:rotate-6 hover:scale-110 transition-all duration-500">
+          <div class="w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.2)] bg-white transform hover:rotate-6 hover:scale-110 transition-all duration-500">
             <img :src="service.image" alt="" class="w-full h-full object-cover">
           </div>
         </div>
@@ -172,17 +172,17 @@
     </div>
 
     <!-- Right Column -->
-    <div class="flex flex-col items-start gap-16">
+    <div class="flex flex-col items-start gap-20">
       <template x-for="service in $store.services.rightServices" :key="service.title">
-        <div class="flex items-center gap-6 transform hover:translate-x-2 transition-transform duration-500">
+        <div class="flex items-center gap-8 transform hover:translate-x-3 transition-transform duration-500">
           <!-- 3D Circle -->
-          <div class="w-28 h-28 rounded-full overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.2)] bg-white transform hover:-rotate-6 hover:scale-110 transition-all duration-500">
+          <div class="w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.2)] bg-white transform hover:-rotate-6 hover:scale-110 transition-all duration-500">
             <img :src="service.image" alt="" class="w-full h-full object-cover">
           </div>
           <!-- Text Right -->
-          <div>
-            <h3 class="text-2xl font-extrabold text-gray-900" x-text="service.title"></h3>
-            <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
+          <div class="max-w-[220px]">
+            <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900" x-text="service.title"></h3>
+            <p class="text-gray-600 mt-1 text-sm md:text-base" x-text="service.texts[0]"></p>
           </div>
         </div>
       </template>
