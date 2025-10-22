@@ -169,7 +169,7 @@
           </div>
           <!-- Text Right -->
           <div class="text-left max-w-[280px]">
-            <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900" x-text="service.title"></h3>
+            <h3 class="text-xl md:text-2xl font-extrabold text-green-700/80" x-text="service.title"></h3>
             <p class="text-gray-600 mt-2 text-sm md:text-base leading-relaxed" x-text="service.texts[0]"></p>
             <p class="text-gray-500 mt-1 text-sm md:text-sm leading-relaxed" x-text="service.texts[1] || ''"></p>
           </div>
@@ -192,7 +192,7 @@
           </div>
           <!-- Text Right -->
           <div class="text-left max-w-[280px]">
-            <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900" x-text="service.title"></h3>
+            <h3 class="text-xl md:text-2xl font-extrabold text-green-700/80" x-text="service.title"></h3>
             <p class="text-gray-600 mt-2 text-sm md:text-base leading-relaxed" x-text="service.texts[0]"></p>
             <p class="text-gray-500 mt-1 text-sm md:text-sm leading-relaxed" x-text="service.texts[1] || ''"></p>
           </div>
@@ -202,7 +202,7 @@
 
   </div>
 </section>
-haha
+
   <!-- Footer -->
   <footer class="bg-gray-900 text-gray-300 mt-16">
     <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
