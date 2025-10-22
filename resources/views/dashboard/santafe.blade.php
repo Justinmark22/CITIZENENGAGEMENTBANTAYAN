@@ -9,129 +9,106 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
-
 <!-- 🌐 Navbar -->
 <nav class="w-full bg-white/90 backdrop-blur-md border-b shadow-sm px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-50">
   <!-- Left: Logo + Title -->
   <a href="#" class="flex items-center gap-3">
-    <img src="{{ asset('images/citizen.png') }}" alt="Logo" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-gray-200 shadow-sm">
+    <img src="{{ asset('images/citizen.png') }}" alt="Logo"
+         class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-gray-200 shadow-sm">
     <span class="text-lg md:text-xl font-bold text-gray-900 tracking-tight">Santa.Fe Dashboard</span>
   </a>
 
-  <!-- Optimized Mobile Menu Toggle -->
-<button 
-  id="mobileMenuBtn"
-  type="button"
-  class="md:hidden p-2 rounded-xl text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200"
-  aria-label="Toggle mobile menu"
->
-  <i data-lucide="menu" class="w-6 h-6"></i>
-</button>
-
-
-  <!-- Right side items -->
-  <div id="navbarLinks" class="hidden md:flex items-center gap-4 md:gap-5 flex-wrap text-sm absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none rounded-b-2xl md:rounded-none p-4 md:p-0">
-    
-<!-- 🔔 Alerts Dropdown -->
-<div class="relative w-full md:w-auto">
-  <button onclick="toggleDropdown('alertsDropdown'); clearBadge();" 
-          class="flex items-center justify-center md:justify-start w-10 h-10 md:w-auto md:px-4 rounded-full hover:bg-gray-100 transition relative text-gray-700">
-    <i data-lucide="bell" class="w-5 h-5"></i>Notifications
-    @php 
-      $totalAlerts = $alerts->count() 
-                    + $mddrmoAcceptedReports->count() + $wasteAcceptedReports->count()
-                    + $mddrmoOngoingReports->count() + $wasteOngoingReports->count()
-                    + $mddrmoResolvedReports->count() + $wasteResolvedReports->count(); 
-    @endphp
-    @if($totalAlerts > 0)
-      <span id="alertsBadge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full shadow">{{ $totalAlerts }}</span>
-    @endif
+  <!-- Mobile menu toggle -->
+  <button id="mobileMenuBtn"
+          type="button"
+          aria-label="Toggle menu"
+          class="md:hidden p-2 rounded-xl text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200">
+    <i data-lucide="menu" class="w-6 h-6"></i>
   </button>
 
-  <!-- Dropdown -->
-  <div id="alertsDropdown" class="hidden absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50">
-    <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
-      <h6 class="font-semibold text-gray-800 text-sm uppercase tracking-wide">Notifications</h6>
-      <button onclick="hideNotifications()" class="text-gray-400 hover:text-gray-600 text-sm">Clear All</button>
-    </div>
+  <!-- Right side items -->
+  <div id="navbarLinks"
+       class="hidden md:flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-5 flex-wrap text-sm absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none rounded-b-2xl md:rounded-none p-5 md:p-0 transition-all duration-300 ease-in-out origin-top">
+    
+    <!-- 🔔 Alerts Dropdown -->
+    <div class="relative w-full md:w-auto">
+      <button onclick="toggleDropdown('alertsDropdown'); clearBadge();"
+              class="flex items-center gap-2 w-full md:w-auto text-gray-700 hover:text-green-700 transition font-medium">
+        <i data-lucide="bell" class="w-5 h-5"></i> Notifications
+        @php 
+          $totalAlerts = $alerts->count() 
+                        + $mddrmoAcceptedReports->count() + $wasteAcceptedReports->count()
+                        + $mddrmoOngoingReports->count() + $wasteOngoingReports->count()
+                        + $mddrmoResolvedReports->count() + $wasteResolvedReports->count(); 
+        @endphp
+        @if($totalAlerts > 0)
+          <span id="alertsBadge"
+                class="absolute -top-1 -right-2 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full shadow">
+            {{ $totalAlerts }}
+          </span>
+        @endif
+      </button>
 
-    <div class="max-h-96 overflow-y-auto">
-      {{-- System Alerts --}}
-      @forelse ($alerts as $alert)
-        <div onclick="showAlertModal({{ $alert->id }}, '{{ $alert->title }}', '{{ $alert->message }}')" 
-             class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
-          <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-            <i class="text-blue-600" data-lucide="alert-triangle"></i>
-          </div>
-          <div class="flex-1">
-            <p class="text-gray-800 text-sm font-medium">{{ $alert->title }}</p>
-            <p class="text-gray-500 text-xs mt-1">{{ $alert->message }}</p>
-          </div>
+      <!-- Dropdown -->
+      <div id="alertsDropdown"
+           class="hidden absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50">
+        <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
+          <h6 class="font-semibold text-gray-800 text-sm uppercase tracking-wide">Notifications</h6>
+          <button onclick="hideNotifications()" class="text-gray-400 hover:text-gray-600 text-sm">Clear All</button>
         </div>
-      @empty
-        <p class="text-gray-400 text-sm text-center py-4">No alerts available.</p>
-      @endforelse
 
-      {{-- Reports Notifications --}}
-      @foreach(['Resolved Reports' => ['color'=>'purple','data'=>[$mddrmoResolvedReports,$wasteResolvedReports]],
-                'Ongoing Reports' => ['color'=>'blue','data'=>[$mddrmoOngoingReports,$wasteOngoingReports]],
-                'Accepted Reports' => ['color'=>'green','data'=>[$mddrmoAcceptedReports,$wasteAcceptedReports]]] as $group => $groupData)
-        @foreach($groupData['data'] as $reports)
-          @foreach($reports as $report)
-            <div onclick="openReportModal({{ $report->id }}, '{{ $report->title }}', '{{ $report->status }}', '{{ $report->forwarded_to }}')" 
-                 class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition bg-{{ $groupData['color'] }}-50 rounded-md m-2">
-              <div class="flex-shrink-0 w-8 h-8 bg-{{ $groupData['color'] }}-400 text-white rounded-full flex items-center justify-center">
-                <i data-lucide="check-circle" class="w-4 h-4"></i>
+        <div class="max-h-96 overflow-y-auto">
+          @forelse ($alerts as $alert)
+            <div onclick="showAlertModal({{ $alert->id }}, '{{ $alert->title }}', '{{ $alert->message }}')" 
+                 class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <i class="text-blue-600" data-lucide="alert-triangle"></i>
               </div>
-              <div class="flex-1">
-                <p class="text-{{ $groupData['color'] }}-700 text-sm font-medium">
-                  {{ $report->status }} {{ strpos($group,'Waste') !== false ? '♻' : '' }}
-                </p>
-                <p class="text-gray-600 text-xs mt-1">
-                  Your report "<span class="font-medium">{{ $report->title }}</span>" 
-                  {{ $group == 'Resolved Reports' ? 'was resolved by' : ($group == 'Ongoing Reports' ? 'is being handled by' : 'was forwarded to') }}
-                  <span class="font-semibold">{{ $report->forwarded_to }}</span>.
-                </p>
+              <div>
+                <p class="text-gray-800 text-sm font-medium">{{ $alert->title }}</p>
+                <p class="text-gray-500 text-xs mt-1">{{ $alert->message }}</p>
               </div>
             </div>
-          @endforeach
-        @endforeach
-      @endforeach
-
+          @empty
+            <p class="text-gray-400 text-sm text-center py-4">No alerts available.</p>
+          @endforelse
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-
-
- <a href="{{ route('certificate.request') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
+    <!-- Links -->
+    <a href="{{ route('certificate.request') }}" class="flex items-center gap-2 text-gray-700 hover:text-green-700 transition">
       <i data-lucide="file-text" class="w-4 h-4"></i> Certificate
     </a>
-    <a href="{{ route('feedback.page') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
+
+    <a href="{{ route('feedback.page') }}" class="flex items-center gap-2 text-gray-700 hover:text-green-700 transition">
       <i data-lucide="message-square" class="w-4 h-4"></i> Feedback
     </a>
 
-    <a href="{{ route('contact.support.page') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
+    <a href="{{ route('contact.support.page') }}" class="flex items-center gap-2 text-gray-700 hover:text-green-700 transition">
       <i data-lucide="life-buoy" class="w-4 h-4"></i> Support
     </a>
 
+    <!-- + Concern Button -->
     <button onclick="openModal('reportModal')" 
-            class="w-full md:w-auto bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-full font-semibold text-gray-800 shadow-sm transition">
+            class="w-full md:w-auto bg-green-100 hover:bg-green-200 px-4 py-2 rounded-full font-semibold text-green-700 shadow-sm transition">
       + Concern
     </button>
 
     <!-- User Dropdown -->
     <div class="relative w-full md:w-auto">
-      <button onclick="toggleDropdown('userDropdown')" class="flex items-center justify-between md:justify-start w-full md:w-auto gap-2 text-gray-700 hover:text-green-700 transition">
+      <button onclick="toggleDropdown('userDropdown')"
+              class="flex items-center gap-2 text-gray-700 hover:text-green-700 transition w-full md:w-auto font-medium">
         <div class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center shadow-inner">
           <i data-lucide="user" class="w-4 h-4"></i>
         </div>
-        <span class="md:inline hidden font-medium">{{ Auth::user()->name ?? 'Guest' }}</span>
+        <span class="hidden md:inline">{{ Auth::user()->name ?? 'Guest' }}</span>
         <i data-lucide="chevron-down" class="w-4 h-4"></i>
       </button>
 
       <!-- Dropdown -->
-      <div id="userDropdown" class="hidden absolute right-0 mt-2 bg-white shadow-xl rounded-xl w-64 overflow-hidden border border-gray-100 z-50">
+      <div id="userDropdown"
+           class="hidden absolute right-0 mt-2 bg-white shadow-xl rounded-xl w-64 overflow-hidden border border-gray-100 z-50">
         <div class="px-5 py-4 bg-gray-50">
           <p class="font-semibold">{{ Auth::user()->name ?? 'Guest' }}</p>
           <p class="text-gray-500 text-sm">{{ Auth::user()->email ?? 'No Email' }}</p>
@@ -141,7 +118,8 @@
           <a href="#" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
             <i data-lucide="settings" class="w-4 h-4"></i> Settings
           </a>
-          <button onclick="confirmLogout(event)" class="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left transition">
+          <button onclick="confirmLogout(event)"
+                  class="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left transition">
             <i data-lucide="log-out" class="w-4 h-4"></i> Logout
           </button>
           <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
@@ -150,6 +128,22 @@
     </div>
   </div>
 </nav>
+
+<!-- 🔧 Script -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  lucide.createIcons();
+
+  const mobileBtn = document.getElementById("mobileMenuBtn");
+  const navLinks = document.getElementById("navbarLinks");
+
+  mobileBtn.addEventListener("click", () => {
+    navLinks.classList.toggle("hidden");
+    navLinks.classList.toggle("flex");
+  });
+});
+</script>
+
 <!-- 🌟 Hero Section -->
 <section class="relative overflow-hidden py-12 md:py-16 bg-gradient-to-r from-green-50 to-lime-50">
   <!-- Background blobs -->
