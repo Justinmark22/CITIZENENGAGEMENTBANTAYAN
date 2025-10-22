@@ -188,7 +188,7 @@
       </template>
     </div>
 
-  </div>
+  
 </section>
 
   <!-- Footer -->
