@@ -97,16 +97,17 @@
     </div>
   </nav>
 <!-- Hero Section -->
-<section class="relative pt-32 pb-24 text-white overflow-hidden perspective-1000">
-  <!-- Background Patterns & Gradient -->
-  <div class="absolute inset-0 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/lines.png')] bg-repeat opacity-30"></div>
-  <div class="absolute inset-0 bg-gradient-to-br from-black/40 via-black/20 to-black/40"></div>
+<section class="relative pt-32 pb-24 text-gray-900 overflow-hidden">
+  <!-- Background Gradient (matching Services Section) -->
+  <div class="absolute inset-0 bg-gradient-to-b from-green-50 to-green-100"></div>
+  <!-- Optional subtle pattern overlay for texture -->
+  <div class="absolute inset-0 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/lines.png')] bg-repeat opacity-10"></div>
 
   <div class="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
 
     <!-- ✅ 3D Image Carousel -->
     <div 
-      class="w-full lg:w-1/2 relative rounded-xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.5)] border border-white/20 h-64 sm:h-80 lg:h-96 order-1 lg:order-2 transform-style-3d"
+      class="w-full lg:w-1/2 relative rounded-xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.25)] border border-white/20 h-64 sm:h-80 lg:h-96 order-1 lg:order-2 transform-style-3d"
       x-data="{
         images: [
           '{{ asset('images/bantayan.png') }}',
@@ -118,12 +119,11 @@
         rotationY: 0,
         init() {
           setInterval(() => this.index = (this.index + 1) % this.images.length, 3000);
-          // 3D parallax on mouse move
           this.$el.addEventListener('mousemove', e => {
             const rect = this.$el.getBoundingClientRect();
             const x = e.clientX - rect.left - rect.width/2;
             const y = e.clientY - rect.top - rect.height/2;
-            this.rotationY = x * 0.03; // tilt sensitivity
+            this.rotationY = x * 0.03;
             this.rotationX = -y * 0.03;
           });
           this.$el.addEventListener('mouseleave', () => { this.rotationX = 0; this.rotationY = 0; });
@@ -140,26 +140,26 @@
           :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'"
         >
       </template>
-      <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-green-50/40 to-green-100/20"></div>
       <!-- Light Bloom Glow -->
       <div class="absolute inset-0 pointer-events-none bg-gradient-to-tr from-yellow-300/10 via-pink-200/5 to-purple-400/10 mix-blend-screen animate-pulse"></div>
     </div>
 
     <!-- Text Content -->
-    <div class="w-full lg:w-1/2 text-center lg:text-left animate-fadeInUp order-2 lg:order-1 relative z-10">
-      <h2 class="text-xl lg:text-2xl font-semibold text-yellow-400 mb-2 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">Welcome to Bantayan Island</h2>
-      <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.6)]">
+    <div class="w-full lg:w-1/2 text-left animate-fadeInUp order-2 lg:order-1 relative z-10">
+      <h2 class="text-xl lg:text-2xl font-semibold text-green-700 mb-2 drop-shadow-[0_2px_10px_rgba(0,0,0,0.2)]">Welcome to Bantayan Island</h2>
+      <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-green-900 drop-shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
         Strengthening Citizen Engagement Across Communities
       </h1>
-      <p class="text-lg text-gray-300 mb-8 leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]">
-        Discover a <span class="font-semibold text-yellow-400">transparent digital platform</span> connecting citizens, LGUs, and local communities in Bantayan, Santa Fe, and Madridejos.
-        <br><span class="text-gray-200/90">Experience real-time engagement, local updates, and community-driven initiatives in stunning clarity.</span>
+      <p class="text-gray-700 mb-8 leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
+        Discover a <span class="font-semibold text-green-800">transparent digital platform</span> connecting citizens, LGUs, and local communities in Bantayan, Santa Fe, and Madridejos.
+        <br><span class="text-gray-600/90">Experience real-time engagement, local updates, and community-driven initiatives in stunning clarity.</span>
       </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-        <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-lg transition transform hover:scale-105">
+      <div class="flex flex-col sm:flex-row gap-4 justify-start">
+        <a href="#services" class="px-8 py-4 bg-green-700 hover:bg-green-800 text-white rounded-lg font-bold shadow-lg transition transform hover:scale-105">
           Explore Services
         </a>
-        <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-lg transition transform hover:scale-105">
+        <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-lg transition transform hover:scale-105 text-green-900">
           Contact Us
         </a>
       </div>
