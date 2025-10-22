@@ -168,84 +168,58 @@
   </div>
 </section>
 
-<<!-- Hero Section -->
-<section class="relative pt-32 pb-24 text-gray-900 overflow-hidden bg-gradient-to-b from-green-50 to-green-100">
-  <!-- Optional subtle pattern overlay -->
-  <div class="absolute inset-0 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/lines.png')] bg-repeat opacity-10"></div>
+<!-- Services Section -->
+<section id="services" class="relative py-32 bg-gradient-to-b from-green-50 to-green-100 overflow-hidden">
+  <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-28">
 
-  <div class="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
-
-    <!-- ✅ 3D Image Carousel -->
-    <div 
-      class="w-full lg:w-1/2 relative rounded-xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.25)] border border-white/20 h-64 sm:h-80 lg:h-96 order-1 lg:order-2 transform-style-3d"
-      x-data="{
-        images: [
-          '{{ asset('images/bantayan.png') }}',
-          '{{ asset('images/sta.fe.png') }}',
-          '{{ asset('images/madridejos.png') }}'
-        ],
-        index: 0,
-        rotationX: 0,
-        rotationY: 0,
-        init() {
-          setInterval(() => this.index = (this.index + 1) % this.images.length, 3000);
-          this.$el.addEventListener('mousemove', e => {
-            const rect = this.$el.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width/2;
-            const y = e.clientY - rect.top - rect.height/2;
-            this.rotationY = x * 0.03;
-            this.rotationX = -y * 0.03;
-          });
-          this.$el.addEventListener('mouseleave', () => { this.rotationX = 0; this.rotationY = 0; });
-        }
-      }"
-      :style="`transform: rotateX(${rotationX}deg) rotateY(${rotationY}deg); perspective: 1200px;`"
-    >
-      <template x-for="(img, i) in images" :key="i">
-        <img 
-          :src="img"
-          alt="Municipality image"
-          loading="lazy"
-          class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] shadow-2xl"
-          :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'"
-        >
+    <!-- Left Column -->
+    <div class="flex flex-col items-end gap-28">
+      <template x-for="service in $store.services.leftServices" :key="service.title">
+        <div class="flex items-start gap-8">
+          <!-- Floating 3D Circle -->
+          <div 
+            class="w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.2)] bg-white transform transition-all duration-500 hover:rotate-6 hover:scale-110"
+            x-data="{ float: 0 }"
+            x-init="setInterval(() => float = (float + 1) % 360, 50)"
+            :style="`transform: translateY(${Math.sin(float/20)*8}px) rotate(${Math.sin(float/30)*4}deg);`"
+          >
+            <img :src="service.image" alt="" class="w-full h-full object-cover">
+          </div>
+          <!-- Text Right -->
+          <div class="text-left max-w-[280px]">
+            <h3 class="text-xl md:text-2xl font-extrabold text-green-700/80" x-text="service.title"></h3>
+            <p class="text-gray-600 mt-2 text-sm md:text-base leading-relaxed" x-text="service.texts[0]"></p>
+            <p class="text-gray-500 mt-1 text-sm md:text-sm leading-relaxed" x-text="service.texts[1] || ''"></p>
+            <p class="text-gray-500 mt-1 text-sm md:text-sm leading-relaxed" x-text="service.texts[2] || ''"></p>
+          </div>
+        </div>
       </template>
-      <div class="absolute inset-0 bg-gradient-to-t from-green-50/40 to-green-100/20"></div>
-      <!-- Light Bloom Glow -->
-      <div class="absolute inset-0 pointer-events-none bg-gradient-to-tr from-yellow-300/10 via-pink-200/5 to-purple-400/10 mix-blend-screen animate-pulse"></div>
     </div>
 
-    <!-- Text Content with floating 3D effect -->
-    <div 
-      class="w-full lg:w-1/2 text-left order-2 lg:order-1 relative z-10"
-      x-data="{ float: 0 }"
-      x-init="setInterval(() => float = (float + 1) % 360, 50)"
-      :style="`transform: translateY(${Math.sin(float/20)*6}px);`"
-    >
-      <h2 class="text-xl lg:text-2xl font-semibold text-green-700/80 mb-2 drop-shadow-[0_2px_10px_rgba(0,0,0,0.2)] animate-fadeInUp">Welcome to Bantayan Island</h2>
-      <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-green-900 drop-shadow-[0_4px_20px_rgba(0,0,0,0.25)] animate-fadeInUp delay-200">
-        Strengthening Citizen Engagement Across Communities
-      </h1>
-      <p class="text-gray-700 mb-8 leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.15)] animate-fadeInUp delay-400">
-        Discover a <span class="font-semibold text-green-800">transparent digital platform</span> connecting citizens, LGUs, and local communities in Bantayan, Santa Fe, and Madridejos.
-        <br><span class="text-gray-600/90">Experience real-time engagement, local updates, and community-driven initiatives in stunning clarity.</span>
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-start animate-fadeInUp delay-600">
-        <a 
-          href="#services" 
-          class="px-8 py-4 bg-green-700 hover:bg-green-800 text-white rounded-lg font-bold shadow-lg transition transform hover:scale-105 hover:-translate-y-1"
-        >
-          Explore Services
-        </a>
-        <a 
-          href="{{ route('contact') }}" 
-          class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-lg transition transform hover:scale-105 hover:-translate-y-1 text-green-900"
-        >
-          Contact Us
-        </a>
-      </div>
+    <!-- Right Column -->
+    <div class="flex flex-col items-start gap-28">
+      <template x-for="service in $store.services.rightServices" :key="service.title">
+        <div class="flex items-start gap-8">
+          <!-- Floating 3D Circle -->
+          <div 
+            class="w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.2)] bg-white transform transition-all duration-500 hover:-rotate-6 hover:scale-110"
+            x-data="{ float: 0 }"
+            x-init="setInterval(() => float = (float + 1) % 360, 50)"
+            :style="`transform: translateY(${Math.sin(float/20)*8}px) rotate(${Math.sin(float/30)*4}deg);`"
+          >
+            <img :src="service.image" alt="" class="w-full h-full object-cover">
+          </div>
+          <!-- Text Right -->
+          <div class="text-left max-w-[280px]">
+            <h3 class="text-xl md:text-2xl font-extrabold text-green-700/80" x-text="service.title"></h3>
+            <p class="text-gray-600 mt-2 text-sm md:text-base leading-relaxed" x-text="service.texts[0]"></p>
+            <p class="text-gray-500 mt-1 text-sm md:text-sm leading-relaxed" x-text="service.texts[1] || ''"></p>
+            <p class="text-gray-500 mt-1 text-sm md:text-sm leading-relaxed" x-text="service.texts[2] || ''"></p>
+          </div>
+        </div>
+      </template>
     </div>
-    
+
   </div>
 </section>
 
