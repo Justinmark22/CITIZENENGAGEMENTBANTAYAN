@@ -1,32 +1,40 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{ open: false }">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bantayan 911</title>
+  
+  <!-- Tailwind & Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide-icons/dist/umd/lucide.min.js"></script>
+
+  <!-- Alpine.js -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide-icons/dist/umd/lucide.min.js"></script>
+
   <style>
     body { font-family: 'Roboto', sans-serif; scroll-behavior: smooth; }
     @keyframes fadeInUp { 0% {opacity:0;transform:translateY(40px);} 100% {opacity:1;transform:translateY(0);} }
     .animate-fadeInUp { animation: fadeInUp 1s ease-out forwards; }
     .blinking { animation: blink 1s infinite; }
     @keyframes blink { 0%,50%,100%{opacity:1;}25%,75%{opacity:0;} }
+    [x-cloak] { display: none !important; }
   </style>
 </head>
 
 <body class="bg-white text-gray-900">
 
 <!-- Navbar -->
-<nav class="bg-white border-b border-gray-200 shadow-md fixed top-0 inset-x-0 z-50">
+<nav class="bg-white border-b border-gray-200 shadow-md fixed top-0 inset-x-0 z-50" x-data="{ open: false }">
   <div class="max-w-7xl mx-auto px-6">
     <div class="flex justify-between items-center h-20">
       <!-- Logo -->
       <div class="flex items-center gap-3">
         <img src="{{ asset('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png') }}" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-md">
-        <span class="text-xl md:text-2xl font-extrabold text-black-700 tracking-tight">Bantayan 911</span>
+        <span class="text-xl md:text-2xl font-extrabold text-black tracking-tight">Bantayan 911</span>
       </div>
 
       <!-- Desktop Menu -->
@@ -57,7 +65,7 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div x-show="open" x-transition class="md:hidden bg-white shadow-lg px-6 py-4 space-y-2">
+    <div x-show="open" x-transition x-cloak class="md:hidden bg-white shadow-lg px-6 py-4 space-y-2">
       <a href="{{ url('/') }}" class="block py-2 hover:text-blue-700">Home</a>
       <a href="{{ route('about') }}" class="block py-2 hover:text-blue-700">About</a>
       <a href="{{ route('contact') }}" class="block py-2 hover:text-blue-700">Contact</a>
@@ -67,19 +75,14 @@
     </div>
   </div>
 </nav>
-<!-- Hero -->
-<section class="relative pt-32 pb-24 text-white overflow-hidden">
-  <!-- Textured transparent black background -->
-  <div class="absolute inset-0"
-       style="background-color: rgba(0,0,0,0.5); 
-              background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/lines.png'); 
-              background-repeat: repeat;">
-  </div>
 
-  <!-- Optional gradient overlay for depth -->
+<!-- Hero Section -->
+<section class="relative pt-32 pb-24 text-white overflow-hidden">
+  <div class="absolute inset-0 bg-black/50" style="background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/lines.png'); background-repeat: repeat;"></div>
   <div class="absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/30"></div>
 
   <div class="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
+    <!-- Text -->
     <div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
       <h2 class="text-xl lg:text-2xl font-semibold text-yellow-400 mb-2">Welcome to Bantayan Island</h2>
       <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-white">
@@ -98,14 +101,11 @@
       </div>
     </div>
 
+    <!-- Image Carousel -->
     <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
-         x-data="{
-           images: ['{{ asset('images/bantayan.png') }}', '{{ asset('images/sta.fe.png') }}', '{{ asset('images/madridejos.png') }}'],
-           index: 0,
-           init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) }
-         }">
-      <template x-for="(img, i) in images" :key="i">
-        <img :src="img"
+         x-data="{ images: ['{{ asset('images/bantayan.png') }}','{{ asset('images/sta.fe.png') }}','{{ asset('images/madridejos.png') }}'], index:0, init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) } }">
+      <template x-for="(img,i) in images" :key="i">
+        <img :src="img" alt="" loading="lazy"
              class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
              :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
       </template>
@@ -113,20 +113,18 @@
     </div>
   </div>
 </section>
-<!-- Services -->
-<section id="services" class="relative py-24" 
-         style="background-color: rgba(144, 238, 144, 0.2);" x-data>
+
+<!-- Services Section -->
+<section id="services" class="relative py-24 bg-green-100/30" x-data>
   <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
 
-    <!-- Left Column (4 services) -->
+    <!-- Left Column -->
     <div class="flex flex-col gap-16">
       <template x-for="service in $store.services.leftServices" :key="service.title">
         <div class="flex items-center gap-6">
-          <!-- Circle Image -->
           <div class="w-24 h-24 rounded-full overflow-hidden shadow-2xl flex-shrink-0 transform hover:scale-105 transition-transform duration-500">
-            <img :src="service.image" class="w-full h-full object-cover">
+            <img :src="service.image" alt="" class="w-full h-full object-cover">
           </div>
-          <!-- Text on Right -->
           <div>
             <h3 class="text-xl font-bold text-gray-900" x-text="service.title"></h3>
             <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
@@ -135,15 +133,13 @@
       </template>
     </div>
 
-    <!-- Right Column (4 services) -->
+    <!-- Right Column -->
     <div class="flex flex-col gap-16">
       <template x-for="service in $store.services.rightServices" :key="service.title">
         <div class="flex items-center gap-6">
-          <!-- Circle Image -->
           <div class="w-24 h-24 rounded-full overflow-hidden shadow-2xl flex-shrink-0 transform hover:scale-105 transition-transform duration-500">
-            <img :src="service.image" class="w-full h-full object-cover">
+            <img :src="service.image" alt="" class="w-full h-full object-cover">
           </div>
-          <!-- Text on Right -->
           <div>
             <h3 class="text-xl font-bold text-gray-900" x-text="service.title"></h3>
             <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
@@ -195,15 +191,15 @@
   </div>
 </footer>
 
-<!-- Alpine Stores & Typing Function -->
+<!-- Alpine Stores -->
 <script>
 document.addEventListener('alpine:init', () => {
   Alpine.store('services', {
     leftServices: [
       { title: 'Disaster Response', image: '{{ asset("images/dis.png") }}', texts: ['MDRRMO: Disaster Preparedness & Emergency Response'] },
       { title: 'Health Services', image: '{{ asset("images/asd.png") }}', texts: ['Accessible Care for Everyone'] },
-      { title: 'Waste Management', image: '{{ asset("images/waste.png") }}', texts: ['Keeping Bantayan Clean & Safe'] },
-      { title: 'Water Management', image: '{{ asset("images/wat .png") }}', texts: ['Clean Water Access for All'] }
+      { title: 'Waste Management', image: '{{ asset("images/wat.png") }}', texts: ['Keeping Bantayan Clean & Safe'] },
+      { title: 'Water Management', image: '{{ asset("images/wat.png") }}', texts: ['Clean Water Access for All'] }
     ],
     rightServices: [
       { title: 'Public Safety', image: '{{ asset("images/SAN.PNG") }}', texts: ['Protecting Our Communities'] },
@@ -211,37 +207,8 @@ document.addEventListener('alpine:init', () => {
       { title: 'Community Engagement', image: '{{ asset("images/asdas (2).png") }}', texts: ['Bridging Citizens and LGUs'] },
       { title: 'Environmental Care', image: '{{ asset("images/gsd (1).png") }}', texts: ['Preserving Natural Resources'] }
     ]
-  })
+  });
 });
 
-function typingText(texts) {
-  return {
-    texts,
-    textIndex: 0,
-    displayText: '',
-    charIndex: 0,
-    init() { this.type(); },
-    type() {
-      const current = this.texts[this.textIndex];
-      if (this.charIndex < current.length) {
-        this.displayText += current[this.charIndex++];
-        setTimeout(() => this.type(), 50);
-      } else { setTimeout(() => this.delete(), 1000); }
-    },
-    delete() {
-      if (this.charIndex > 0) {
-        this.displayText = this.displayText.slice(0, -1);
-        this.charIndex--;
-        setTimeout(() => this.delete(), 25);
-      } else {
-        this.textIndex = (this.textIndex + 1) % this.texts.length;
-        setTimeout(() => this.type(), 500);
-      }
-    }
-  }
-}
-</script>
-
-<script>
 lucide.createIcons();
 </script>
