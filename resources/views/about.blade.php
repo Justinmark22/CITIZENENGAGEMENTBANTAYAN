@@ -10,7 +10,7 @@
   <!-- AOS Animation Library -->
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <style>
-    /* Floating 3D effect for circles/cards */
+    /* Optional: floating 3D effect for circles */
     .float-3d {
       transition: transform 0.5s ease;
     }
@@ -22,7 +22,7 @@
 
 <body class="bg-green-50 text-gray-900 font-roboto scroll-smooth">
 
-  <!-- Navbar -->
+  <!-- Navbar (Same style as Welcome page) -->
   <nav class="bg-white shadow-md fixed top-0 inset-x-0 z-50">
     <div class="max-w-7xl mx-auto px-6">
       <div class="flex justify-between items-center h-20">
@@ -129,22 +129,4 @@
     <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-sm">&copy; 2025 911 Hotline Bantayan Island. All Rights Reserved.</p>
       <div class="flex space-x-6">
-        <a href="#" class="hover:text-white transition">Facebook</a>
-        <a href="#" class="hover:text-white transition">Twitter</a>
-        <a href="#" class="hover:text-white transition">Instagram</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- AOS & Alpine.js -->
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <script>
-    AOS.init({
-      duration: 800,
-      once: true,
-      offset: 100
-    });
-  </script>
-</body>
-</html>
+        <a href
