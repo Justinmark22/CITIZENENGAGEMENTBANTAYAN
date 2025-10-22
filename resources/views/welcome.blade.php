@@ -16,6 +16,9 @@
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide/dist/lucide.min.js"></script>
+  <!-- Include Alpine.js -->
+<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
 
   <!-- Tailwind Custom Animations -->
   <script>
@@ -119,28 +122,38 @@
         </div>
       </div>
 <!-- Image Carousel -->
-<div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
-  x-data="{
-    images: [
-      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...', // bantayan.png base64 here
-      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...', // sta.fe.png base64 here
-      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...'  // madridejos.png base64 here
-    ],
-    index: 0,
-    init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) }
-  }">
-
+<div 
+  class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
+  x-data="
+    {
+      images: [
+        '{{ asset('images/bantayan.png') }}',
+        '{{ asset('images/sta.fe.png') }}',
+        '{{ asset('images/madridejos.png') }}'
+      ],
+      index: 0,
+      init() {
+        setInterval(() => {
+          this.index = (this.index + 1) % this.images.length
+        }, 3000)
+      }
+    }
+  "
+>
   <template x-for="(img, i) in images" :key="i">
-    <img :src="img" alt="Carousel image" loading="lazy"
+    <img 
+      :src="img"
+      alt="Municipality image"
+      loading="lazy"
       class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-      :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
+      :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'"
+    >
   </template>
 
   <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-</div>  
+</div>
     </div>
   </section>
-
   <!-- Services Section -->
   <section id="services" class="relative py-24 bg-green-100/30" x-data>
     <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
