@@ -260,7 +260,7 @@
     </div>
     <div class="border-t border-gray-700 mt-8">
       <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
-        <p>&copy; 2025 Citizen Engagement Bantayan — Connecting People, Building Communities</p>
+        <p>&copy; 2025 Bantayan 911 — Connecting People, Building Communities</p>
         <p class="mt-2 md:mt-0">Powered by Local Government & Communities</p>
       </div>
     </div>
