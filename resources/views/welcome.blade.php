@@ -209,7 +209,5 @@ document.addEventListener('alpine:init', () => {
   });
 });
 </script>
-<script>
-
-lucide.createIcons();
-</script>
+</body> 
+</html>
