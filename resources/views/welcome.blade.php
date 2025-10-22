@@ -4,221 +4,212 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bantayan 911</title>
+  
+  <!-- Tailwind & Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide/dist/lucide.min.js"></script>
+<!-- Include Lucide from CDN -->
+<script src="https://unpkg.com/lucide/dist/lucide.min.js"></script>
 
   <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      scroll-behavior: smooth;
-    }
-
-    /* Hero overlay */
-    .hero-overlay {
-      background: linear-gradient(to bottom right, rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://www.toptal.com/designers/subtlepatterns/patterns/lines.png');
-      background-repeat: repeat;
-    }
-
-    .hero-text-shadow {
-      text-shadow: 1px 1px 6px rgba(0,0,0,0.6);
-    }
+    body { font-family: 'Roboto', sans-serif; scroll-behavior: smooth; }
+    @keyframes fadeInUp { 0% {opacity:0;transform:translateY(40px);} 100% {opacity:1;transform:translateY(0);} }
+    .animate-fadeInUp { animation: fadeInUp 1s ease-out forwards; }
+    .blinking { animation: blink 1s infinite; }
+    @keyframes blink { 0%,50%,100%{opacity:1;}25%,75%{opacity:0;} }
+    [x-cloak] { display: none !important; }
   </style>
 </head>
 
-<body>
+<body class="bg-white text-gray-900">
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow fixed-top">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-      <img src="{{ asset('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png') }}" alt="Logo" class="rounded-circle" width="50" height="50">
-      <span class="fw-bold fs-4">Bantayan 911</span>
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-      aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarContent">
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" href="{{ url('/') }}">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ route('about') }}">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ route('contact') }}">Contact</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ route('faq') }}">FAQs</a></li>
-      </ul>
-      <div class="d-flex ms-lg-3 gap-2">
-        <a href="{{ url('/login') }}" class="btn btn-outline-primary">Log In</a>
-        <a href="{{ url('/register') }}" class="btn btn-primary">Register</a>
+<nav class="bg-white border-b border-gray-200 shadow-md fixed top-0 inset-x-0 z-50" x-data="{ open: false }">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex justify-between items-center h-20">
+      <!-- Logo -->
+      <div class="flex items-center gap-3">
+        <img src="{{ asset('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png') }}" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-md">
+        <span class="text-xl md:text-2xl font-extrabold text-black tracking-tight">Bantayan 911</span>
       </div>
+
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex space-x-8 text-sm font-medium">
+        <a href="{{ url('/') }}" class="hover:text-blue-700 transition">Home</a>
+        <a href="{{ route('about') }}" class="hover:text-blue-700 transition">About</a>
+        <a href="{{ route('contact') }}" class="hover:text-blue-700 transition">Contact</a>
+        <a href="{{ route('faq') }}" class="hover:text-blue-700 transition">FAQs</a>
+      </div>
+
+      <!-- Desktop Auth -->
+      <div class="hidden md:flex items-center gap-3">
+        <a href="{{ url('/login') }}" class="text-sm font-bold text-blue-700 hover:underline">Log In</a>
+        <a href="{{ url('/register') }}" class="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-lg font-semibold text-sm shadow-md transition">Register</a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden">
+        <button @click="open = !open" class="text-gray-800 focus:outline-none">
+          <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div x-show="open" x-transition x-cloak class="md:hidden bg-white shadow-lg px-6 py-4 space-y-2">
+      <a href="{{ url('/') }}" class="block py-2 hover:text-blue-700">Home</a>
+      <a href="{{ route('about') }}" class="block py-2 hover:text-blue-700">About</a>
+      <a href="{{ route('contact') }}" class="block py-2 hover:text-blue-700">Contact</a>
+      <a href="{{ route('faq') }}" class="block py-2 hover:text-blue-700">FAQs</a>
+      <a href="{{ url('/login') }}" class="block py-2 font-bold text-blue-700">Log In</a>
+      <a href="{{ url('/register') }}" class="block py-2 bg-blue-700 text-white rounded-md text-center mt-2">Register</a>
     </div>
   </div>
 </nav>
 
 <!-- Hero Section -->
-<section class="hero-overlay text-white d-flex align-items-center" style="height: 90vh; position: relative;">
-  <div class="container text-center text-lg-start position-relative" style="z-index: 2;">
-    <h2 class="fs-3 text-warning mb-2">Welcome to Bantayan Island</h2>
-    <h1 class="display-4 fw-bold hero-text-shadow mb-4">
-      Strengthening Citizen Engagement Across Communities
-    </h1>
-    <p class="fs-5 mb-4 hero-text-shadow">
-      Discover a <span class="fw-semibold text-warning">transparent digital platform</span> that connects citizens, LGUs, and local communities in Bantayan, Santa Fe, and Madridejos.
-    </p>
-    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
-      <a href="#services" class="btn btn-warning btn-lg text-dark fw-bold">Explore Services</a>
-      <a href="{{ route('contact') }}" class="btn btn-outline-light btn-lg fw-bold">Contact Us</a>
-    </div>
-  </div>
+<section class="relative pt-32 pb-24 text-white overflow-hidden">
+  <div class="absolute inset-0 bg-black/50" style="background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/lines.png'); background-repeat: repeat;"></div>
+  <div class="absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/30"></div>
 
-  <!-- Image Carousel -->
-  <div id="heroCarousel" class="carousel slide position-absolute top-0 end-0 bottom-0 start-50 translate-middle-x" style="width: 50%; height: 90%;">
-    <div class="carousel-inner h-100 rounded shadow-lg border border-white-20">
-      <div class="carousel-item active h-100">
-        <img src="{{ asset('images/bantayan.png') }}" class="d-block w-100 h-100 object-fit-cover" alt="Bantayan">
-      </div>
-      <div class="carousel-item h-100">
-        <img src="{{ asset('images/sta.fe.png') }}" class="d-block w-100 h-100 object-fit-cover" alt="Santa Fe">
-      </div>
-      <div class="carousel-item h-100">
-        <img src="{{ asset('images/madridejos.png') }}" class="d-block w-100 h-100 object-fit-cover" alt="Madridejos">
+  <div class="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
+    <!-- Text -->
+    <div class="lg:w-1/2 text-center lg:text-left animate-fadeInUp">
+      <h2 class="text-xl lg:text-2xl font-semibold text-yellow-400 mb-2">Welcome to Bantayan Island</h2>
+      <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-white">
+        Strengthening Citizen Engagement Across Communities
+      </h1>
+      <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+        Discover a <span class="font-semibold text-yellow-400">transparent digital platform</span> that connects citizens, LGUs, and local communities in Bantayan, Santa Fe, and Madridejos.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+        <a href="#services" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-bold shadow-md transition">
+          Explore Services
+        </a>
+        <a href="{{ route('contact') }}" class="px-8 py-4 bg-white/20 hover:bg-white/30 border border-white rounded-lg font-bold shadow-md transition">
+          Contact Us
+        </a>
       </div>
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
+
+    <!-- Image Carousel -->
+    <div class="lg:w-1/2 relative rounded-xl overflow-hidden shadow-2xl border border-white/20 h-96"
+         x-data="{ images: ['{{ asset('images/bantayan.png') }}','{{ asset('images/sta.fe.png') }}','{{ asset('images/madridejos.png') }}'], index:0, init() { setInterval(() => this.index = (this.index + 1) % this.images.length, 3000) } }">
+      <template x-for="(img,i) in images" :key="i">
+        <img :src="img" alt="" loading="lazy"
+             class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+             :class="index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
+      </template>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+    </div>
   </div>
 </section>
 
 <!-- Services Section -->
-<section id="services" class="py-5 bg-light">
-  <div class="container">
-    <div class="row g-4">
-      <!-- Left Column -->
-      <div class="col-md-6">
-        <div class="row g-4">
-          <div class="col-12 d-flex align-items-center gap-3">
-            <img src="{{ asset('images/dis.png') }}" class="rounded-circle shadow-lg" width="80" height="80">
-            <div>
-              <h5 class="fw-bold">Disaster Response</h5>
-              <p class="text-muted mb-0">MDRRMO: Disaster Preparedness & Emergency Response</p>
-            </div>
-          </div>
-          <div class="col-12 d-flex align-items-center gap-3">
-            <img src="{{ asset('images/asd.png') }}" class="rounded-circle shadow-lg" width="80" height="80">
-            <div>
-              <h5 class="fw-bold">Health Services</h5>
-              <p class="text-muted mb-0">Accessible Care for Everyone</p>
-            </div>
-          </div>
-          <div class="col-12 d-flex align-items-center gap-3">
-            <img src="{{ asset('images/wat.png') }}" class="rounded-circle shadow-lg" width="80" height="80">
-            <div>
-              <h5 class="fw-bold">Waste Management</h5>
-              <p class="text-muted mb-0">Keeping Bantayan Clean & Safe</p>
-            </div>
-          </div>
-          <div class="col-12 d-flex align-items-center gap-3">
-            <img src="{{ asset('images/wat.png') }}" class="rounded-circle shadow-lg" width="80" height="80">
-            <div>
-              <h5 class="fw-bold">Water Management</h5>
-              <p class="text-muted mb-0">Clean Water Access for All</p>
-            </div>
-          </div>
-        </div>
-      </div>
+<section id="services" class="relative py-24 bg-green-100/30" x-data>
+  <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
 
-      <!-- Right Column -->
-      <div class="col-md-6">
-        <div class="row g-4">
-          <div class="col-12 d-flex align-items-center gap-3">
-            <img src="{{ asset('images/SAN.PNG') }}" class="rounded-circle shadow-lg" width="80" height="80">
-            <div>
-              <h5 class="fw-bold">Public Safety</h5>
-              <p class="text-muted mb-0">Protecting Our Communities</p>
-            </div>
+    <!-- Left Column -->
+    <div class="flex flex-col gap-16">
+      <template x-for="service in $store.services.leftServices" :key="service.title">
+        <div class="flex items-center gap-6">
+          <div class="w-24 h-24 rounded-full overflow-hidden shadow-2xl flex-shrink-0 transform hover:scale-105 transition-transform duration-500">
+            <img :src="service.image" alt="" class="w-full h-full object-cover">
           </div>
-          <div class="col-12 d-flex align-items-center gap-3">
-            <img src="{{ asset('images/as.png') }}" class="rounded-circle shadow-lg" width="80" height="80">
-            <div>
-              <h5 class="fw-bold">Education</h5>
-              <p class="text-muted mb-0">Learning & Growth Opportunities</p>
-            </div>
-          </div>
-          <div class="col-12 d-flex align-items-center gap-3">
-            <img src="{{ asset('images/asdas (2).png') }}" class="rounded-circle shadow-lg" width="80" height="80">
-            <div>
-              <h5 class="fw-bold">Community Engagement</h5>
-              <p class="text-muted mb-0">Bridging Citizens and LGUs</p>
-            </div>
-          </div>
-          <div class="col-12 d-flex align-items-center gap-3">
-            <img src="{{ asset('images/gsd (1).png') }}" class="rounded-circle shadow-lg" width="80" height="80">
-            <div>
-              <h5 class="fw-bold">Environmental Care</h5>
-              <p class="text-muted mb-0">Preserving Natural Resources</p>
-            </div>
+          <div>
+            <h3 class="text-xl font-bold text-gray-900" x-text="service.title"></h3>
+            <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
           </div>
         </div>
-      </div>
+      </template>
     </div>
+
+    <!-- Right Column -->
+    <div class="flex flex-col gap-16">
+      <template x-for="service in $store.services.rightServices" :key="service.title">
+        <div class="flex items-center gap-6">
+          <div class="w-24 h-24 rounded-full overflow-hidden shadow-2xl flex-shrink-0 transform hover:scale-105 transition-transform duration-500">
+            <img :src="service.image" alt="" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-gray-900" x-text="service.title"></h3>
+            <p class="text-gray-600 mt-1 text-sm" x-text="service.texts[0]"></p>
+          </div>
+        </div>
+      </template>
+    </div>
+
   </div>
 </section>
 
 <!-- Footer -->
-<footer class="bg-dark text-light pt-5">
-  <div class="container">
-    <div class="row g-4">
-      <div class="col-md-3">
-        <h5 class="fw-bold">Quick Links</h5>
-        <ul class="list-unstyled">
-          <li><a href="#" class="text-light text-decoration-none">Bantayan Updates</a></li>
-          <li><a href="#" class="text-light text-decoration-none">Santa Fe Updates</a></li>
-          <li><a href="#" class="text-light text-decoration-none">Madridejos Updates</a></li>
-        </ul>
-      </div>
-      <div class="col-md-3">
-        <h5 class="fw-bold">Legal & Policies</h5>
-        <ul class="list-unstyled">
-          <li><a href="{{ route('privacy.policy') }}" class="text-light text-decoration-none">Privacy Policy</a></li>
-          <li><a href="{{ route('terms.service') }}" class="text-light text-decoration-none">Terms of Service</a></li>
-        </ul>
-      </div>
-      <div class="col-md-3">
-        <h5 class="fw-bold">Contact</h5>
-        <p class="small">📍 Bantayan Island, Cebu<br>📧 info@citizenengage.ph<br>☎ +63 912 345 6789</p>
-      </div>
-      <div class="col-md-3">
-        <h5 class="fw-bold">Stay Connected</h5>
-        <ul class="list-unstyled small">
-          <li><a href="#" class="text-light text-decoration-none">🌐 Facebook</a></li>
-          <li><a href="#" class="text-light text-decoration-none">🐦 Twitter</a></li>
-          <li><a href="#" class="text-light text-decoration-none">📷 Instagram</a></li>
-          <li><a href="#" class="text-light text-decoration-none">▶ YouTube</a></li>
-        </ul>
+<footer class="bg-gray-900 text-gray-300 mt-16">
+  <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
+    <div>
+      <h4 class="text-white text-lg font-bold mb-4">Quick Links</h4>
+      <ul class="space-y-3 text-sm">
+        <li><a href="#" class="hover:text-blue-400">Bantayan Updates</a></li>
+        <li><a href="#" class="hover:text-blue-400">Santa Fe Updates</a></li>
+        <li><a href="#" class="hover:text-blue-400">Madridejos Updates</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-white text-lg font-bold mb-4">Legal & Policies</h4>
+      <ul class="space-y-3 text-sm">
+        <li><a href="{{ route('privacy.policy') }}" class="hover:text-blue-400">Privacy Policy</a></li>
+        <li><a href="{{ route('terms.service') }}" class="hover:text-blue-400">Terms of Service</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-white text-lg font-bold mb-4">Contact</h4>
+      <p class="text-gray-400 text-sm">📍 Bantayan Island, Cebu<br>📧 info@citizenengage.ph<br>☎ +63 912 345 6789</p>
+    </div>
+    <div>
+      <h4 class="text-white text-lg font-bold mb-4">Stay Connected</h4>
+      <div class="flex flex-col space-y-2 text-sm">
+        <a href="#" class="hover:text-blue-400">🌐 Facebook</a>
+        <a href="#" class="hover:text-blue-400">🐦 Twitter</a>
+        <a href="#" class="hover:text-blue-400">📷 Instagram</a>
+        <a href="#" class="hover:text-blue-400">▶ YouTube</a>
       </div>
     </div>
-    <hr class="bg-secondary mt-4">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small pb-3">
-      <p class="mb-0">&copy; 2025 Citizen Engagement Bantayan — Connecting People, Building Communities</p>
-      <p class="mb-0">Powered by Local Government & Communities</p>
+  </div>
+  <div class="border-t border-gray-700 mt-8">
+    <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
+      <p>&copy; 2025 Citizen Engagement Bantayan — Connecting People, Building Communities</p>
+      <p class="mt-2 md:mt-0">Powered by Local Government & Communities</p>
     </div>
   </div>
 </footer>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  lucide.createIcons();
+document.addEventListener('alpine:init', () => {
+  Alpine.store('services', {
+    leftServices: [
+      { title: 'Disaster Response', image: '{{ asset("images/haha.png") }}', texts: ['MDRRMO: Disaster Preparedness & Emergency Response'] },
+      { title: 'Health Services', image: '{{ asset("images/asd.png") }}', texts: ['Accessible Care for Everyone'] },
+      { title: 'Waste Management', image: '{{ asset("images/waste.png") }}', texts: ['Keeping Bantayan Clean & Safe'] },
+      { title: 'Water Management', image: '{{ asset("images/watttt.png") }}', texts: ['Clean Water Access for All'] }
+    ],
+    rightServices: [
+      { title: 'Public Safety', image: '{{ asset("images/SAN.PNG") }}', texts: ['Protecting Our Communities'] },
+      { title: 'Education', image: '{{ asset("images/as.png") }}', texts: ['Learning & Growth Opportunities'] },
+      { title: 'Community Engagement', image: '{{ asset("images/asdas (2).png") }}', texts: ['Bridging Citizens and LGUs'] },
+      { title: 'Environmental Care', image: '{{ asset("images/gsd (1).png") }}', texts: ['Preserving Natural Resources'] }
+    ]
+  });
+});
 </script>
+<script>
 
-</body>
-</html>
+lucide.createIcons();
+</script>
