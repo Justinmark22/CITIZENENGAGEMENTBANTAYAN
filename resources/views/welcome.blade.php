@@ -48,54 +48,57 @@
 
 <body class="bg-white text-gray-900 font-roboto scroll-smooth">
 
-  <!-- Navbar -->
-  <nav class="bg-white border-b border-gray-200 shadow-md fixed top-0 inset-x-0 z-50">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="flex justify-between items-center h-20">
-        <!-- Logo -->
-        <div class="flex items-center gap-3">
-          <img src="{{ asset('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png') }}" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-md">
-          <span class="text-xl md:text-2xl font-extrabold text-black tracking-tight">Bantayan 911</span>
-        </div>
+ <!-- Navbar -->
+<nav class="bg-white border-b border-gray-200 shadow sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex justify-between items-center h-20">
 
-        <!-- Desktop Menu -->
-        <div class="hidden md:flex space-x-8 text-sm font-medium">
-          <a href="{{ url('/') }}" class="hover:text-blue-700 transition">Home</a>
-          <a href="{{ route('about') }}" class="hover:text-blue-700 transition">About</a>
-          <a href="{{ route('contact') }}" class="hover:text-blue-700 transition">Contact</a>
-          <a href="{{ route('faq') }}" class="hover:text-blue-700 transition">FAQs</a>
-        </div>
+      <!-- Logo -->
+      <a href="{{ url('/') }}" class="flex items-center gap-3">
+        <img src="{{ asset('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png') }}" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-sm">
+        <span class="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">Bantayan 911</span>
+      </a>
 
-        <!-- Desktop Auth -->
-        <div class="hidden md:flex items-center gap-3">
-          <a href="{{ url('/login') }}" class="text-sm font-bold text-blue-700 hover:underline">Log In</a>
-          <a href="{{ url('/register') }}" class="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-lg font-semibold text-sm shadow-md transition">Register</a>
-        </div>
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-800">
+        <a href="{{ url('/') }}" class="hover:text-green-700 transition">Home</a>
+        <a href="{{ route('about') }}" class="hover:text-green-700 transition">About</a>
+        <a href="{{ route('contact') }}" class="hover:text-green-700 transition">Contact</a>
+        <a href="{{ route('faq') }}" class="hover:text-green-700 transition">FAQs</a>
+      </div>
 
-        <!-- Mobile Menu Button -->
-        <div class="md:hidden">
-          <button @click="open = !open" class="text-gray-800 focus:outline-none">
-            <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-            <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
+      <!-- Desktop Auth Buttons -->
+      <div class="hidden md:flex items-center gap-3">
+        <a href="{{ url('/login') }}" class="text-sm font-semibold text-green-700 hover:underline focus:outline-none focus:ring-2 focus:ring-green-500 rounded">Log In</a>
+        <a href="{{ url('/register') }}" class="px-5 py-2 bg-green-700 hover:bg-green-800 text-white rounded-lg font-semibold text-sm shadow transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500">Register</a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden" x-data="{ open: false }">
+        <button @click="open = !open" aria-label="Toggle menu" class="text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 rounded">
+          <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+
+        <!-- Mobile Menu -->
+        <div x-show="open" x-transition class="absolute top-20 left-0 w-full bg-white shadow-md px-6 py-4 space-y-2 md:hidden">
+          <a href="{{ url('/') }}" class="block py-2 text-gray-800 hover:text-green-700 transition">Home</a>
+          <a href="{{ route('about') }}" class="block py-2 text-gray-800 hover:text-green-700 transition">About</a>
+          <a href="{{ route('contact') }}" class="block py-2 text-gray-800 hover:text-green-700 transition">Contact</a>
+          <a href="{{ route('faq') }}" class="block py-2 text-gray-800 hover:text-green-700 transition">FAQs</a>
+          <a href="{{ url('/login') }}" class="block py-2 font-semibold text-green-700 hover:underline">Log In</a>
+          <a href="{{ url('/register') }}" class="block py-2 mt-2 bg-green-700 hover:bg-green-800 text-white rounded-lg text-center font-semibold">Register</a>
         </div>
       </div>
 
-      <!-- Mobile Menu -->
-      <div x-show="open" x-transition x-cloak class="md:hidden bg-white shadow-lg px-6 py-4 space-y-2">
-        <a href="{{ url('/') }}" class="block py-2 hover:text-blue-700">Home</a>
-        <a href="{{ route('about') }}" class="block py-2 hover:text-blue-700">About</a>
-        <a href="{{ route('contact') }}" class="block py-2 hover:text-blue-700">Contact</a>
-        <a href="{{ route('faq') }}" class="block py-2 hover:text-blue-700">FAQs</a>
-        <a href="{{ url('/login') }}" class="block py-2 font-bold text-blue-700">Log In</a>
-        <a href="{{ url('/register') }}" class="block py-2 bg-blue-700 text-white rounded-md text-center mt-2">Register</a>
-      </div>
     </div>
-  </nav>
+  </div>
+</nav>
+
 <!-- Hero Section -->
 <section class="relative pt-32 pb-24 text-gray-900 overflow-hidden">
   <!-- Background Gradient (matching Services Section) -->
