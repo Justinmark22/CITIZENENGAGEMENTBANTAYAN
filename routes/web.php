@@ -127,9 +127,7 @@ Route::get('/', function () {
     $response->headers->set('Referrer-Policy', 'no-referrer');
 
     return $response;
-});
-
-// ✅ LOGIN ROUTES
+});// ✅ LOGIN ROUTES
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
@@ -144,7 +142,7 @@ Route::post('/login', function (Request $request) {
 
     // ✅ reCAPTCHA v3 verification
     $recaptchaResponse = $request->input('g-recaptcha-response');
-    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // Replace with your key
+    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // replace with your key
 
     if (!$recaptchaResponse) {
         return back()->withErrors(['captcha' => 'Please complete the reCAPTCHA verification.'])
@@ -170,7 +168,7 @@ Route::post('/login', function (Request $request) {
         'password' => ['required', 'string', 'max:255'],
     ]);
 
-    $user = User::where('email', $credentials['email'])->first();
+    $user = \App\Models\User::where('email', $credentials['email'])->first();
 
     if ($user && $user->status === 'disabled') {
         RateLimiter::hit($key, 60);
@@ -183,6 +181,7 @@ Route::post('/login', function (Request $request) {
         $request->session()->regenerate();
         $user = Auth::user();
 
+        // ✅ Example cookies
         cookie()->queue(cookie('user_name', $user->name, 60));
         cookie()->queue(cookie('user_role', $user->role, 60));
         cookie()->queue(cookie('secure_session', Str::random(32), 60, null, null, true, true));
@@ -191,41 +190,47 @@ Route::post('/login', function (Request $request) {
         $user->save();
         RateLimiter::clear($key);
 
-        // ✅ If user is admin or staff → redirect directly (NO OTP)
-        if (in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water'])) {
+        // ✅ Admins, Staff, or Admin Location → skip OTP
+        if (
+            in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water'])
+            || strtolower($user->location) === 'admin'
+        ) {
             $route = match (strtolower($user->role)) {
-                'admin' => match ($user->location) {
-                    'Santa.Fe' => 'dashboard.santafeadmin',
-                    'Bantayan' => 'dashboard.bantayanadmin',
-                    'Madridejos' => 'dashboard.madridejosadmin',
+                'admin' => match (strtolower($user->location)) {
+                    'santa.fe' => 'dashboard.santafeadmin',
+                    'bantayan' => 'dashboard.bantayanadmin',
+                    'madridejos' => 'dashboard.madridejosadmin',
                     'admin' => 'dashboard.admin',
                     default => 'dashboard',
                 },
-                'mdrrmo' => match ($user->location) {
-                    'Santa.Fe' => 'dashboard.mdrrmo-santafe',
-                    'Bantayan' => 'dashboard.mdrrmo-bantayan',
-                    'Madridejos' => 'dashboard.mdrrmo-madridejos',
+                'mdrrmo' => match (strtolower($user->location)) {
+                    'santa.fe' => 'dashboard.mdrrmo-santafe',
+                    'bantayan' => 'dashboard.mdrrmo-bantayan',
+                    'madridejos' => 'dashboard.mdrrmo-madridejos',
                     default => 'dashboard',
                 },
-                'waste' => match ($user->location) {
-                    'Santa.Fe' => 'dashboard.waste-santafe',
-                    'Bantayan' => 'dashboard.waste-bantayan',
-                    'Madridejos' => 'dashboard.waste-madridejos',
+                'waste' => match (strtolower($user->location)) {
+                    'santa.fe' => 'dashboard.waste-santafe',
+                    'bantayan' => 'dashboard.waste-bantayan',
+                    'madridejos' => 'dashboard.waste-madridejos',
                     default => 'dashboard',
                 },
-                'water' => match ($user->location) {
-                    'Santa.Fe' => 'dashboard.water-santafe',
-                    'Bantayan' => 'dashboard.water-bantayan',
-                    'Madridejos' => 'dashboard.water-madridejos',
+                'water' => match (strtolower($user->location)) {
+                    'santa.fe' => 'dashboard.water-santafe',
+                    'bantayan' => 'dashboard.water-bantayan',
+                    'madridejos' => 'dashboard.water-madridejos',
                     default => 'dashboard',
                 },
-                default => 'dashboard',
+                default => match (strtolower($user->location)) {
+                    'admin' => 'dashboard.admin',
+                    default => 'dashboard',
+                },
             };
 
             return redirect()->route($route);
         }
 
-        // ✅ Citizens → Send OTP
+        // ✅ Citizens only → Send OTP
         $otp = rand(100000, 999999);
 
         session([
@@ -241,7 +246,6 @@ Route::post('/login', function (Request $request) {
         }
 
         Auth::logout(); // logout until OTP verified
-
         return redirect()->route('otp.verify')->with('status', 'OTP sent to your email. Please verify to continue.');
     }
 
@@ -272,7 +276,7 @@ Route::post('/verify-otp', function (Request $request) {
         return back()->withErrors(['otp' => 'Invalid OTP code.']);
     }
 
-    $user = User::find($userId);
+    $user = \App\Models\User::find($userId);
 
     if (!$user) {
         return redirect()->route('login')->withErrors(['email' => 'User not found.']);
@@ -281,7 +285,7 @@ Route::post('/verify-otp', function (Request $request) {
     Auth::login($user);
     session()->forget(['otp', 'otp_expires', 'otp_user_id']);
 
-    // ✅ Redirect citizens after OTP
+    // ✅ Redirect based on location (for citizens)
     return match ($user->location) {
         'Santa.Fe'   => redirect()->route('dashboard.santafe'),
         'Bantayan'   => redirect()->route('dashboard.bantayan'),
