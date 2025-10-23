@@ -128,7 +128,6 @@ Route::get('/', function () {
 
     return $response;
 });
-
 // ✅ LOGIN ROUTES
 Route::get('/login', fn() => view('login'))->name('login');
 
@@ -184,7 +183,7 @@ Route::post('/login', function (Request $request) {
         $user = Auth::user();
 
         // ✅ Example cookies
-        cookie()->queue(cookie('user_name', $user->name, 60)); // 60 minutes
+        cookie()->queue(cookie('user_name', $user->name, 60));
         cookie()->queue(cookie('user_role', $user->role, 60));
         cookie()->queue(cookie('secure_session', Str::random(32), 60, null, null, true, true));
 
@@ -192,7 +191,7 @@ Route::post('/login', function (Request $request) {
         $user->save();
         RateLimiter::clear($key);
 
-        // ✅ For citizen users only → send OTP first
+        // ✅ Citizens only → Send OTP
         if (!in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water'])) {
             $otp = rand(100000, 999999);
 
@@ -208,11 +207,12 @@ Route::post('/login', function (Request $request) {
                 return back()->withErrors(['email' => 'Failed to send OTP: ' . $e->getMessage()]);
             }
 
-            // ✅ Redirect to OTP page before dashboard
-            return redirect()->route('otp.verify')->with('status', 'OTP sent to your email.');
+            Auth::logout(); // logout until OTP verified
+
+            return redirect()->route('otp.verify')->with('status', 'OTP sent to your email. Please verify to continue.');
         }
 
-        // ✅ Admin & other staff — redirect directly
+        // ✅ Admins & staff → redirect directly
         $route = match (strtolower($user->role)) {
             'admin' => match ($user->location) {
                 'Santa.Fe' => 'dashboard.santafeadmin',
@@ -277,7 +277,6 @@ Route::post('/verify-otp', function (Request $request) {
         return back()->withErrors(['otp' => 'Invalid OTP code.']);
     }
 
-    session(['otp_verified' => true]);
     $user = \App\Models\User::find($userId);
 
     if (!$user) {
@@ -287,7 +286,7 @@ Route::post('/verify-otp', function (Request $request) {
     Auth::login($user);
     session()->forget(['otp', 'otp_expires', 'otp_user_id']);
 
-    // ✅ Redirect based on role & location (citizens only)
+    // ✅ Redirect based on location (for citizens)
     return match ($user->location) {
         'Santa.Fe'   => redirect()->route('dashboard.santafe'),
         'Bantayan'   => redirect()->route('dashboard.bantayan'),
