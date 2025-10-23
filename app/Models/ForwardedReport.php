@@ -19,6 +19,7 @@ class ForwardedReport extends Model
         'photo',
         'status',
         'forwarded_to',
+        'rerouted_to',
         'location',
         'user_id',
     ];

@@ -385,7 +385,7 @@
 <!-- 🔹 Footer -->
 <div class="modal-footer bg-light border-top rounded-bottom px-4 py-3 d-flex justify-content-between align-items-center">
   <small class="text-muted d-flex align-items-center gap-2">
-    <i data-lucide="cpu"></i> Santa Fe
+    <i data-lucide="cpu"></i> Bantayan
   </small>
 
  @foreach ($reports as $report)
@@ -407,8 +407,8 @@
             aria-labelledby="forwardDropdown{{ $report->id }}">
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'MDRRMO')">MDRRMO</a></li>
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Waste Management')">WASTEMANAGEMENT</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'WATERMANAGEMENT')">WATERMANAGEMENT</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Health Office')">Health Office</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Water Management')">WATERMANAGEMENT</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Fire Department')">Fire Department</a></li>
         </ul>
       </div>
 

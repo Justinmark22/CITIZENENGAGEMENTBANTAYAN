@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 use Carbon\Carbon;
 
 class WaterManagementAdminSeeder extends Seeder
@@ -32,7 +33,7 @@ class WaterManagementAdminSeeder extends Seeder
                 'email' => 'santafe.water@local',
                 'password' => Hash::make('password123'),
                 'role' => 'water',
-                'location' => 'Santa Fe',
+                'location' => 'Santa.Fe',
                 'status' => 'active',
                 'created_at' => $now,
                 'updated_at' => $now,

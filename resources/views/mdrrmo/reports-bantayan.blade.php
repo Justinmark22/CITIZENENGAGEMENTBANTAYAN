@@ -113,120 +113,134 @@
           <p class="text-sm text-gray-500">Dashboard / Forwarded Reports</p>
         </div>
       </div>
-
-      <!-- Reports Container -->
-      <div class="space-y-4" id="reports-container">
-        {{-- Only show Pending or Ongoing reports --}}
-        @forelse($reports->whereNotIn('status', ['Resolved','Rejected']) as $report)
+<!-- Reports Container -->
+<div class="space-y-4" id="reports-container">
+    {{-- Show Forwarded or Rerouted reports excluding Resolved/Rejected --}}
+    @forelse($reports->whereNotIn('status', ['Resolved','Rejected']) as $report)
+    <div 
+        x-data="{ open: false }" 
+        id="report-{{ $report->id }}"
+        class="report-item bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all"
+    >
+        <!-- Header -->
         <div 
-          x-data="{ open: false }" 
-          id="report-{{ $report->id }}"
-          class="report-item bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all"
-        >
-          <!-- Header -->
-          <div 
             @click="open = !open" 
             class="cursor-pointer px-5 py-4 flex justify-between items-center hover:bg-gray-50 transition"
-          >
+        >
             <div>
-              <h2 class="text-base font-semibold text-gray-800">{{ $report->title }}</h2>
-              <p class="text-sm text-gray-500">
-                {{ $report->category }} • ID: {{ $report->id }}  
-                <span class="ml-2">By: {{ $report->user?->name ?? 'N/A' }} ({{ $report->user?->email ?? 'N/A' }})</span>
-              </p>
+                <h2 class="text-base font-semibold text-gray-800">{{ $report->title }}</h2>
+                <p class="text-sm text-gray-500">
+                    {{ $report->category }} • ID: {{ $report->id }}  
+                    <span class="ml-2">
+                        By: {{ $report->user?->name ?? 'N/A' }} ({{ $report->user?->email ?? 'N/A' }})
+                        @if($report instanceof \App\Models\ReroutedReport)
+                            <span class="ml-1 text-xs font-medium text-purple-600">(Rerouted)</span>
+                        @else
+                            <span class="ml-1 text-xs font-medium text-blue-600">(Forwarded)</span>
+                        @endif
+                    </span>
+                </p>
             </div>
 
             <div class="flex items-center gap-3">
-              <span 
-                class="status-badge px-2.5 py-1 text-xs font-medium rounded-full text-white 
-                  {{ strtolower($report->status) == 'pending' ? 'bg-yellow-500' : 'bg-blue-600' }}"
-              >
-                {{ ucfirst($report->status) }}
-              </span>
-              <svg x-show="!open" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
-              <svg x-show="open" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-              </svg>
+                <span 
+                    class="status-badge px-2.5 py-1 text-xs font-medium rounded-full text-white
+                        @if(str_contains(strtolower($report->status), 'rerouted')) bg-purple-500 
+                        @elseif(strtolower($report->status) == 'pending') bg-yellow-500 
+                        @else bg-blue-600 @endif"
+                >
+                    {{ ucfirst($report->status) }}
+                </span>
+                <svg x-show="!open" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+                <svg x-show="open" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                </svg>
             </div>
-          </div>
+        </div>
 
-          <!-- Content -->
-          <div 
+        <!-- Content -->
+        <div 
             x-show="open" 
             x-transition 
             class="px-5 py-4 border-t border-gray-100 text-gray-700 space-y-4 bg-gray-50/50"
-          >
+        >
             <!-- Description -->
             <p class="text-sm leading-relaxed">{{ $report->description }}</p>
 
             <!-- Metadata -->
             <div class="text-xs text-gray-500 flex flex-col sm:flex-row sm:justify-between gap-2">
-              <span><strong>Location:</strong> {{ $report->location }}</span>
-              <span><strong>Created:</strong> {{ $report->created_at->format('M d, Y h:i A') }}</span>
+                <span><strong>Location:</strong> {{ $report->location }}</span>
+              <span><strong>Created:</strong> 
+    {{ \Carbon\Carbon::parse($report->created_at)->format('M d, Y h:i A') }}
+</span>
+
             </div>
 
             <!-- Photo -->
             @if($report->photo)
             <img 
-              src="{{ asset('storage/'.$report->photo) }}" 
-              alt="Report Photo" 
-              class="rounded-md w-full md:w-2/3 lg:w-1/2 h-48 object-cover border border-gray-200"
+                src="{{ asset('storage/'.$report->photo) }}" 
+                alt="Report Photo" 
+                class="rounded-md w-full md:w-2/3 lg:w-1/2 h-48 object-cover border border-gray-200"
             >
             @endif
-           <!-- Buttons -->
+
+<!-- Buttons -->
 <div class="flex justify-end space-x-2 mt-4">
-  <!-- Accept -->
-  <button data-action="accept"
-      onclick="updateStatus('{{ $report->id }}', 'Accepted', this)"
-      class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition 
-             {{ in_array($report->status, ['Forwarded','Pending']) ? '' : 'hidden' }}">
-      Accept
-  </button>
+    @php
+        $statusLower = strtolower($report->status);
+        $isRerouted = str_contains($statusLower, 'rerouted');
+    @endphp
 
-  <!-- Ongoing -->
-  <button data-action="ongoing"
-      onclick="updateStatus('{{ $report->id }}', 'Ongoing', this)"
-      class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition 
-             {{ $report->status === 'Accepted' ? '' : 'hidden' }}">
-      Ongoing
-  </button>
-
-  <!-- Resolved -->
-  <button data-action="resolved"
-      onclick="updateStatus('{{ $report->id }}', 'Resolved', this)"
-      class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition 
-             {{ $report->status === 'Ongoing' ? '' : 'hidden' }}">
-      Resolved
-  </button>
-
-  <!-- Reroute (always visible) -->
-  <div class="relative inline-block text-left" data-action="reroute">
-    <button onclick="toggleDropdown('{{ $report->id }}')"
-        class="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 transition">
-        Reroute
+    <!-- Accept -->
+    <button data-action="accept"
+        onclick="updateStatus('{{ $report->id }}', 'Accepted', this)"
+        class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition
+            {{ in_array($report->status, ['Forwarded','Pending']) || $isRerouted ? '' : 'hidden' }}">
+        Accept
     </button>
-    <div id="dropdown-{{ $report->id }}" 
-        class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-10">
-        <button onclick="rerouteReport('{{ $report->id }}','Water Management')" 
-            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Water Management</button>
-        <button onclick="rerouteReport('{{ $report->id }}','Waste Management')" 
-            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Waste Management</button>
-        <button onclick="rerouteReport('{{ $report->id }}','Mayor\'s Office')" 
-            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Mayor's Office</button>
-        <button onclick="rerouteReport('{{ $report->id }}','Engineering Dept')" 
-            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Engineering Dept</button>
+
+    <!-- Ongoing -->
+    <button data-action="ongoing"
+        onclick="updateStatus('{{ $report->id }}', 'Ongoing', this)"
+        class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition
+            {{ $report->status === 'Accepted' ? '' : 'hidden' }}">
+        Ongoing
+    </button>
+
+    <!-- Resolved -->
+    <button data-action="resolved"
+        onclick="updateStatus('{{ $report->id }}', 'Resolved', this)"
+        class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition
+            {{ $report->status === 'Ongoing' ? '' : 'hidden' }}">
+        Resolved
+    </button>
+
+    <!-- Reroute (always visible) -->
+    <div class="relative inline-block text-left" data-action="reroute">
+        <button onclick="toggleDropdown('{{ $report->id }}')" class="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 transition">
+            Reroute
+        </button>
+        <div id="dropdown-{{ $report->id }}" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-10">
+            <button onclick="rerouteReport('{{ $report->id }}','Water Management')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Water Management</button>
+            <button onclick="rerouteReport('{{ $report->id }}','Waste Management')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Waste Management</button>
+            <button onclick="rerouteReport('{{ $report->id }}','Mayor\'s Office')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Mayor's Office</button>
+            <button onclick="rerouteReport('{{ $report->id }}','Engineering Dept')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Engineering Dept</button>
+        </div>
     </div>
-  </div>
 </div>
 
+
+
+        </div>
+    </div>
+    @empty
+        <p id="no-reports" class="text-gray-500 text-center mt-10">No forwarded or rerouted reports found.</p>
+    @endforelse
 </div>
-</div>
-@empty
-<p id="no-reports" class="text-gray-500 text-center mt-10">No forwarded reports found.</p>
-@endforelse
-</div>
+
 
 <!-- Pagination -->
 <div class="mt-8 flex justify-center">
@@ -308,7 +322,6 @@ function toggleDropdown(reportId) {
     document.querySelectorAll('[id^="dropdown-"]').forEach(el => el.classList.add('hidden'));
     document.getElementById(`dropdown-${reportId}`).classList.toggle('hidden');
 }
-
 function rerouteReport(reportId, destination) {
     Swal.fire({
         title: 'Reroute Report',
@@ -318,22 +331,22 @@ function rerouteReport(reportId, destination) {
         confirmButtonText: 'Yes, reroute',
         cancelButtonText: 'Cancel'
     }).then(result => {
-        if(!result.isConfirmed) return;
+        if (!result.isConfirmed) return;
 
         fetch(`/forwarded-reports/${reportId}/update-status`, {
             method: 'POST',
             headers: {
-                'Content-Type':'application/json',
+                'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
             },
             body: JSON.stringify({
                 status: `Rerouted to ${destination}`,
-                rerouted_to: destination // ✅ backend uses this
+                rerouted_to: destination // ✅ backend must store this
             })
         })
         .then(res => res.json())
         .then(data => {
-            if(data.success){
+            if (data.success) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Rerouted!',
@@ -342,21 +355,22 @@ function rerouteReport(reportId, destination) {
                     showConfirmButton: false
                 });
 
-                // Update badge in UI
+                // ✅ Hide the report immediately
                 const reportEl = document.getElementById(`report-${reportId}`);
-                const badge = reportEl.querySelector('.status-badge');
-                if(badge){
-                    badge.textContent = `Rerouted (${data.rerouted_to})`;
-                    badge.className = `status-badge px-2.5 py-1 text-xs font-medium rounded-full bg-purple-500 text-white`;
+                if (reportEl) {
+                    reportEl.style.display = 'none';
                 }
             } else {
-                Swal.fire('Error','Failed to reroute report','error');
+                Swal.fire('Error', 'Failed to reroute report', 'error');
             }
         })
-        .catch(err => Swal.fire('Error','Request failed','error'));
+        .catch(err => Swal.fire('Error', 'Request failed', 'error'));
     });
 }
+
 </script>
+
+
 
 
 </body>

@@ -129,20 +129,6 @@
   </div>
 </nav>
 
-<!-- 🔧 Script -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  lucide.createIcons();
-
-  const mobileBtn = document.getElementById("mobileMenuBtn");
-  const navLinks = document.getElementById("navbarLinks");
-
-  mobileBtn.addEventListener("click", () => {
-    navLinks.classList.toggle("hidden");
-    navLinks.classList.toggle("flex");
-  });
-});
-</script>
 
 <!-- 🌟 Hero Section -->
 <section class="relative overflow-hidden py-12 md:py-16 bg-gradient-to-r from-green-50 to-lime-50">

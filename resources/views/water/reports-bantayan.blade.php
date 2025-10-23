@@ -56,7 +56,7 @@
     <!-- Header -->
     <div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Forwarded Reports (Water Management)</h1>
+        <h1 class="text-2xl font-bold text-gray-900">Forwarded & Rerouted Reports (Water Management)</h1>
         <p class="text-sm text-gray-500">Dashboard / Forwarded Reports</p>
       </div>
     </div>
@@ -81,35 +81,48 @@
       </div>
     </div>
 
-    <!-- Forwarded Reports (WATER MANAGEMENT) -->
+    <!-- Forwarded & Rerouted Reports -->
     <div class="space-y-6" id="reports-container">
-      @forelse($reports->where('forwarded_to', 'Water Management')->whereNotIn('status', ['Resolved','Rejected']) as $report)
+      @forelse($reports as $report)
       <div x-data="{ open: false }" id="report-{{ $report->id }}"
-        class="bg-white/60 backdrop-blur-md border border-gray-200 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+           class="bg-white/60 backdrop-blur-md border border-gray-200 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
 
+        <!-- Header -->
         <div @click="open = !open" class="cursor-pointer px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition">
           <div>
             <h2 class="text-lg font-semibold text-gray-800">{{ $report->title }}</h2>
-            <p class="text-sm text-gray-500 mt-1">{{ $report->category }} • ID: {{ $report->id }}
+            <p class="text-sm text-gray-500 mt-1">
+              {{ $report->category }} • ID: {{ $report->id }}
               <span class="ml-2">By: {{ $report->user?->name ?? 'N/A' }}</span>
             </p>
           </div>
           <div class="flex items-center gap-3">
+            <!-- Status Badge -->
             <span class="status-badge px-3 py-1 text-xs font-semibold rounded-full 
-              {{ strtolower($report->status)=='pending'?'bg-yellow-400 text-yellow-900':'bg-blue-500 text-white' }}">
+              {{ strtolower($report->status)=='pending'?'bg-yellow-400 text-yellow-900':(strtolower($report->status)=='ongoing'?'bg-orange-400 text-orange-900':'bg-blue-500 text-white') }}">
               {{ ucfirst($report->status) }}
             </span>
+
+            <!-- Type Badge -->
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full
+              {{ $report->type=='rerouted'?'bg-purple-500 text-white':'bg-green-500 text-white' }}">
+              {{ ucfirst($report->type ?? 'Forwarded') }}
+            </span>
+
             <i x-show="!open" data-lucide="chevron-down" class="h-4 w-4 text-gray-400"></i>
             <i x-show="open" data-lucide="chevron-up" class="h-4 w-4 text-gray-400"></i>
           </div>
         </div>
 
+        <!-- Content -->
         <div x-show="open" x-transition class="px-6 py-4 border-t border-gray-100 space-y-4 text-gray-700 bg-gray-50/50 rounded-b-xl">
           <p class="text-sm leading-relaxed">{{ $report->description }}</p>
           <div class="flex flex-col sm:flex-row sm:justify-between gap-2 text-xs text-gray-500">
             <span><strong>Location:</strong> {{ $report->location }}</span>
-            <span><strong>Created:</strong> {{ $report->created_at->format('M d, Y h:i A') }}</span>
+          <span><strong>Created:</strong> {{ $report->created_at ? \Carbon\Carbon::parse($report->created_at)->format('M d, Y h:i A') : 'N/A' }}</span>
+
           </div>
+
           @if($report->photo)
           <img src="{{ asset('storage/'.$report->photo) }}" class="rounded-lg w-full md:w-2/3 lg:w-1/2 h-48 object-cover border border-gray-200 shadow-sm">
           @endif
@@ -124,11 +137,16 @@
             <button onclick="updateStatus('{{ $report->id }}','Resolved',{},this)" class="flex items-center gap-1 px-4 py-1 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition">
               <i data-lucide="check" class="w-4 h-4"></i> Resolved
             </button>
+
+            <button onclick="rerouteReport('{{ $report->id }}')" 
+              class="flex items-center gap-1 px-4 py-1 bg-purple-500 text-white rounded-lg shadow hover:bg-purple-600 transition">
+              <i data-lucide="share-2" class="w-4 h-4"></i> Reroute
+            </button>
           </div>
         </div>
       </div>
       @empty
-      <p class="text-gray-500 text-center mt-10">No forwarded reports for Water Management found.</p>
+      <p class="text-gray-500 text-center mt-10">No reports found for Water Management.</p>
       @endforelse
     </div>
 
@@ -208,6 +226,65 @@
         Swal.fire('Error', 'Network error.', 'error');
       }
     }
+
+    async function rerouteReport(id) {
+      const { value: department } = await Swal.fire({
+        title: "Reroute Report",
+        input: "select",
+        inputOptions: {
+          "Water Management": "Water Management",
+          "Waste Management": "Waste Management",
+          "MDRRMO": "MDRRMO",
+          "Fire Department": "Fire Department",
+        },
+        inputPlaceholder: "Select department to reroute to",
+        showCancelButton: true,
+        confirmButtonText: "Reroute",
+        cancelButtonText: "Cancel",
+        inputValidator: (value) => {
+          if (!value) return "Please select a department";
+        },
+      });
+
+      if (department) {
+        try {
+          const res = await fetch(`/reports/${id}/reroute`, {
+            method: "POST",
+            headers: {
+              "X-CSRF-TOKEN": CSRF,
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+            },
+            body: JSON.stringify({ rerouted_to: department }),
+          });
+
+          const data = await res.json();
+
+          if (!data.success) {
+            Swal.fire("Error", data.message || "Failed to reroute report", "error");
+            return;
+          }
+
+          Swal.fire({
+            icon: "success",
+            title: `Report rerouted to ${department}`,
+            timer: 1300,
+            showConfirmButton: false,
+          });
+
+          const card = document.getElementById(`report-${id}`);
+          if (card) {
+            card.style.transition = "opacity .3s ease";
+            card.style.opacity = "0";
+            setTimeout(() => card.remove(), 350);
+          }
+        } catch (err) {
+          console.error(err);
+          Swal.fire("Error", "Network error while rerouting.", "error");
+        }
+      }
+    }
   </script>
+
 </body>
 </html>
