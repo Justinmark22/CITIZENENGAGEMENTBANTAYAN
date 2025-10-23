@@ -127,14 +127,7 @@ Route::get('/', function () {
     $response->headers->set('Referrer-Policy', 'no-referrer');
 
     return $response;
-});use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
-use App\Mail\SendOtpMail;
-use App\Models\User;
+});
 
 // ✅ LOGIN ROUTES
 Route::get('/login', fn() => view('login'))->name('login');
