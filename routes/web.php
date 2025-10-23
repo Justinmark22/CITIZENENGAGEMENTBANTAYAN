@@ -214,11 +214,11 @@ Route::post('/login', function (Request $request) {
 
         // ✅ Admins & staff → redirect directly
         $route = match (strtolower($user->role)) {
-            'Admin' => match ($user->location) {
+            'admin' => match ($user->location) {
                 'Santa.Fe' => 'dashboard.santafeadmin',
                 'Bantayan' => 'dashboard.bantayanadmin',
                 'Madridejos' => 'dashboard.madridejosadmin',
-                'Admin' => 'dashboard.admin',
+                'admin' => 'dashboard.admin',
                 default => 'dashboard',
             },
             'mdrrmo' => match ($user->location) {
