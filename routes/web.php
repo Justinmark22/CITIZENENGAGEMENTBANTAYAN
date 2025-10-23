@@ -129,9 +129,14 @@ Route::get('/', function () {
     return $response;
 });
 
+// ✅ LOGIN PAGE (GET)
+Route::get('/login', fn() => view('login'))->name('login');
+
+// ✅ LOGIN SUBMIT (POST)
 Route::post('/login', function (Request $request) {
     $key = Str::lower($request->input('email')).'|'.$request->ip();
 
+    // ✅ Rate Limiter
     if (RateLimiter::tooManyAttempts($key, 3)) {
         $seconds = RateLimiter::availableIn($key);
         return back()->withErrors([
@@ -141,7 +146,7 @@ Route::post('/login', function (Request $request) {
 
     // ✅ reCAPTCHA v3 verification
     $recaptchaResponse = $request->input('g-recaptcha-response');
-    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // replace with your own secret key
+    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // replace with your key
 
     if (!$recaptchaResponse) {
         return back()->withErrors(['captcha' => 'Please complete the reCAPTCHA verification.'])
@@ -176,10 +181,12 @@ Route::post('/login', function (Request $request) {
         ])->onlyInput('email');
     }
 
+    // ✅ Attempt login
     if (Auth::attempt($credentials, $request->boolean('remember'))) {
         $request->session()->regenerate();
         $user = Auth::user();
 
+        // ✅ Set cookies
         cookie()->queue(cookie('user_name', $user->name, 60));
         cookie()->queue(cookie('user_role', $user->role, 60));
         cookie()->queue(cookie('secure_session', Str::random(32), 60, null, null, true, true));
@@ -189,7 +196,7 @@ Route::post('/login', function (Request $request) {
 
         RateLimiter::clear($key);
 
-        // ✅ Generate OTP for citizen users only
+        // ✅ Citizen users → OTP Verification
         if (strtolower($user->role) === 'citizen') {
             $otp = rand(100000, 999999);
             session([
@@ -198,18 +205,17 @@ Route::post('/login', function (Request $request) {
                 'otp_user_id' => $user->id,
             ]);
 
-            // ✅ Send OTP via email
             try {
                 Mail::to($user->email)->send(new SendOtpMail($otp));
             } catch (\Exception $e) {
-                Log::error('Failed to send OTP: ' . $e->getMessage());
+                \Log::error('Failed to send OTP: '.$e->getMessage());
             }
 
-            Auth::logout(); // Logout until OTP verified
+            Auth::logout(); // wait for OTP verification
             return redirect()->route('otp.verify')->with('status', 'OTP sent to your email.');
         }
 
-        // ✅ Determine redirect route by role + location
+        // ✅ Redirect (admin / mdrrmo / waste / water / others)
         $route = match (strtolower($user->role)) {
             'admin' => match ($user->location) {
                 'Santa.Fe' => 'dashboard.santafeadmin',
@@ -247,11 +253,53 @@ Route::post('/login', function (Request $request) {
         return redirect()->route($route);
     }
 
+    // ❌ Invalid credentials
     RateLimiter::hit($key, 60);
     return back()->withErrors([
         'email' => 'Invalid email or password.',
     ])->onlyInput('email');
 })->name('login.submit');
+
+
+// ✅ OTP VERIFICATION ROUTES
+Route::get('/verify-otp', fn() => view('auth.verify-otp'))->name('otp.verify');
+
+Route::post('/verify-otp', function (Request $request) {
+    $request->validate(['otp' => 'required|numeric']);
+
+    $sessionOtp = session('otp');
+    $expires = session('otp_expires');
+    $userId = session('otp_user_id');
+
+    if (!$sessionOtp || now()->greaterThan($expires)) {
+        Auth::logout();
+        session()->forget(['otp', 'otp_expires', 'otp_user_id']);
+        return redirect()->route('login')->withErrors(['otp' => 'OTP expired. Please login again.']);
+    }
+
+    if ($request->otp != $sessionOtp) {
+        return back()->withErrors(['otp' => 'Invalid OTP code.']);
+    }
+
+    session(['otp_verified' => true]);
+    $user = \App\Models\User::find($userId);
+
+    if (!$user) {
+        return redirect()->route('login')->withErrors(['email' => 'User not found.']);
+    }
+
+    Auth::login($user);
+    session()->forget(['otp', 'otp_expires', 'otp_user_id']);
+
+    // ✅ Redirect based on citizen location
+    return match ($user->location) {
+        'Santa.Fe'   => redirect()->route('dashboard.santafe'),
+        'Bantayan'   => redirect()->route('dashboard.bantayan'),
+        'Madridejos' => redirect()->route('dashboard.madridejos'),
+        default      => redirect('/dashboard'),
+    };
+})->name('otp.verify.submit');
+
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
     if ($user) {
