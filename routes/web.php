@@ -127,7 +127,15 @@ Route::get('/', function () {
     $response->headers->set('Referrer-Policy', 'no-referrer');
 
     return $response;
-});
+});use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use App\Mail\SendOtpMail;
+use App\Models\User;
+
 // ✅ LOGIN ROUTES
 Route::get('/login', fn() => view('login'))->name('login');
 
@@ -143,7 +151,7 @@ Route::post('/login', function (Request $request) {
 
     // ✅ reCAPTCHA v3 verification
     $recaptchaResponse = $request->input('g-recaptcha-response');
-    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // replace with your key
+    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // Replace with your key
 
     if (!$recaptchaResponse) {
         return back()->withErrors(['captcha' => 'Please complete the reCAPTCHA verification.'])
@@ -169,7 +177,7 @@ Route::post('/login', function (Request $request) {
         'password' => ['required', 'string', 'max:255'],
     ]);
 
-    $user = \App\Models\User::where('email', $credentials['email'])->first();
+    $user = User::where('email', $credentials['email'])->first();
 
     if ($user && $user->status === 'disabled') {
         RateLimiter::hit($key, 60);
@@ -182,7 +190,6 @@ Route::post('/login', function (Request $request) {
         $request->session()->regenerate();
         $user = Auth::user();
 
-        // ✅ Example cookies
         cookie()->queue(cookie('user_name', $user->name, 60));
         cookie()->queue(cookie('user_role', $user->role, 60));
         cookie()->queue(cookie('secure_session', Str::random(32), 60, null, null, true, true));
@@ -191,66 +198,58 @@ Route::post('/login', function (Request $request) {
         $user->save();
         RateLimiter::clear($key);
 
-        // ✅ Citizens only → Send OTP
-        if (!in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water'])) {
-            $otp = rand(100000, 999999);
+        // ✅ If user is admin or staff → redirect directly (NO OTP)
+        if (in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water'])) {
+            $route = match (strtolower($user->role)) {
+                'admin' => match ($user->location) {
+                    'Santa.Fe' => 'dashboard.santafeadmin',
+                    'Bantayan' => 'dashboard.bantayanadmin',
+                    'Madridejos' => 'dashboard.madridejosadmin',
+                    'admin' => 'dashboard.admin',
+                    default => 'dashboard',
+                },
+                'mdrrmo' => match ($user->location) {
+                    'Santa.Fe' => 'dashboard.mdrrmo-santafe',
+                    'Bantayan' => 'dashboard.mdrrmo-bantayan',
+                    'Madridejos' => 'dashboard.mdrrmo-madridejos',
+                    default => 'dashboard',
+                },
+                'waste' => match ($user->location) {
+                    'Santa.Fe' => 'dashboard.waste-santafe',
+                    'Bantayan' => 'dashboard.waste-bantayan',
+                    'Madridejos' => 'dashboard.waste-madridejos',
+                    default => 'dashboard',
+                },
+                'water' => match ($user->location) {
+                    'Santa.Fe' => 'dashboard.water-santafe',
+                    'Bantayan' => 'dashboard.water-bantayan',
+                    'Madridejos' => 'dashboard.water-madridejos',
+                    default => 'dashboard',
+                },
+                default => 'dashboard',
+            };
 
-            session([
-                'otp' => $otp,
-                'otp_expires' => now()->addMinutes(3),
-                'otp_user_id' => $user->id,
-            ]);
-
-            try {
-                Mail::to($user->email)->send(new SendOtpMail($otp));
-            } catch (\Exception $e) {
-                return back()->withErrors(['email' => 'Failed to send OTP: ' . $e->getMessage()]);
-            }
-
-            Auth::logout(); // logout until OTP verified
-
-            return redirect()->route('otp.verify')->with('status', 'OTP sent to your email. Please verify to continue.');
+            return redirect()->route($route);
         }
 
-        // ✅ Admins & staff → redirect directly
+        // ✅ Citizens → Send OTP
+        $otp = rand(100000, 999999);
 
-        // ✅ Admins & location admins → redirect directly
-        $route = match (strtolower($user->role)) {
-            'admin', 'location admin' => match ($user->location) {
-                'Santa.Fe' => 'dashboard.santafeadmin',
-                'Bantayan' => 'dashboard.bantayanadmin',
-                'Madridejos' => 'dashboard.madridejosadmin',
-                'Admin' => 'dashboard.admin',
-                default => 'dashboard',
-            
-            },
-            'mdrrmo' => match ($user->location) {
-                'Santa.Fe' => 'dashboard.mdrrmo-santafe',
-                'Bantayan' => 'dashboard.mdrrmo-bantayan',
-                'Madridejos' => 'dashboard.mdrrmo-madridejos',
-                default => 'dashboard',
-            },
-            'waste' => match ($user->location) {
-                'Santa.Fe' => 'dashboard.waste-santafe',
-                'Bantayan' => 'dashboard.waste-bantayan',
-                'Madridejos' => 'dashboard.waste-madridejos',
-                default => 'dashboard',
-            },
-            'water' => match ($user->location) {
-                'Santa.Fe' => 'dashboard.water-santafe',
-                'Bantayan' => 'dashboard.water-bantayan',
-                'Madridejos' => 'dashboard.water-madridejos',
-                default => 'dashboard',
-            },
-            default => match ($user->location) {
-                'Santa.Fe' => 'dashboard.santafe',
-                'Bantayan' => 'dashboard.bantayan',
-                'Madridejos' => 'dashboard.madridejos',
-                default => 'dashboard',
-            },
-        };
+        session([
+            'otp' => $otp,
+            'otp_expires' => now()->addMinutes(3),
+            'otp_user_id' => $user->id,
+        ]);
 
-        return redirect()->route($route);
+        try {
+            Mail::to($user->email)->send(new SendOtpMail($otp));
+        } catch (\Exception $e) {
+            return back()->withErrors(['email' => 'Failed to send OTP: ' . $e->getMessage()]);
+        }
+
+        Auth::logout(); // logout until OTP verified
+
+        return redirect()->route('otp.verify')->with('status', 'OTP sent to your email. Please verify to continue.');
     }
 
     RateLimiter::hit($key, 60);
@@ -280,7 +279,7 @@ Route::post('/verify-otp', function (Request $request) {
         return back()->withErrors(['otp' => 'Invalid OTP code.']);
     }
 
-    $user = \App\Models\User::find($userId);
+    $user = User::find($userId);
 
     if (!$user) {
         return redirect()->route('login')->withErrors(['email' => 'User not found.']);
@@ -289,7 +288,7 @@ Route::post('/verify-otp', function (Request $request) {
     Auth::login($user);
     session()->forget(['otp', 'otp_expires', 'otp_user_id']);
 
-    // ✅ Redirect based on location (for citizens)
+    // ✅ Redirect citizens after OTP
     return match ($user->location) {
         'Santa.Fe'   => redirect()->route('dashboard.santafe'),
         'Bantayan'   => redirect()->route('dashboard.bantayan'),
@@ -297,6 +296,7 @@ Route::post('/verify-otp', function (Request $request) {
         default      => redirect('/dashboard'),
     };
 })->name('otp.verify.submit');
+
 
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
