@@ -145,7 +145,7 @@ Route::post('/login', function (Request $request) {
 
     // ✅ reCAPTCHA v3 verification
     $recaptchaResponse = $request->input('g-recaptcha-response');
-    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // replace with your actual key
+    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // replace with your real key
 
     if (!$recaptchaResponse) {
         return back()->withErrors(['captcha' => 'Please complete the reCAPTCHA verification.'])
@@ -185,13 +185,13 @@ Route::post('/login', function (Request $request) {
         $request->session()->regenerate();
         $user = Auth::user();
 
-        // ✅ Mark user active
+        // ✅ Mark active
         $user->status = 'active';
         $user->save();
 
         RateLimiter::clear($key);
 
-        // ✅ Generate OTP for citizens only
+        // ✅ Citizens → require OTP before dashboard
         if (strtolower($user->role) === 'citizen') {
             $otp = rand(100000, 999999);
             session([
@@ -200,16 +200,22 @@ Route::post('/login', function (Request $request) {
                 'otp_user_id' => $user->id,
             ]);
 
-            // ✅ Send OTP via email
-            Mail::to($user->email)->send(new SendOtpMail($otp));
+            try {
+                Mail::to($user->email)->send(new SendOtpMail($otp));
+            } catch (\Exception $e) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Failed to send OTP. Please check your email configuration.',
+                ]);
+            }
 
-            // ✅ Logout temporarily until OTP verified
+            // ✅ Temporarily log out until OTP verified
             Auth::logout();
 
-            return redirect()->route('otp.verify')->with('status', 'OTP sent to your email.');
+            return redirect()->route('otp.verify')->with('status', 'An OTP was sent to your email. Please verify to continue.');
         }
 
-        // ✅ Redirect immediately for admins and other roles
+        // ✅ Non-citizen roles → direct dashboard redirect
         $route = match (strtolower($user->role)) {
             'admin' => match ($user->location) {
                 'Santa.Fe' => 'dashboard.santafeadmin',
@@ -280,12 +286,12 @@ Route::post('/verify-otp', function (Request $request) {
         return redirect()->route('login')->withErrors(['email' => 'User not found.']);
     }
 
-    // ✅ OTP verified → login the user
+    // ✅ OTP verified → login user
     Auth::login($user);
     session()->forget(['otp', 'otp_expires', 'otp_user_id']);
     session(['otp_verified' => true]);
 
-    // ✅ Redirect by citizen location
+    // ✅ Redirect based on citizen’s location
     return match ($user->location) {
         'Santa.Fe'   => redirect()->route('dashboard.santafe'),
         'Bantayan'   => redirect()->route('dashboard.bantayan'),
@@ -293,6 +299,7 @@ Route::post('/verify-otp', function (Request $request) {
         default      => redirect('/dashboard'),
     };
 })->name('otp.verify.submit');
+
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
     if ($user) {
