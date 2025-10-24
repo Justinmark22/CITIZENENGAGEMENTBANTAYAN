@@ -98,9 +98,6 @@
 
 
 
- <a href="{{ route('certificate.request') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
-      <i data-lucide="file-text" class="w-4 h-4"></i> Certificate
-    </a>
     <a href="{{ route('feedback.page') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
       <i data-lucide="message-square" class="w-4 h-4"></i> Feedback
     </a>
