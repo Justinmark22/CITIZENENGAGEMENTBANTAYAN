@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
+
 <!-- 🌐 Navbar -->
 <nav class="w-full bg-white/90 backdrop-blur-md border-b shadow-sm px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-50">
   <!-- Left: Logo + Title -->
@@ -18,81 +19,84 @@
   </a>
 
   <!-- Mobile menu toggle -->
-  <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition" aria-expanded="false">
+  <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition">
     <i data-lucide="menu" class="w-6 h-6"></i>
   </button>
 
   <!-- Right side items -->
-  <div id="navbarLinks" class="hidden md:flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-5 text-sm absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none rounded-b-2xl md:rounded-none p-4 md:p-0 transition-all duration-300 ease-in-out transform opacity-0 md:opacity-100 md:translate-y-0">
+  <div id="navbarLinks" class="hidden md:flex items-center gap-4 md:gap-5 flex-wrap text-sm absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none rounded-b-2xl md:rounded-none p-4 md:p-0">
+    
+<!-- 🔔 Alerts Dropdown -->
+<div class="relative w-full md:w-auto">
+  <button onclick="toggleDropdown('alertsDropdown'); clearBadge();" 
+          class="flex items-center justify-center md:justify-start w-10 h-10 md:w-auto md:px-4 rounded-full hover:bg-gray-100 transition relative text-gray-700">
+    <i data-lucide="bell" class="w-5 h-5"></i>Notifications
+    @php 
+      $totalAlerts = $alerts->count() 
+                    + $mddrmoAcceptedReports->count() + $wasteAcceptedReports->count()
+                    + $mddrmoOngoingReports->count() + $wasteOngoingReports->count()
+                    + $mddrmoResolvedReports->count() + $wasteResolvedReports->count(); 
+    @endphp
+    @if($totalAlerts > 0)
+      <span id="alertsBadge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full shadow">{{ $totalAlerts }}</span>
+    @endif
+  </button>
 
-    <!-- 🔔 Alerts Dropdown -->
-    <div class="relative w-full md:w-auto">
-      <button onclick="toggleDropdown('alertsDropdown'); clearBadge();" 
-              class="flex items-center justify-center md:justify-start w-10 h-10 md:w-auto md:px-4 rounded-full hover:bg-gray-100 transition relative text-gray-700">
-        <i data-lucide="bell" class="w-5 h-5"></i>Notifications
-        @php 
-          $totalAlerts = $alerts->count() 
-                        + $mddrmoAcceptedReports->count() + $wasteAcceptedReports->count()
-                        + $mddrmoOngoingReports->count() + $wasteOngoingReports->count()
-                        + $mddrmoResolvedReports->count() + $wasteResolvedReports->count(); 
-        @endphp
-        @if($totalAlerts > 0)
-          <span id="alertsBadge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full shadow">{{ $totalAlerts }}</span>
-        @endif
-      </button>
+  <!-- Dropdown -->
+  <div id="alertsDropdown" class="hidden absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50">
+    <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
+      <h6 class="font-semibold text-gray-800 text-sm uppercase tracking-wide">Notifications</h6>
+      <button onclick="hideNotifications()" class="text-gray-400 hover:text-gray-600 text-sm">Clear All</button>
+    </div>
 
-      <!-- Dropdown -->
-      <div id="alertsDropdown" class="hidden absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50">
-        <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
-          <h6 class="font-semibold text-gray-800 text-sm uppercase tracking-wide">Notifications</h6>
-          <button onclick="hideNotifications()" class="text-gray-400 hover:text-gray-600 text-sm">Clear All</button>
+    <div class="max-h-96 overflow-y-auto">
+      {{-- System Alerts --}}
+      @forelse ($alerts as $alert)
+        <div onclick="showAlertModal({{ $alert->id }}, '{{ $alert->title }}', '{{ $alert->message }}')" 
+             class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
+          <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+            <i class="text-blue-600" data-lucide="alert-triangle"></i>
+          </div>
+          <div class="flex-1">
+            <p class="text-gray-800 text-sm font-medium">{{ $alert->title }}</p>
+            <p class="text-gray-500 text-xs mt-1">{{ $alert->message }}</p>
+          </div>
         </div>
+      @empty
+        <p class="text-gray-400 text-sm text-center py-4">No alerts available.</p>
+      @endforelse
 
-        <div class="max-h-96 overflow-y-auto">
-          {{-- System Alerts --}}
-          @forelse ($alerts as $alert)
-            <div onclick="showAlertModal({{ $alert->id }}, '{{ $alert->title }}', '{{ $alert->message }}')" 
-                 class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
-              <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <i class="text-blue-600" data-lucide="alert-triangle"></i>
+      {{-- Reports Notifications --}}
+      @foreach(['Resolved Reports' => ['color'=>'purple','data'=>[$mddrmoResolvedReports,$wasteResolvedReports]],
+                'Ongoing Reports' => ['color'=>'blue','data'=>[$mddrmoOngoingReports,$wasteOngoingReports]],
+                'Accepted Reports' => ['color'=>'green','data'=>[$mddrmoAcceptedReports,$wasteAcceptedReports]]] as $group => $groupData)
+        @foreach($groupData['data'] as $reports)
+          @foreach($reports as $report)
+            <div onclick="openReportModal({{ $report->id }}, '{{ $report->title }}', '{{ $report->status }}', '{{ $report->forwarded_to }}')" 
+                 class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition bg-{{ $groupData['color'] }}-50 rounded-md m-2">
+              <div class="flex-shrink-0 w-8 h-8 bg-{{ $groupData['color'] }}-400 text-white rounded-full flex items-center justify-center">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
               </div>
               <div class="flex-1">
-                <p class="text-gray-800 text-sm font-medium">{{ $alert->title }}</p>
-                <p class="text-gray-500 text-xs mt-1">{{ $alert->message }}</p>
+                <p class="text-{{ $groupData['color'] }}-700 text-sm font-medium">
+                  {{ $report->status }} {{ strpos($group,'Waste') !== false ? '♻' : '' }}
+                </p>
+                <p class="text-gray-600 text-xs mt-1">
+                  Your report "<span class="font-medium">{{ $report->title }}</span>" 
+                  {{ $group == 'Resolved Reports' ? 'was resolved by' : ($group == 'Ongoing Reports' ? 'is being handled by' : 'was forwarded to') }}
+                  <span class="font-semibold">{{ $report->forwarded_to }}</span>.
+                </p>
               </div>
             </div>
-          @empty
-            <p class="text-gray-400 text-sm text-center py-4">No alerts available.</p>
-          @endforelse
-
-          {{-- Reports Notifications --}}
-          @foreach(['Resolved Reports' => ['color'=>'purple','data'=>[$mddrmoResolvedReports,$wasteResolvedReports]],
-                    'Ongoing Reports' => ['color'=>'blue','data'=>[$mddrmoOngoingReports,$wasteOngoingReports]],
-                    'Accepted Reports' => ['color'=>'green','data'=>[$mddrmoAcceptedReports,$wasteAcceptedReports]]] as $group => $groupData)
-            @foreach($groupData['data'] as $reports)
-              @foreach($reports as $report)
-                <div onclick="openReportModal({{ $report->id }}, '{{ $report->title }}', '{{ $report->status }}', '{{ $report->forwarded_to }}')" 
-                     class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition bg-{{ $groupData['color'] }}-50 rounded-md m-2">
-                  <div class="flex-shrink-0 w-8 h-8 bg-{{ $groupData['color'] }}-400 text-white rounded-full flex items-center justify-center">
-                    <i data-lucide="check-circle" class="w-4 h-4"></i>
-                  </div>
-                  <div class="flex-1">
-                    <p class="text-{{ $groupData['color'] }}-700 text-sm font-medium">
-                      {{ $report->status }} {{ strpos($group,'Waste') !== false ? '♻' : '' }}
-                    </p>
-                    <p class="text-gray-600 text-xs mt-1">
-                      Your report "<span class="font-medium">{{ $report->title }}</span>" 
-                      {{ $group == 'Resolved Reports' ? 'was resolved by' : ($group == 'Ongoing Reports' ? 'is being handled by' : 'was forwarded to') }}
-                      <span class="font-semibold">{{ $report->forwarded_to }}</span>.
-                    </p>
-                  </div>
-                </div>
-              @endforeach
-            @endforeach
           @endforeach
-        </div>
-      </div>
+        @endforeach
+      @endforeach
+
     </div>
+  </div>
+</div>
+
+
 
     <a href="{{ route('feedback.page') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
       <i data-lucide="message-square" class="w-4 h-4"></i> Feedback
@@ -137,7 +141,6 @@
     </div>
   </div>
 </nav>
-
 
 <!-- 🌟 Hero Section -->
 <section class="relative overflow-hidden py-12 md:py-16 bg-gradient-to-r from-green-50 to-lime-50">
@@ -314,18 +317,16 @@
 }
 .animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
 </style>
-<!-- Add SweetAlert2 CDN (put this in your layout <head> or before closing </body>) -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- 📌 Submit Concern Modal -->
 <div id="reportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn">
     <div class="flex justify-between items-center border-b pb-3 mb-4">
       <h3 class="text-lg font-semibold text-gray-800">Submit Concern</h3>
-      <button type="button" onclick="closeModal('reportModal')" class="text-gray-400 hover:text-gray-700">&times;</button>
+      <button onclick="closeModal('reportModal')" class="text-gray-400 hover:text-gray-700">&times;</button>
     </div>
 
-    <form id="reportForm" method="POST" action="{{ route('reports.store') }}" enctype="multipart/form-data" class="space-y-4">
+    <form method="POST" action="{{ route('reports.store') }}" enctype="multipart/form-data" class="space-y-4">
       @csrf
       <div>
         <label class="block text-sm font-medium text-gray-700">Category</label>
@@ -354,128 +355,12 @@
       </div>
 
       <div class="flex justify-end gap-3 pt-4 border-t">
-        <button type="button" id="cancelReportBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
-        <button type="submit" id="submitReportBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">Submit</button>
+        <button type="button" onclick="closeModal('reportModal')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">Submit</button>
       </div>
     </form>
   </div>
 </div>
-
-<!-- SweetAlert + modal JS (place near page bottom) -->
-<script>
-  // Simple modal helper if you don't already have one
-  function closeModal(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.add('hidden');
-  }
-  function openModal(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.remove('hidden');
-  }
-
-  // Ask for confirmation before submitting the form
-  document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('reportForm');
-    const cancelBtn = document.getElementById('cancelReportBtn');
-
-    if (cancelBtn) {
-      cancelBtn.addEventListener('click', (e) => {
-        // ask if user really wants to cancel
-        Swal.fire({
-          title: 'Discard changes?',
-          text: "Your input will be lost.",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, discard',
-          cancelButtonText: 'Keep editing'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            closeModal('reportModal');
-            // optional: reset form fields
-            form.reset();
-          }
-        });
-      });
-    }
-
-    if (form) {
-      form.addEventListener('submit', function (e) {
-        e.preventDefault(); // stop normal submit until user confirms
-
-        // Optional: quick client-side validation before confirm (you can expand this)
-        const title = form.querySelector('input[name="title"]').value.trim();
-        const description = form.querySelector('textarea[name="description"]').value.trim();
-        const category = form.querySelector('select[name="category"]').value;
-
-        if (!category || !title || !description) {
-          Swal.fire({
-            title: 'Missing fields',
-            text: 'Please fill in category, title and description.',
-            icon: 'error'
-          });
-          return;
-        }
-
-        Swal.fire({
-          title: 'Submit concern?',
-          text: "Make sure the information is correct before sending.",
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, submit',
-          cancelButtonText: 'Cancel'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            // show a small loading state then submit
-            Swal.fire({
-              title: 'Submitting...',
-              allowOutsideClick: false,
-              didOpen: () => {
-                Swal.showLoading();
-                // submit the form (this will reload the page)
-                form.submit();
-              }
-            });
-          } else {
-            // do nothing; user canceled
-          }
-        });
-      });
-    }
-  });
-
-  // Laravel flash alerts: show success/error messages after redirect
-  document.addEventListener('DOMContentLoaded', () => {
-    @if (session('success'))
-      Swal.fire({
-        title: 'Success',
-        text: {!! json_encode(session('success')) !!},
-        icon: 'success',
-        timer: 3000,
-        showConfirmButton: false
-      });
-    @endif
-
-    @if (session('error'))
-      Swal.fire({
-        title: 'Error',
-        text: {!! json_encode(session('error')) !!},
-        icon: 'error'
-      });
-    @endif
-
-    @if ($errors->any())
-      // show the first validation error (or iterate to show all)
-      Swal.fire({
-        title: 'Validation error',
-        text: {!! json_encode($errors->first()) !!},
-        icon: 'error'
-      });
-    @endif
-  });
-</script>
-
 <!-- TikTok-Style Dark Report Progress Modal (Tailwind) -->
 <div id="reportProgressModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
   <div class="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-6 relative text-gray-100 overflow-hidden">
@@ -563,185 +448,218 @@
     </div>
   </div>
 </div>
+
 <script>
+function openReportModal(id, title, status, department, timestamps = {}) {
+  const modal = document.getElementById("reportProgressModal");
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+
+  document.getElementById("modalReportTitle").innerText = title;
+  document.getElementById("modalDepartment").innerText = department;
+
+  document.getElementById("forwardedTime").innerText = timestamps.forwarded || '--';
+  document.getElementById("acceptedTime").innerText = timestamps.accepted || '--';
+  document.getElementById("ongoingTime").innerText = timestamps.ongoing || '--';
+  document.getElementById("resolvedTime").innerText = timestamps.resolved || '--';
+
+  const stepsOrder = ["Forwarded","Accepted","Ongoing","Resolved"];
+  const colors = {"Forwarded":"bg-green-400","Accepted":"bg-blue-400","Ongoing":"bg-yellow-400","Resolved":"bg-purple-400"};
+  const timelineFill = document.getElementById("timelineFill");
+  const stepBlocks = document.querySelectorAll(".timeline-step-block");
+  const particleContainer = document.getElementById("particlesContainer");
+  particleContainer.innerHTML = '';
+
+  stepsOrder.forEach((s, i) => {
+    const stepEl = document.getElementById("step"+s);
+    const block = stepEl.closest(".timeline-step-block");
+    const top = block.offsetTop + stepEl.offsetHeight/2;
+
+    if(stepsOrder.indexOf(s) <= stepsOrder.indexOf(status)){
+      setTimeout(() => {
+        stepEl.classList.add(colors[s]);
+        stepEl.classList.add("border-transparent");
+        stepEl.querySelector("i").classList.add("text-white");
+        stepEl.classList.add("scale-110");
+        setTimeout(()=> stepEl.classList.remove("scale-110"), 300);
+
+        timelineFill.style.height = (top) + "px";
+
+        for(let j=0;j<5;j++){
+          const p = document.createElement("div");
+          p.className = "w-1 h-1 rounded-full absolute animate-bounce";
+          p.style.left = (stepEl.offsetLeft + 6 + Math.random()*10) + "px";
+          p.style.top = (top - 6 + Math.random()*10) + "px";
+          p.style.backgroundColor = window.getComputedStyle(stepEl).backgroundColor;
+          particleContainer.appendChild(p);
+        }
+      }, i*400);
+    }
+  });
+}
+
+function closeReportModal() {
+  const modal = document.getElementById("reportProgressModal");
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+}
+</script>
+<script>
+/* ===============================
+   📊 REPORT MODAL LOGIC
+================================ */
+function openReportModal(id, title, status, department, timestamps = {}) {
+  const modal = document.getElementById("reportProgressModal");
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+
+  document.getElementById("modalReportTitle").innerText = title;
+  document.getElementById("modalDepartment").innerText = department;
+
+  document.getElementById("forwardedTime").innerText = timestamps.forwarded || '--';
+  document.getElementById("acceptedTime").innerText = timestamps.accepted || '--';
+  document.getElementById("ongoingTime").innerText = timestamps.ongoing || '--';
+  document.getElementById("resolvedTime").innerText = timestamps.resolved || '--';
+
+  const stepsOrder = ["Forwarded","Accepted","Ongoing","Resolved"];
+  const colors = {"Forwarded":"bg-green-400","Accepted":"bg-blue-400","Ongoing":"bg-yellow-400","Resolved":"bg-purple-400"};
+  const timelineFill = document.getElementById("timelineFill");
+  const stepBlocks = document.querySelectorAll(".timeline-step-block");
+  const particleContainer = document.getElementById("particlesContainer");
+  particleContainer.innerHTML = '';
+
+  stepsOrder.forEach((s, i) => {
+    const stepEl = document.getElementById("step"+s);
+    const block = stepEl.closest(".timeline-step-block");
+    const top = block.offsetTop + stepEl.offsetHeight/2;
+
+    if(stepsOrder.indexOf(s) <= stepsOrder.indexOf(status)){
+      setTimeout(() => {
+        stepEl.classList.add(colors[s]);
+        stepEl.classList.add("border-transparent");
+        stepEl.querySelector("i").classList.add("text-white");
+        stepEl.classList.add("scale-110");
+        setTimeout(()=> stepEl.classList.remove("scale-110"), 300);
+
+        timelineFill.style.height = (top) + "px";
+
+        for(let j=0;j<5;j++){
+          const p = document.createElement("div");
+          p.className = "w-1 h-1 rounded-full absolute animate-bounce";
+          p.style.left = (stepEl.offsetLeft + 6 + Math.random()*10) + "px";
+          p.style.top = (top - 6 + Math.random()*10) + "px";
+          p.style.backgroundColor = window.getComputedStyle(stepEl).backgroundColor;
+          particleContainer.appendChild(p);
+        }
+      }, i*400);
+    }
+  });
+}
+
+function closeReportModal() {
+  const modal = document.getElementById("reportProgressModal");
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+}
+
+/* ===============================
+   📱 MOBILE MENU & NAVBAR
+================================ */
 document.addEventListener("DOMContentLoaded", () => {
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
   const navbarLinks = document.getElementById("navbarLinks");
+  const nav = document.querySelector("nav");
 
-  // Toggle mobile menu (vertical)
-  mobileMenuBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
+  // Toggle mobile menu with smooth transition
+  mobileMenuBtn?.addEventListener("click", () => {
     navbarLinks.classList.toggle("hidden");
     navbarLinks.classList.toggle("flex");
     navbarLinks.classList.toggle("flex-col");
-    navbarLinks.classList.toggle("animate-slideDown");
+    navbarLinks.classList.toggle("animate-fadeIn");
   });
 
-  // Close menu when clicking outside
-  document.addEventListener("click", (event) => {
-    if (!navbarLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+  // Close mobile menu when clicking outside it
+  document.addEventListener("click", (e) => {
+    if (!nav.contains(e.target) && !navbarLinks.classList.contains("hidden")) {
       navbarLinks.classList.add("hidden");
-      navbarLinks.classList.remove("flex", "flex-col", "animate-slideDown");
+      navbarLinks.classList.remove("flex");
     }
   });
 
-  // Close menu when clicking a link
-  navbarLinks.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", () => {
-      navbarLinks.classList.add("hidden");
-      navbarLinks.classList.remove("flex", "flex-col", "animate-slideDown");
-    });
-  });
+  lucide.createIcons();
+});
 
-  // Dropdown toggle (works on both desktop & mobile)
-  window.toggleDropdown = function(id) {
-    const dropdown = document.getElementById(id);
-    const isOpen = !dropdown.classList.contains("hidden");
-    document.querySelectorAll("[id$='Dropdown']").forEach(el => el.classList.add("hidden"));
-    if (!isOpen) dropdown.classList.remove("hidden");
-  };
+/* ===============================
+   ⚙️ DROPDOWNS & MODALS
+================================ */
+function toggleDropdown(id) {
+  const dropdown = document.getElementById(id);
+  const isOpen = !dropdown.classList.contains("hidden");
+  document.querySelectorAll("[id$='Dropdown']").forEach(el => el.classList.add("hidden"));
+  if (!isOpen) dropdown.classList.remove("hidden");
+}
 
-  // Close dropdowns when clicking outside
-  document.addEventListener("click", (event) => {
-    document.querySelectorAll("[id$='Dropdown']").forEach(drop => {
-      if (!drop.contains(event.target) && !drop.previousElementSibling.contains(event.target)) {
-        drop.classList.add("hidden");
-      }
-    });
-  });
-
-  // Modals
-  window.openModal = function(id) {
-    const modal = document.getElementById(id);
-    modal.classList.remove("hidden");
-    modal.classList.add("flex");
-    lucide.createIcons();
-  };
-
-  window.closeModal = function(id) {
-    const modal = document.getElementById(id);
-    modal.classList.add("hidden");
-    modal.classList.remove("flex");
-  };
-
-  // Alerts badge persistence
-  window.clearBadge = function() {
-    let badge = document.getElementById('alertsBadge');
-    if (badge) {
-      badge.style.display = 'none';
-      localStorage.setItem('alertsCleared', 'true');
+// Close dropdowns when clicking outside
+document.addEventListener("click", (event) => {
+  document.querySelectorAll("[id$='Dropdown']").forEach(drop => {
+    if (!drop.contains(event.target) && !drop.previousElementSibling.contains(event.target)) {
+      drop.classList.add("hidden");
     }
-  };
+  });
+});
 
+function openModal(id) {
+  const modal = document.getElementById(id);
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+  lucide.createIcons();
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+}
+
+/* ===============================
+   🔔 ALERTS & BADGE HANDLING
+================================ */
+function clearBadge() {
+  let badge = document.getElementById('alertsBadge');
+  if (badge) {
+    badge.style.display = 'none';
+    localStorage.setItem('alertsCleared', 'true');
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem('alertsCleared') === 'true') {
     let badge = document.getElementById('alertsBadge');
     if (badge) badge.style.display = 'none';
   }
-
   lucide.createIcons();
 });
-</script>
 
-<style>
-/* Smooth slide-down animation */
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-slideDown {
-  animation: slideDown 0.25s ease-in-out;
-}
-</style>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-  const navbarLinks = document.getElementById("navbarLinks");
-
-  // Toggle mobile menu (vertical)
-  mobileMenuBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    navbarLinks.classList.toggle("hidden");
-    navbarLinks.classList.toggle("flex");
-    navbarLinks.classList.toggle("flex-col");
-    navbarLinks.classList.toggle("animate-slideDown");
-  });
-
-  // Close menu when clicking outside
-  document.addEventListener("click", (event) => {
-    if (!navbarLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
-      navbarLinks.classList.add("hidden");
-      navbarLinks.classList.remove("flex", "flex-col", "animate-slideDown");
+/* ===============================
+   🚪 LOGOUT CONFIRMATION
+================================ */
+function confirmLogout(event) {
+  event.preventDefault();
+  Swal.fire({
+    title: 'Logout Confirmation',
+    text: "Do you really want to logout?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#16a34a',
+    cancelButtonColor: '#9ca3af',
+    confirmButtonText: 'Logout'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('logout-form').submit();
     }
   });
-
-  // Close menu when clicking a link
-  navbarLinks.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", () => {
-      navbarLinks.classList.add("hidden");
-      navbarLinks.classList.remove("flex", "flex-col", "animate-slideDown");
-    });
-  });
-
-  // Dropdown toggle (works on both desktop & mobile)
-  window.toggleDropdown = function(id) {
-    const dropdown = document.getElementById(id);
-    const isOpen = !dropdown.classList.contains("hidden");
-    document.querySelectorAll("[id$='Dropdown']").forEach(el => el.classList.add("hidden"));
-    if (!isOpen) dropdown.classList.remove("hidden");
-  };
-
-  // Close dropdowns when clicking outside
-  document.addEventListener("click", (event) => {
-    document.querySelectorAll("[id$='Dropdown']").forEach(drop => {
-      if (!drop.contains(event.target) && !drop.previousElementSibling.contains(event.target)) {
-        drop.classList.add("hidden");
-      }
-    });
-  });
-
-  // Modals
-  window.openModal = function(id) {
-    const modal = document.getElementById(id);
-    modal.classList.remove("hidden");
-    modal.classList.add("flex");
-    lucide.createIcons();
-  };
-
-  window.closeModal = function(id) {
-    const modal = document.getElementById(id);
-    modal.classList.add("hidden");
-    modal.classList.remove("flex");
-  };
-
-  // Alerts badge persistence
-  window.clearBadge = function() {
-    let badge = document.getElementById('alertsBadge');
-    if (badge) {
-      badge.style.display = 'none';
-      localStorage.setItem('alertsCleared', 'true');
-    }
-  };
-
-  if (localStorage.getItem('alertsCleared') === 'true') {
-    let badge = document.getElementById('alertsBadge');
-    if (badge) badge.style.display = 'none';
-  }
-
-  lucide.createIcons();
-});
+}
 </script>
-
-<style>
-/* Smooth slide-down animation */
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-slideDown {
-  animation: slideDown 0.25s ease-in-out;
-}
-</style>
-
 
 </body>
 </html>
