@@ -220,9 +220,6 @@
   </div>
 </section>
 
-<!-- Include your modals here -->
-@include('partials.modals')
-
 <!-- Scripts -->
 <script>
   // Navbar Mobile Toggle
