@@ -564,161 +564,183 @@
   </div>
 </div>
 <script>
-/* ===============================
-   📊 REPORT MODAL LOGIC
-================================ */
-function openReportModal(id, title, status, department, timestamps = {}) {
-  const modal = document.getElementById("reportProgressModal");
-  modal.classList.remove("hidden");
-  modal.classList.add("flex");
-
-  document.getElementById("modalReportTitle").innerText = title;
-  document.getElementById("modalDepartment").innerText = department;
-
-  document.getElementById("forwardedTime").innerText = timestamps.forwarded || '--';
-  document.getElementById("acceptedTime").innerText = timestamps.accepted || '--';
-  document.getElementById("ongoingTime").innerText = timestamps.ongoing || '--';
-  document.getElementById("resolvedTime").innerText = timestamps.resolved || '--';
-
-  const stepsOrder = ["Forwarded","Accepted","Ongoing","Resolved"];
-  const colors = {"Forwarded":"bg-green-400","Accepted":"bg-blue-400","Ongoing":"bg-yellow-400","Resolved":"bg-purple-400"};
-  const timelineFill = document.getElementById("timelineFill");
-  const stepBlocks = document.querySelectorAll(".timeline-step-block");
-  const particleContainer = document.getElementById("particlesContainer");
-  particleContainer.innerHTML = '';
-
-  stepsOrder.forEach((s, i) => {
-    const stepEl = document.getElementById("step"+s);
-    const block = stepEl.closest(".timeline-step-block");
-    const top = block.offsetTop + stepEl.offsetHeight/2;
-
-    if(stepsOrder.indexOf(s) <= stepsOrder.indexOf(status)){
-      setTimeout(() => {
-        stepEl.classList.add(colors[s]);
-        stepEl.classList.add("border-transparent");
-        stepEl.querySelector("i").classList.add("text-white");
-        stepEl.classList.add("scale-110");
-        setTimeout(()=> stepEl.classList.remove("scale-110"), 300);
-
-        timelineFill.style.height = (top) + "px";
-
-        for(let j=0;j<5;j++){
-          const p = document.createElement("div");
-          p.className = "w-1 h-1 rounded-full absolute animate-bounce";
-          p.style.left = (stepEl.offsetLeft + 6 + Math.random()*10) + "px";
-          p.style.top = (top - 6 + Math.random()*10) + "px";
-          p.style.backgroundColor = window.getComputedStyle(stepEl).backgroundColor;
-          particleContainer.appendChild(p);
-        }
-      }, i*400);
-    }
-  });
-}
-
-function closeReportModal() {
-  const modal = document.getElementById("reportProgressModal");
-  modal.classList.add("hidden");
-  modal.classList.remove("flex");
-}
-
-/* ===============================
-   📱 MOBILE MENU & NAVBAR
-================================ */
 document.addEventListener("DOMContentLoaded", () => {
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
   const navbarLinks = document.getElementById("navbarLinks");
-  const nav = document.querySelector("nav");
 
-  // Toggle mobile menu with smooth transition
-  mobileMenuBtn?.addEventListener("click", () => {
+  // Toggle mobile menu (vertical)
+  mobileMenuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     navbarLinks.classList.toggle("hidden");
     navbarLinks.classList.toggle("flex");
     navbarLinks.classList.toggle("flex-col");
-    navbarLinks.classList.toggle("animate-fadeIn");
+    navbarLinks.classList.toggle("animate-slideDown");
   });
 
-  // Close mobile menu when clicking outside it
-  document.addEventListener("click", (e) => {
-    if (!nav.contains(e.target) && !navbarLinks.classList.contains("hidden")) {
+  // Close menu when clicking outside
+  document.addEventListener("click", (event) => {
+    if (!navbarLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
       navbarLinks.classList.add("hidden");
-      navbarLinks.classList.remove("flex");
+      navbarLinks.classList.remove("flex", "flex-col", "animate-slideDown");
     }
   });
 
-  lucide.createIcons();
-});
-
-/* ===============================
-   ⚙️ DROPDOWNS & MODALS
-================================ */
-function toggleDropdown(id) {
-  const dropdown = document.getElementById(id);
-  const isOpen = !dropdown.classList.contains("hidden");
-  document.querySelectorAll("[id$='Dropdown']").forEach(el => el.classList.add("hidden"));
-  if (!isOpen) dropdown.classList.remove("hidden");
-}
-
-// Close dropdowns when clicking outside
-document.addEventListener("click", (event) => {
-  document.querySelectorAll("[id$='Dropdown']").forEach(drop => {
-    if (!drop.contains(event.target) && !drop.previousElementSibling.contains(event.target)) {
-      drop.classList.add("hidden");
-    }
+  // Close menu when clicking a link
+  navbarLinks.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      navbarLinks.classList.add("hidden");
+      navbarLinks.classList.remove("flex", "flex-col", "animate-slideDown");
+    });
   });
-});
 
-function openModal(id) {
-  const modal = document.getElementById(id);
-  modal.classList.remove("hidden");
-  modal.classList.add("flex");
-  lucide.createIcons();
-}
+  // Dropdown toggle (works on both desktop & mobile)
+  window.toggleDropdown = function(id) {
+    const dropdown = document.getElementById(id);
+    const isOpen = !dropdown.classList.contains("hidden");
+    document.querySelectorAll("[id$='Dropdown']").forEach(el => el.classList.add("hidden"));
+    if (!isOpen) dropdown.classList.remove("hidden");
+  };
 
-function closeModal(id) {
-  const modal = document.getElementById(id);
-  modal.classList.add("hidden");
-  modal.classList.remove("flex");
-}
+  // Close dropdowns when clicking outside
+  document.addEventListener("click", (event) => {
+    document.querySelectorAll("[id$='Dropdown']").forEach(drop => {
+      if (!drop.contains(event.target) && !drop.previousElementSibling.contains(event.target)) {
+        drop.classList.add("hidden");
+      }
+    });
+  });
 
-/* ===============================
-   🔔 ALERTS & BADGE HANDLING
-================================ */
-function clearBadge() {
-  let badge = document.getElementById('alertsBadge');
-  if (badge) {
-    badge.style.display = 'none';
-    localStorage.setItem('alertsCleared', 'true');
-  }
-}
+  // Modals
+  window.openModal = function(id) {
+    const modal = document.getElementById(id);
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    lucide.createIcons();
+  };
 
-window.addEventListener('DOMContentLoaded', () => {
+  window.closeModal = function(id) {
+    const modal = document.getElementById(id);
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  };
+
+  // Alerts badge persistence
+  window.clearBadge = function() {
+    let badge = document.getElementById('alertsBadge');
+    if (badge) {
+      badge.style.display = 'none';
+      localStorage.setItem('alertsCleared', 'true');
+    }
+  };
+
   if (localStorage.getItem('alertsCleared') === 'true') {
     let badge = document.getElementById('alertsBadge');
     if (badge) badge.style.display = 'none';
   }
+
   lucide.createIcons();
 });
+</script>
 
-/* ===============================
-   🚪 LOGOUT CONFIRMATION
-================================ */
-function confirmLogout(event) {
-  event.preventDefault();
-  Swal.fire({
-    title: 'Logout Confirmation',
-    text: "Do you really want to logout?",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#16a34a',
-    cancelButtonColor: '#9ca3af',
-    confirmButtonText: 'Logout'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      document.getElementById('logout-form').submit();
+<style>
+/* Smooth slide-down animation */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slideDown {
+  animation: slideDown 0.25s ease-in-out;
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+  const navbarLinks = document.getElementById("navbarLinks");
+
+  // Toggle mobile menu (vertical)
+  mobileMenuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    navbarLinks.classList.toggle("hidden");
+    navbarLinks.classList.toggle("flex");
+    navbarLinks.classList.toggle("flex-col");
+    navbarLinks.classList.toggle("animate-slideDown");
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener("click", (event) => {
+    if (!navbarLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+      navbarLinks.classList.add("hidden");
+      navbarLinks.classList.remove("flex", "flex-col", "animate-slideDown");
     }
   });
-}
+
+  // Close menu when clicking a link
+  navbarLinks.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      navbarLinks.classList.add("hidden");
+      navbarLinks.classList.remove("flex", "flex-col", "animate-slideDown");
+    });
+  });
+
+  // Dropdown toggle (works on both desktop & mobile)
+  window.toggleDropdown = function(id) {
+    const dropdown = document.getElementById(id);
+    const isOpen = !dropdown.classList.contains("hidden");
+    document.querySelectorAll("[id$='Dropdown']").forEach(el => el.classList.add("hidden"));
+    if (!isOpen) dropdown.classList.remove("hidden");
+  };
+
+  // Close dropdowns when clicking outside
+  document.addEventListener("click", (event) => {
+    document.querySelectorAll("[id$='Dropdown']").forEach(drop => {
+      if (!drop.contains(event.target) && !drop.previousElementSibling.contains(event.target)) {
+        drop.classList.add("hidden");
+      }
+    });
+  });
+
+  // Modals
+  window.openModal = function(id) {
+    const modal = document.getElementById(id);
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    lucide.createIcons();
+  };
+
+  window.closeModal = function(id) {
+    const modal = document.getElementById(id);
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  };
+
+  // Alerts badge persistence
+  window.clearBadge = function() {
+    let badge = document.getElementById('alertsBadge');
+    if (badge) {
+      badge.style.display = 'none';
+      localStorage.setItem('alertsCleared', 'true');
+    }
+  };
+
+  if (localStorage.getItem('alertsCleared') === 'true') {
+    let badge = document.getElementById('alertsBadge');
+    if (badge) badge.style.display = 'none';
+  }
+
+  lucide.createIcons();
+});
 </script>
+
+<style>
+/* Smooth slide-down animation */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slideDown {
+  animation: slideDown 0.25s ease-in-out;
+}
+</style>
 
 
 </body>
