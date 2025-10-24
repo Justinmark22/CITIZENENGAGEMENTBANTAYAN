@@ -316,6 +316,21 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 .animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-4px); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+.animate-fadeOut {
+  animation: fadeOut 0.2s ease-in forwards;
+}
+
 </style>
 <!-- Add SweetAlert2 CDN (put this in your layout <head> or before closing </body>) -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -622,25 +637,67 @@ function closeReportModal() {
   modal.classList.remove("flex");
 }
 </script>
-
 <script>
-  
+  // ============================
+  // ✅ Mobile Menu Toggle
+  // ============================
+  document.addEventListener("DOMContentLoaded", () => {
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const navbarLinks = document.getElementById("navbarLinks");
 
-  // Mobile menu toggle
-  const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-  const navbarLinks = document.getElementById("navbarLinks");
-  mobileMenuBtn.addEventListener("click", () => {
-    navbarLinks.classList.toggle("hidden");
-    navbarLinks.classList.toggle("flex");
-    navbarLinks.classList.toggle("flex-col");
+    if (mobileMenuBtn && navbarLinks) {
+      // Set initial aria state
+      mobileMenuBtn.setAttribute("aria-expanded", "false");
+
+      mobileMenuBtn.addEventListener("click", () => {
+        const isHidden = navbarLinks.classList.contains("hidden");
+
+        navbarLinks.classList.toggle("hidden", !isHidden);
+        navbarLinks.classList.toggle("flex", isHidden);
+        navbarLinks.classList.toggle("flex-col", isHidden);
+
+        // Add transition effect (slide & fade)
+        navbarLinks.classList.toggle("translate-y-2", isHidden);
+        navbarLinks.classList.toggle("opacity-0", !isHidden);
+        navbarLinks.classList.toggle("opacity-100", isHidden);
+
+        // Update aria-expanded for accessibility
+        mobileMenuBtn.setAttribute("aria-expanded", isHidden ? "true" : "false");
+      });
+
+      // Auto close when clicking a menu link (for mobile)
+      navbarLinks.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", () => {
+          if (window.innerWidth < 1024) { // only for small screens
+            navbarLinks.classList.add("hidden");
+            navbarLinks.classList.remove("flex", "flex-col");
+            mobileMenuBtn.setAttribute("aria-expanded", "false");
+          }
+        });
+      });
+    }
   });
 
-  // Dropdown toggle
+
+  // ============================
+  // ✅ Dropdown Toggle
+  // ============================
   function toggleDropdown(id) {
     const dropdown = document.getElementById(id);
+    if (!dropdown) return;
+
     const isOpen = !dropdown.classList.contains("hidden");
+
+    // Close all other dropdowns
     document.querySelectorAll("[id$='Dropdown']").forEach(el => el.classList.add("hidden"));
-    if (!isOpen) dropdown.classList.remove("hidden");
+
+    // Toggle the selected dropdown
+    if (!isOpen) {
+      dropdown.classList.remove("hidden");
+      dropdown.classList.add("animate-fadeIn");
+    } else {
+      dropdown.classList.add("hidden");
+    }
   }
 
   // Close dropdowns when clicking outside
@@ -652,23 +709,39 @@ function closeReportModal() {
     });
   });
 
-  // Modals
+
+  // ============================
+  // ✅ Modals
+  // ============================
   function openModal(id) {
     const modal = document.getElementById(id);
+    if (!modal) return;
+
     modal.classList.remove("hidden");
     modal.classList.add("flex");
-    lucide.createIcons();
+    modal.classList.add("animate-fadeIn");
+
+    // Re-init icons if needed
+    if (typeof lucide !== "undefined") lucide.createIcons();
   }
 
   function closeModal(id) {
     const modal = document.getElementById(id);
-    modal.classList.add("hidden");
-    modal.classList.remove("flex");
+    if (!modal) return;
+
+    modal.classList.add("animate-fadeOut");
+    setTimeout(() => {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex", "animate-fadeOut");
+    }, 150); // short delay for fade-out
   }
 
-  // Clear alerts badge & remember state
+
+  // ============================
+  // ✅ Alerts Badge
+  // ============================
   function clearBadge() {
-    let badge = document.getElementById('alertsBadge');
+    const badge = document.getElementById('alertsBadge');
     if (badge) {
       badge.style.display = 'none';
       localStorage.setItem('alertsCleared', 'true');
@@ -677,13 +750,18 @@ function closeReportModal() {
 
   window.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('alertsCleared') === 'true') {
-      let badge = document.getElementById('alertsBadge');
+      const badge = document.getElementById('alertsBadge');
       if (badge) badge.style.display = 'none';
     }
-    lucide.createIcons();
+
+    // Init Lucide icons globally
+    if (typeof lucide !== "undefined") lucide.createIcons();
   });
 
-  // Logout confirmation
+
+  // ============================
+  // ✅ Logout Confirmation (SweetAlert2)
+  // ============================
   function confirmLogout(event) {
     event.preventDefault();
     Swal.fire({
@@ -701,6 +779,7 @@ function closeReportModal() {
     });
   }
 </script>
+
 
 </body>
 </html>
