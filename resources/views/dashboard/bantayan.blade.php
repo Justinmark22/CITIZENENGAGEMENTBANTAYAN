@@ -9,13 +9,12 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
-
 <!-- 🌐 Navbar -->
 <nav class="w-full bg-white/90 backdrop-blur-md border-b shadow-sm px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-50">
   <!-- Left: Logo + Title -->
   <a href="#" class="flex items-center gap-3">
     <img src="{{ asset('images/citizen.png') }}" alt="Logo" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-gray-200 shadow-sm">
-    <span class="text-lg md:text-xl font-bold text-gray-900 tracking-tight"> Bantayan Dashboard</span>
+    <span class="text-lg md:text-xl font-bold text-gray-900 tracking-tight">Bantayan Dashboard</span>
   </a>
 
   <!-- Mobile menu toggle -->
@@ -24,85 +23,61 @@
   </button>
 
   <!-- Right side items -->
-  <div id="navbarLinks" class="hidden md:flex items-center gap-4 md:gap-5 flex-wrap text-sm absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none rounded-b-2xl md:rounded-none p-4 md:p-0">
-    
-<!-- 🔔 Alerts Dropdown -->
-<div class="relative w-full md:w-auto">
-  <button onclick="toggleDropdown('alertsDropdown'); clearBadge();" 
-          class="flex items-center justify-center md:justify-start w-10 h-10 md:w-auto md:px-4 rounded-full hover:bg-gray-100 transition relative text-gray-700">
-    <i data-lucide="bell" class="w-5 h-5"></i>Notifications
-    @php 
-      $totalAlerts = $alerts->count() 
-                    + $mddrmoAcceptedReports->count() + $wasteAcceptedReports->count()
-                    + $mddrmoOngoingReports->count() + $wasteOngoingReports->count()
-                    + $mddrmoResolvedReports->count() + $wasteResolvedReports->count(); 
-    @endphp
-    @if($totalAlerts > 0)
-      <span id="alertsBadge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full shadow">{{ $totalAlerts }}</span>
-    @endif
-  </button>
+  <div
+    id="navbarLinks"
+    class="hidden flex-col md:flex md:flex-row items-start md:items-center gap-4 md:gap-5 w-full md:w-auto absolute md:static top-full left-0 bg-white md:bg-transparent shadow-lg md:shadow-none rounded-xl md:rounded-none p-4 md:p-0 border md:border-0 animate-slideDown"
+  >
 
-  <!-- Dropdown -->
-  <div id="alertsDropdown" class="hidden absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50">
-    <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
-      <h6 class="font-semibold text-gray-800 text-sm uppercase tracking-wide">Notifications</h6>
-      <button onclick="hideNotifications()" class="text-gray-400 hover:text-gray-600 text-sm">Clear All</button>
-    </div>
+    <!-- 🔔 Alerts Dropdown -->
+    <div class="relative w-full md:w-auto">
+      <button onclick="toggleDropdown('alertsDropdown'); clearBadge();" 
+              class="flex items-center justify-start md:justify-center gap-2 w-full md:w-auto rounded-lg px-3 py-2 hover:bg-gray-100 transition text-gray-700 font-medium">
+        <i data-lucide="bell" class="w-5 h-5"></i>
+        <span>Notifications</span>
+        @php 
+          $totalAlerts = $alerts->count() 
+                        + $mddrmoAcceptedReports->count() + $wasteAcceptedReports->count()
+                        + $mddrmoOngoingReports->count() + $wasteOngoingReports->count()
+                        + $mddrmoResolvedReports->count() + $wasteResolvedReports->count(); 
+        @endphp
+        @if($totalAlerts > 0)
+          <span id="alertsBadge" class="absolute top-1 right-2 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full shadow">{{ $totalAlerts }}</span>
+        @endif
+      </button>
 
-    <div class="max-h-96 overflow-y-auto">
-      {{-- System Alerts --}}
-      @forelse ($alerts as $alert)
-        <div onclick="showAlertModal({{ $alert->id }}, '{{ $alert->title }}', '{{ $alert->message }}')" 
-             class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
-          <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-            <i class="text-blue-600" data-lucide="alert-triangle"></i>
-          </div>
-          <div class="flex-1">
-            <p class="text-gray-800 text-sm font-medium">{{ $alert->title }}</p>
-            <p class="text-gray-500 text-xs mt-1">{{ $alert->message }}</p>
-          </div>
+      <!-- Dropdown -->
+      <div id="alertsDropdown" class="hidden absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50">
+        <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
+          <h6 class="font-semibold text-gray-800 text-sm uppercase tracking-wide">Notifications</h6>
+          <button onclick="hideNotifications()" class="text-gray-400 hover:text-gray-600 text-sm">Clear All</button>
         </div>
-      @empty
-        <p class="text-gray-400 text-sm text-center py-4">No alerts available.</p>
-      @endforelse
 
-      {{-- Reports Notifications --}}
-      @foreach(['Resolved Reports' => ['color'=>'purple','data'=>[$mddrmoResolvedReports,$wasteResolvedReports]],
-                'Ongoing Reports' => ['color'=>'blue','data'=>[$mddrmoOngoingReports,$wasteOngoingReports]],
-                'Accepted Reports' => ['color'=>'green','data'=>[$mddrmoAcceptedReports,$wasteAcceptedReports]]] as $group => $groupData)
-        @foreach($groupData['data'] as $reports)
-          @foreach($reports as $report)
-            <div onclick="openReportModal({{ $report->id }}, '{{ $report->title }}', '{{ $report->status }}', '{{ $report->forwarded_to }}')" 
-                 class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition bg-{{ $groupData['color'] }}-50 rounded-md m-2">
-              <div class="flex-shrink-0 w-8 h-8 bg-{{ $groupData['color'] }}-400 text-white rounded-full flex items-center justify-center">
-                <i data-lucide="check-circle" class="w-4 h-4"></i>
+        <div class="max-h-96 overflow-y-auto">
+          {{-- Alerts --}}
+          @forelse ($alerts as $alert)
+            <div onclick="showAlertModal({{ $alert->id }}, '{{ $alert->title }}', '{{ $alert->message }}')" 
+                 class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <i class="text-blue-600" data-lucide="alert-triangle"></i>
               </div>
               <div class="flex-1">
-                <p class="text-{{ $groupData['color'] }}-700 text-sm font-medium">
-                  {{ $report->status }} {{ strpos($group,'Waste') !== false ? '♻' : '' }}
-                </p>
-                <p class="text-gray-600 text-xs mt-1">
-                  Your report "<span class="font-medium">{{ $report->title }}</span>" 
-                  {{ $group == 'Resolved Reports' ? 'was resolved by' : ($group == 'Ongoing Reports' ? 'is being handled by' : 'was forwarded to') }}
-                  <span class="font-semibold">{{ $report->forwarded_to }}</span>.
-                </p>
+                <p class="text-gray-800 text-sm font-medium">{{ $alert->title }}</p>
+                <p class="text-gray-500 text-xs mt-1">{{ $alert->message }}</p>
               </div>
             </div>
-          @endforeach
-        @endforeach
-      @endforeach
-
+          @empty
+            <p class="text-gray-400 text-sm text-center py-4">No alerts available.</p>
+          @endforelse
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-
-
-    <a href="{{ route('feedback.page') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
+    <!-- Menu links -->
+    <a href="{{ route('feedback.page') }}" class="flex items-center gap-2 text-gray-700 hover:text-green-700 transition w-full md:w-auto px-3 py-2 rounded-lg hover:bg-gray-100">
       <i data-lucide="message-square" class="w-4 h-4"></i> Feedback
     </a>
 
-    <a href="{{ route('contact.support.page') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
+    <a href="{{ route('contact.support.page') }}" class="flex items-center gap-2 text-gray-700 hover:text-green-700 transition w-full md:w-auto px-3 py-2 rounded-lg hover:bg-gray-100">
       <i data-lucide="life-buoy" class="w-4 h-4"></i> Support
     </a>
 
@@ -113,7 +88,7 @@
 
     <!-- User Dropdown -->
     <div class="relative w-full md:w-auto">
-      <button onclick="toggleDropdown('userDropdown')" class="flex items-center justify-between md:justify-start w-full md:w-auto gap-2 text-gray-700 hover:text-green-700 transition">
+      <button onclick="toggleDropdown('userDropdown')" class="flex items-center justify-between md:justify-start w-full md:w-auto gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition text-gray-700 font-medium">
         <div class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center shadow-inner">
           <i data-lucide="user" class="w-4 h-4"></i>
         </div>
@@ -121,7 +96,6 @@
         <i data-lucide="chevron-down" class="w-4 h-4"></i>
       </button>
 
-      <!-- Dropdown -->
       <div id="userDropdown" class="hidden absolute right-0 mt-2 bg-white shadow-xl rounded-xl w-64 overflow-hidden border border-gray-100 z-50">
         <div class="px-5 py-4 bg-gray-50">
           <p class="font-semibold">{{ Auth::user()->name ?? 'Guest' }}</p>
@@ -141,6 +115,7 @@
     </div>
   </div>
 </nav>
+
 
 <!-- 🌟 Hero Section -->
 <section class="relative overflow-hidden py-12 md:py-16 bg-gradient-to-r from-green-50 to-lime-50">
@@ -504,162 +479,159 @@ function closeReportModal() {
   modal.classList.remove("flex");
 }
 </script>
-<script>
-/* ===============================
-   📊 REPORT MODAL LOGIC
-================================ */
-function openReportModal(id, title, status, department, timestamps = {}) {
-  const modal = document.getElementById("reportProgressModal");
-  modal.classList.remove("hidden");
-  modal.classList.add("flex");
+ <script>
+    /* ===============================
+       📊 REPORT MODAL LOGIC
+    ================================ */
+    function openReportModal(id, title, status, department, timestamps = {}) {
+      const modal = document.getElementById("reportProgressModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
 
-  document.getElementById("modalReportTitle").innerText = title;
-  document.getElementById("modalDepartment").innerText = department;
+      document.getElementById("modalReportTitle").innerText = title;
+      document.getElementById("modalDepartment").innerText = department;
 
-  document.getElementById("forwardedTime").innerText = timestamps.forwarded || '--';
-  document.getElementById("acceptedTime").innerText = timestamps.accepted || '--';
-  document.getElementById("ongoingTime").innerText = timestamps.ongoing || '--';
-  document.getElementById("resolvedTime").innerText = timestamps.resolved || '--';
+      document.getElementById("forwardedTime").innerText = timestamps.forwarded || '--';
+      document.getElementById("acceptedTime").innerText = timestamps.accepted || '--';
+      document.getElementById("ongoingTime").innerText = timestamps.ongoing || '--';
+      document.getElementById("resolvedTime").innerText = timestamps.resolved || '--';
 
-  const stepsOrder = ["Forwarded","Accepted","Ongoing","Resolved"];
-  const colors = {"Forwarded":"bg-green-400","Accepted":"bg-blue-400","Ongoing":"bg-yellow-400","Resolved":"bg-purple-400"};
-  const timelineFill = document.getElementById("timelineFill");
-  const stepBlocks = document.querySelectorAll(".timeline-step-block");
-  const particleContainer = document.getElementById("particlesContainer");
-  particleContainer.innerHTML = '';
+      const stepsOrder = ["Forwarded","Accepted","Ongoing","Resolved"];
+      const colors = {"Forwarded":"bg-green-400","Accepted":"bg-blue-400","Ongoing":"bg-yellow-400","Resolved":"bg-purple-400"};
+      const timelineFill = document.getElementById("timelineFill");
+      const stepBlocks = document.querySelectorAll(".timeline-step-block");
+      const particleContainer = document.getElementById("particlesContainer");
+      particleContainer.innerHTML = '';
 
-  stepsOrder.forEach((s, i) => {
-    const stepEl = document.getElementById("step"+s);
-    const block = stepEl.closest(".timeline-step-block");
-    const top = block.offsetTop + stepEl.offsetHeight/2;
+      stepsOrder.forEach((s, i) => {
+        const stepEl = document.getElementById("step"+s);
+        const block = stepEl.closest(".timeline-step-block");
+        const top = block.offsetTop + stepEl.offsetHeight/2;
 
-    if(stepsOrder.indexOf(s) <= stepsOrder.indexOf(status)){
-      setTimeout(() => {
-        stepEl.classList.add(colors[s]);
-        stepEl.classList.add("border-transparent");
-        stepEl.querySelector("i").classList.add("text-white");
-        stepEl.classList.add("scale-110");
-        setTimeout(()=> stepEl.classList.remove("scale-110"), 300);
+        if(stepsOrder.indexOf(s) <= stepsOrder.indexOf(status)){
+          setTimeout(() => {
+            stepEl.classList.add(colors[s]);
+            stepEl.classList.add("border-transparent");
+            stepEl.querySelector("i").classList.add("text-white");
+            stepEl.classList.add("scale-110");
+            setTimeout(()=> stepEl.classList.remove("scale-110"), 300);
 
-        timelineFill.style.height = (top) + "px";
+            timelineFill.style.height = (top) + "px";
 
-        for(let j=0;j<5;j++){
-          const p = document.createElement("div");
-          p.className = "w-1 h-1 rounded-full absolute animate-bounce";
-          p.style.left = (stepEl.offsetLeft + 6 + Math.random()*10) + "px";
-          p.style.top = (top - 6 + Math.random()*10) + "px";
-          p.style.backgroundColor = window.getComputedStyle(stepEl).backgroundColor;
-          particleContainer.appendChild(p);
+            for(let j=0;j<5;j++){
+              const p = document.createElement("div");
+              p.className = "w-1 h-1 rounded-full absolute animate-bounce";
+              p.style.left = (stepEl.offsetLeft + 6 + Math.random()*10) + "px";
+              p.style.top = (top - 6 + Math.random()*10) + "px";
+              p.style.backgroundColor = window.getComputedStyle(stepEl).backgroundColor;
+              particleContainer.appendChild(p);
+            }
+          }, i*400);
         }
-      }, i*400);
+      });
     }
-  });
-}
 
-function closeReportModal() {
-  const modal = document.getElementById("reportProgressModal");
-  modal.classList.add("hidden");
-  modal.classList.remove("flex");
-}
-
-/* ===============================
-   📱 MOBILE MENU & NAVBAR
-================================ */
-document.addEventListener("DOMContentLoaded", () => {
-  const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-  const navbarLinks = document.getElementById("navbarLinks");
-  const nav = document.querySelector("nav");
-
-  // Toggle mobile menu with smooth transition
-  mobileMenuBtn?.addEventListener("click", () => {
-    navbarLinks.classList.toggle("hidden");
-    navbarLinks.classList.toggle("flex");
-    navbarLinks.classList.toggle("flex-col");
-    navbarLinks.classList.toggle("animate-fadeIn");
-  });
-
-  // Close mobile menu when clicking outside it
-  document.addEventListener("click", (e) => {
-    if (!nav.contains(e.target) && !navbarLinks.classList.contains("hidden")) {
-      navbarLinks.classList.add("hidden");
-      navbarLinks.classList.remove("flex");
+    function closeReportModal() {
+      const modal = document.getElementById("reportProgressModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
     }
-  });
 
-  lucide.createIcons();
-});
+    /* ===============================
+       📱 MOBILE MENU & NAVBAR
+    ================================ */
+    document.addEventListener("DOMContentLoaded", () => {
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const navbarLinks = document.getElementById("navbarLinks");
+      const nav = document.querySelector("nav");
 
-/* ===============================
-   ⚙️ DROPDOWNS & MODALS
-================================ */
-function toggleDropdown(id) {
-  const dropdown = document.getElementById(id);
-  const isOpen = !dropdown.classList.contains("hidden");
-  document.querySelectorAll("[id$='Dropdown']").forEach(el => el.classList.add("hidden"));
-  if (!isOpen) dropdown.classList.remove("hidden");
-}
+      mobileMenuBtn?.addEventListener("click", () => {
+        navbarLinks.classList.toggle("hidden");
+        navbarLinks.classList.toggle("flex");
+        navbarLinks.classList.toggle("flex-col");
+        navbarLinks.classList.toggle("animate-fadeIn");
+      });
 
-// Close dropdowns when clicking outside
-document.addEventListener("click", (event) => {
-  document.querySelectorAll("[id$='Dropdown']").forEach(drop => {
-    if (!drop.contains(event.target) && !drop.previousElementSibling.contains(event.target)) {
-      drop.classList.add("hidden");
+      document.addEventListener("click", (e) => {
+        if (!nav.contains(e.target) && !navbarLinks.classList.contains("hidden")) {
+          navbarLinks.classList.add("hidden");
+          navbarLinks.classList.remove("flex");
+        }
+      });
+
+      lucide.createIcons();
+    });
+
+    /* ===============================
+       ⚙️ DROPDOWNS & MODALS
+    ================================ */
+    function toggleDropdown(id) {
+      const dropdown = document.getElementById(id);
+      const isOpen = !dropdown.classList.contains("hidden");
+      document.querySelectorAll("[id$='Dropdown']").forEach(el => el.classList.add("hidden"));
+      if (!isOpen) dropdown.classList.remove("hidden");
     }
-  });
-});
 
-function openModal(id) {
-  const modal = document.getElementById(id);
-  modal.classList.remove("hidden");
-  modal.classList.add("flex");
-  lucide.createIcons();
-}
+    document.addEventListener("click", (event) => {
+      document.querySelectorAll("[id$='Dropdown']").forEach(drop => {
+        if (!drop.contains(event.target) && !drop.previousElementSibling.contains(event.target)) {
+          drop.classList.add("hidden");
+        }
+      });
+    });
 
-function closeModal(id) {
-  const modal = document.getElementById(id);
-  modal.classList.add("hidden");
-  modal.classList.remove("flex");
-}
-
-/* ===============================
-   🔔 ALERTS & BADGE HANDLING
-================================ */
-function clearBadge() {
-  let badge = document.getElementById('alertsBadge');
-  if (badge) {
-    badge.style.display = 'none';
-    localStorage.setItem('alertsCleared', 'true');
-  }
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  if (localStorage.getItem('alertsCleared') === 'true') {
-    let badge = document.getElementById('alertsBadge');
-    if (badge) badge.style.display = 'none';
-  }
-  lucide.createIcons();
-});
-
-/* ===============================
-   🚪 LOGOUT CONFIRMATION
-================================ */
-function confirmLogout(event) {
-  event.preventDefault();
-  Swal.fire({
-    title: 'Logout Confirmation',
-    text: "Do you really want to logout?",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#16a34a',
-    cancelButtonColor: '#9ca3af',
-    confirmButtonText: 'Logout'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      document.getElementById('logout-form').submit();
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      lucide.createIcons();
     }
-  });
-}
-</script>
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    /* ===============================
+       🔔 ALERTS & BADGE HANDLING
+    ================================ */
+    function clearBadge() {
+      let badge = document.getElementById('alertsBadge');
+      if (badge) {
+        badge.style.display = 'none';
+        localStorage.setItem('alertsCleared', 'true');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('alertsCleared') === 'true') {
+        let badge = document.getElementById('alertsBadge');
+        if (badge) badge.style.display = 'none';
+      }
+      lucide.createIcons();
+    });
+
+    /* ===============================
+       🚪 LOGOUT CONFIRMATION
+    ================================ */
+    function confirmLogout(event) {
+      event.preventDefault();
+      Swal.fire({
+        title: 'Logout Confirmation',
+        text: "Do you really want to logout?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#16a34a',
+        cancelButtonColor: '#9ca3af',
+        confirmButtonText: 'Logout'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById('logout-form').submit();
+        }
+      });
+    }
+  </script>
 
 </body>
 </html>
