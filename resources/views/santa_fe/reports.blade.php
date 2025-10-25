@@ -80,43 +80,50 @@
   <div class="card-box mb-4">
     <h5 class="mb-4">Report Management</h5>
 
-    <form method="GET" action="{{ route('santafe.reports') }}" class="row g-2 mb-4">
-      <div class="col-md-3">
-        <select name="status" class="form-select">
-          <option value="">All Status</option>
-          <option value="Pending" {{ request('status')=='Pending'?'selected':'' }}>Pending</option>
-          <option value="Ongoing" {{ request('status')=='Ongoing'?'selected':'' }}>Ongoing</option>
-          <option value="Resolved" {{ request('status')=='Resolved'?'selected':'' }}>Resolved</option>
-          <option value="Rejected" {{ request('status')=='Rejected'?'selected':'' }}>Rejected</option>
-        </select>
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-primary w-100"><i data-lucide="filter" class="me-1"></i> Filter</button>
-      data-status="{{ $report->status }}"
+<form method="GET" action="{{ route('santafe.reports') }}" class="row g-2 mb-4">
+  <div class="col-md-3">
+    <select name="status" class="form-select">
+      <option value="">All Status</option>
+      <option value="Pending" {{ request('status')=='Pending'?'selected':'' }}>Pending</option>
+      <option value="Ongoing" {{ request('status')=='Ongoing'?'selected':'' }}>Ongoing</option>
+      <option value="Resolved" {{ request('status')=='Resolved'?'selected':'' }}>Resolved</option>
+      <option value="Rejected" {{ request('status')=='Rejected'?'selected':'' }}>Rejected</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-primary w-100"><i data-lucide="filter" class="me-1"></i> Filter</button>
+  </div>
+</form>
+
+@forelse ($reports as $report)
+  <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
+    <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
+      <div class="flex-grow-1 pe-3">
+        <h6 class="fw-bold text-dark mb-1 cursor-pointer"
+            data-bs-toggle="modal"
+            data-bs-target="#reportModal"
+            data-title="{{ $report->title }}"
+            data-description="{{ $report->description }}"
+            data-location="{{ $report->location }}"
+            data-status="{{ $report->status }}"
             data-date="{{ $report->created_at->format('M d, Y H:i') }}"
             data-photo="{{ $report->photo ? url('reports/' . $report->photo) : '' }}"
             data-name="{{ $report->user->name ?? 'Anonymous' }}"
             data-email="{{ $report->user->email ?? 'No Email' }}">
           {{ $report->title }}
         </h6>
-
-
-
-
         <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
-
         <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-1">
           <span><i data-lucide="map-pin" class="me-1"></i> {{ $report->location }}</span>
           <span><i data-lucide="clock" class="me-1"></i> {{ $report->created_at->format('M d, Y H:i') }}</span>
         </div>
-
         <div class="text-muted small d-flex align-items-center flex-wrap gap-3">
           <span><i data-lucide="user" class="me-1"></i> {{ $report->user->name ?? 'Anonymous' }}</span>
           <span><i data-lucide="mail" class="me-1"></i> {{ $report->user->email ?? 'No Email' }}</span>
         </div>
       </div>
 
-      <!-- Status Badge & Actions -->
+      <!-- Status Badge -->
       <div class="text-end">
         <span class="badge rounded-pill px-3 py-2 fw-semibold text-uppercase shadow-sm
           @if($report->status === 'Resolved') bg-gradient-success
@@ -185,8 +192,6 @@
     </div>
   </div>
 </div>
-
-<!-- Reports List -->
 @forelse ($reports as $report)
   <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
@@ -210,6 +215,7 @@
 @empty
   <p class="text-muted">No reports found.</p>
 @endforelse
+
 
 <!-- Modal JS -->
 <script>
