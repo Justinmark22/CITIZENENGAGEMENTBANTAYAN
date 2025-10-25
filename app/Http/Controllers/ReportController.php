@@ -8,43 +8,35 @@ use Illuminate\Http\Request;
 use App\Models\Report;
 
 class ReportController extends Controller
-{public function store(Request $request)
+{
+public function store(Request $request)
 {
     $validated = $request->validate([
         'category' => 'required|string',
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'photo' => 'nullable|mimes:jpeg,jpg,png,gif,bmp,svg,webp|max:5120', // max 5MB
+        'photo' => 'nullable|mimes:jpeg,jpg,png,gif,bmp,svg,webp|max:5120',
     ]);
 
     if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
-    $photo = $request->file('photo');
-    $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+        $photo = $request->file('photo');
+        $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
 
-    // Ensure folder exists
-    Storage::disk('public')->makeDirectory('reports');
+        // Ensure folder exists
+        Storage::disk('public')->makeDirectory('reports');
 
-    $path = $photo->storeAs('reports', $photoName, 'public');
-    $validated['photo'] = $path;
-
-    } else {
-        $validated['photo'] = null; // ensure DB gets null if no photo
+        $path = $photo->storeAs('reports', $photoName, 'public');
+        $validated['photo'] = $path;
     }
 
-    // Set other fields
     $validated['status'] = 'Pending';
     $validated['location'] = auth()->user()->location ?? 'Unknown';
     $validated['user_id'] = auth()->id();
 
-    // Create report
-    $report = Report::create($validated);
-
-    // Optional: debug
-    // dd($report);
+    Report::create($validated);
 
     return redirect()->back()->with('success', 'Report submitted!');
 }
-
 
 
 
