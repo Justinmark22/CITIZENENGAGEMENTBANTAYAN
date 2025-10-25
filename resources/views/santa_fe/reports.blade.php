@@ -450,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('modalReportName').textContent = name;
         document.getElementById('modalReportEmail').textContent = email;
 
-        // Handle photo with actual existence check
+        // Handle photo safely
         const photoElement = document.getElementById('modalReportPhoto');
         const noPhotoText = document.getElementById('noPhotoText');
 
