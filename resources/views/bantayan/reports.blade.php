@@ -247,57 +247,7 @@
           {{ $report->status }}
         </span>
 
-        <!-- Dropdown Actions -->
-        <div class="dropup">
-          <button 
-            class="btn btn-sm bg-light border-0 shadow-sm rounded-3 px-3 py-2 d-flex align-items-center gap-2 dropdown-toggle" 
-            type="button" 
-            data-bs-toggle="dropdown" 
-            aria-expanded="false"
-            style="font-size: 0.875rem;">
-            <i data-lucide="settings" class="text-muted"></i> Actions
-          </button>
 
-          <ul class="dropdown-menu dropdown-menu-end shadow rounded-3" style="z-index: 2000;">
-            @if($report->status === 'Resolved')
-              <li>
-                <a href="{{ route('santafe.export', $report->id) }}" class="dropdown-item d-flex align-items-center gap-2 text-primary">
-                  <i data-lucide="download"></i> Export PDF
-                </a>
-              </li>
-            @else
-              <li>
-                <form method="POST" action="{{ route('madridejos.reports.update', $report->id) }}">
-                  @csrf @method('PUT')
-                  <input type="hidden" name="status" value="Ongoing">
-                  <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-info">
-                    <i data-lucide="loader"></i> Mark as Ongoing
-                  </button>
-                </form>
-              </li>
-              <li>
-                <form method="POST" action="{{ route('madridejos.reports.update', $report->id) }}">
-                  @csrf @method('PUT')
-                  <input type="hidden" name="status" value="Resolved">
-                  <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-success">
-                    <i data-lucide="check-circle"></i> Mark as Resolved
-                  </button>
-                </form>
-              </li>
-              <li>
-                <form method="POST" action="{{ route('madridejos.reports.update', $report->id) }}">
-                  @csrf @method('PUT')
-                  <input type="hidden" name="status" value="Rejected">
-                  <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger">
-                    <i data-lucide="x-circle"></i> Mark as Rejected
-                  </button>
-                </form>
-              </li>
-            @endif
-          </ul>
-        </div>
-      </div>
-    </div>
   </div>
 @empty
   <div class="alert alert-info">No reports found.</div>
