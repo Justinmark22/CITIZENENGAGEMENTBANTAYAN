@@ -247,7 +247,12 @@
           {{ $report->status }}
         </span>
 
-
+              </li>
+            @endif
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 @empty
   <div class="alert alert-info">No reports found.</div>
