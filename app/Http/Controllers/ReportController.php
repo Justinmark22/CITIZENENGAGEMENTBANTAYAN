@@ -17,23 +17,16 @@ class ReportController extends Controller
         'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
-    $report = new Report();
-    $report->category = $validated['category'];
-    $report->title = $validated['title'];
-    $report->description = $validated['description'];
-
-    // ✅ Handle photo upload
     if ($request->hasFile('photo')) {
-        // store in "storage/app/public/reports"
-        $path = $request->file('photo')->store('reports', 'public');
-        $report->photo = $path; // just save relative path like "reports/abc.jpg"
+        // Save to storage/app/public/reports
+        $path = $request->file('photo')->store('public/reports');
+        // Convert path to public-accessible format (public/storage/reports)
+        $validated['photo'] = str_replace('public/', 'storage/', $path);
     }
 
-    $report->status = 'Pending';
-    $report->user_id = auth()->id() ?? null;
-    $report->save();
+    Report::create($validated);
 
-    return redirect()->back()->with('success', 'Your concern has been submitted successfully.');
+    return redirect()->back()->with('success', 'Report submitted successfully!');
 }
 
 
