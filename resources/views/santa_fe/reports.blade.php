@@ -94,54 +94,55 @@
         <button class="btn btn-primary w-100"><i data-lucide="filter" class="me-1"></i> Filter</button>
       </div>
     </form>
+@forelse ($reports as $report)
+  <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
+    <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
+      <!-- Report Info -->
+      <div class="flex-grow-1 pe-3">
+        <h6 class="fw-bold text-dark mb-1 cursor-pointer"
+            data-bs-toggle="modal"
+            data-bs-target="#reportModal"
+            data-title="{{ $report->title }}"
+            data-description="{{ $report->description }}"
+            data-location="{{ $report->location }}"
+            data-status="{{ $report->status }}"
+            data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+            data-photo="{{ $report->photo ? asset('storage/' . $report->photo) : '' }}"
+            data-name="{{ $report->user->name ?? 'Anonymous' }}"
+            data-email="{{ $report->user->email ?? 'No Email' }}">
+          {{ $report->title }}
+        </h6>
 
-    @forelse($reports as $report)
-      <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
-        <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
-          <div class="flex-grow-1 pe-3">
-<h6 class="fw-bold text-dark mb-1 cursor-pointer"
-    data-bs-toggle="modal"
-    data-bs-target="#reportModal"
-    data-title="{{ $report->title }}"
-    data-description="{{ $report->description }}"
-    data-location="{{ $report->location }}"
-    data-status="{{ $report->status }}"
-    data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-data-photo="{{ $report->photo ? asset('storage/reports/'.$report->photo) : '' }}"
+        <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
 
-    data-name="{{ $report->user->name ?? 'Anonymous' }}"
-    data-email="{{ $report->user->email ?? 'No Email' }}">
-  {{ $report->title }}
-</h6>
+        <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-1">
+          <span><i data-lucide="map-pin" class="me-1"></i> {{ $report->location }}</span>
+          <span><i data-lucide="clock" class="me-1"></i> {{ $report->created_at->format('M d, Y H:i') }}</span>
+        </div>
 
-            <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
-            <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-1">
-              <span><i data-lucide="map-pin" class="me-1"></i> {{ $report->location }}</span>
-              <span><i data-lucide="clock" class="me-1"></i> {{ $report->created_at->format('M d, Y H:i') }}</span>
-            </div>
-            <div class="text-muted small d-flex align-items-center flex-wrap gap-3">
-              <span><i data-lucide="user" class="me-1"></i> {{ $report->user->name ?? 'Anonymous' }}</span>
-              <span><i data-lucide="mail" class="me-1"></i> {{ $report->user->email ?? 'No Email' }}</span>
-            </div>
-          </div>
-
-          <div class="text-end" style="z-index: 1050;">
-            <span class="badge rounded-pill px-3 py-2 fw-semibold text-uppercase shadow-sm mb-2
-              @if($report->status==='Resolved') bg-gradient-success
-              @elseif($report->status==='Rejected') bg-gradient-danger
-              @elseif($report->status==='Ongoing') bg-gradient-info
-              @else bg-gradient-warning @endif">
-              {{ $report->status }}
-            </span>
-          </div>
+        <div class="text-muted small d-flex align-items-center flex-wrap gap-3">
+          <span><i data-lucide="user" class="me-1"></i> {{ $report->user->name ?? 'Anonymous' }}</span>
+          <span><i data-lucide="mail" class="me-1"></i> {{ $report->user->email ?? 'No Email' }}</span>
         </div>
       </div>
-    @empty
-      <div class="alert alert-info">No reports found.</div>
-    @endforelse
-    <div class="mt-4">{{ $reports->withQueryString()->links() }}</div>
+
+      <!-- Status Badge & Actions -->
+      <div class="text-end">
+        <span class="badge rounded-pill px-3 py-2 fw-semibold text-uppercase shadow-sm
+          @if($report->status === 'Resolved') bg-gradient-success
+          @elseif($report->status === 'Rejected') bg-gradient-danger
+          @elseif($report->status === 'Ongoing') bg-gradient-info
+          @else bg-gradient-warning
+          @endif">
+          {{ $report->status }}
+        </span>
+      </div>
+    </div>
   </div>
-</div>
+@empty
+  <div class="alert alert-info">No reports found.</div>
+@endforelse
+
 
 <!-- Report Modal -->
 <div class="modal fade custom-fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
