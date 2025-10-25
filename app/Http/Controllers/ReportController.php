@@ -8,33 +8,35 @@ use App\Models\Report;
 
 class ReportController extends Controller
 {
-  
-public function store(Request $request)
+    public function store(Request $request)
 {
-    $request->validate([
+    // Validate input
+    $validated = $request->validate([
         'category' => 'required|string',
-        'title' => 'required|string',
+        'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // optional validation
+        'photo' => 'nullable|image|max:2048', // optional, max 2MB
     ]);
-
-    $report = new Report();
-    $report->category = $request->category;
-    $report->title = $request->title;
-    $report->description = $request->description;
-    $report->user_id = auth()->id();
 
     // Handle photo upload
     if ($request->hasFile('photo')) {
-        $file = $request->file('photo');
-        $path = $file->store('reports', 'public'); // stores in storage/app/public/reports
-        $report->photo = $path;
+        $photo = $request->file('photo');
+        $photoName = time() . '.' . $photo->getClientOriginalExtension();
+        $validated['photo'] = $photo->storeAs('reports', $photoName, 'public'); 
+        // Stored in storage/app/public/reports
     }
 
-    $report->save();
+    // Assign default values
+    $validated['status'] = 'Pending';
+    $validated['location'] = auth()->user()->location ?? 'Unknown';
+    $validated['user_id'] = auth()->id(); // links report to user
+
+    // Save report
+    Report::create($validated);
 
     return redirect()->back()->with('success', 'Report submitted successfully!');
 }
+
 
 public function stafeDashboard()
 {
