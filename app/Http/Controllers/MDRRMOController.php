@@ -179,59 +179,28 @@ class MDRRMOController extends Controller
                     ->paginate(10);
 
         return view('mdrrmo.reports-madridejos', compact('reports'));
+    }    // Santa.Fe Forwarded Reports
+    public function reportsSantafe()
+    {
+        // Only Pending or Ongoing reports
+        $reports = ForwardedReport::where('location', 'Santa.Fe')
+                    ->whereIn('status', ['Forwarded','Pending','Ongoing'])
+                    ->latest()
+                    ->paginate(10);
+
+        return view('mdrrmo.reports-santafe', compact('reports'));
     }
-public function reportsBantayan()
-{
-    // 🔹 Forwarded Reports specifically for MDRRMO
-    $forwarded = ForwardedReport::select(
-        'id',
-        'title',
-        'description',
-        'category',
-        'status',
-        'location',
-        'photo',
-        'user_id',
-        'created_at',
-        'updated_at',
-        DB::raw("'forwarded' as type") // mark type
-    )
-    ->where('location', 'Bantayan')
-    ->where(function ($q) {
-        $q->where('forwarded_to', 'MDRRMO')
-          ->orWhere('status', 'like', 'Rerouted to MDRRMO%');
-    })
-    ->where('status', '!=', 'Rerouted away'); // ❌ exclude hidden reports
 
-    // 🔹 Rerouted Reports specifically to MDRRMO
-    $rerouted = ReroutedReport::select(
-        'id',
-        'title',
-        'description',
-        'category',
-        'status',
-        'location',
-        'photo',
-        'user_id',
-        'created_at',
-        'updated_at',
-        DB::raw("'rerouted' as type") // mark type
-    )
-    ->where('location', 'Bantayan')
-    ->where('status', 'like', 'Rerouted to MDRRMO%');
+    // Madridejos Forwarded Reports
+    public function reportsMadridejos()
+    {
+        $reports = ForwardedReport::where('location', 'Madridejos')
+                    ->whereIn('status', ['Forwarded','Pending','Ongoing'])
+                    ->latest()
+                    ->paginate(10);
 
-    // 🔹 Combine both using unionAll
-    $combinedQuery = $forwarded->unionAll($rerouted);
-
-    // 🔹 Wrap in query builder for ordering and pagination
-    $reports = DB::table(DB::raw("({$combinedQuery->toSql()}) as reports"))
-        ->mergeBindings($combinedQuery->getQuery())
-        ->orderByDesc('created_at')
-        ->paginate(10);
-
-    return view('mdrrmo.reports-bantayan', compact('reports'));
-}
-
+        return view('mdrrmo.reports-madridejos', compact('reports'));
+    }
 
     // Fetch the user relationship
     public function user()
