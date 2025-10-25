@@ -107,7 +107,7 @@
     data-location="{{ $report->location }}"
     data-status="{{ $report->status }}"
     data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-    data-photo="{{ $report->photo ? asset('reports/' . $report->photo) : '' }}"
+    data-photo="{{ $report->photo ? asset('storage/reports/' . $report->photo) : '' }}"
     data-name="{{ $report->user->name ?? 'Anonymous' }}"
     data-email="{{ $report->user->email ?? 'No Email' }}">
     {{ $report->title }}
@@ -174,12 +174,19 @@
               <div class="col-md-6 mb-3"><label class="text-muted small">Submitted</label><div id="modalReportDate" class="fs-6 text-dark"></div></div>
             </div>
           </div>
-          <div class="col-md-5">
-            <label class="text-muted small">Photo</label>
-            <div class="bg-light p-3 rounded-3 shadow-sm text-center">
-              <img id="modalReportPhoto" src="" alt="Report Photo" class="img-fluid rounded-3 shadow-sm d-none" style="max-height: 280px; object-fit: cover;">
-              <p id="noPhotoText" class="text-muted m-0">No photo available</p>
-            </div>
+         <div class="bg-light p-3 rounded-3 shadow-sm text-center">
+    @if($report->photo)
+        <img 
+            src="{{ asset('storage/reports/' . $report->photo) }}" 
+            alt="Report Photo" 
+            class="img-fluid rounded-3 shadow-sm"
+            style="max-height: 280px; object-fit: cover;"
+        >
+    @else
+        <p class="text-muted m-0">No photo available</p>
+    @endif
+</div>
+
           </div>
         </div>
       </div>
