@@ -371,18 +371,19 @@
           </div>
 <p>Debug path: {{ asset('storage/' . $report->photo) }}</p>
 <p>DB photo: {{ $report->photo }}</p>
-
+$photoUrl = $report->photo ? asset('storage/' . $report->photo) : null;
+dd($photoUrl);
          <!-- Right Column: Photo -->
 <div class="col-md-5">
     <label class="text-muted small">Photo</label>
     <div class="bg-light p-3 rounded-3 shadow-sm text-center">
-@if($report->photo && Storage::disk('public')->exists($report->photo))
+<!-- Check if photo exists -->
+@if ($report->photo)
     <img src="{{ asset('storage/' . $report->photo) }}" 
          alt="Report Photo" 
-         class="img-fluid rounded-3 shadow-sm" 
-         style="max-height: 280px; object-fit: cover;">
+         class="img-fluid rounded-3 shadow-sm">
 @else
-    <p class="text-muted m-0">No photo available</p>
+    <p class="text-muted">No photo available</p>
 @endif
 
     </div>
