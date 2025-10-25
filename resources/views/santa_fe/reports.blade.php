@@ -204,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
   modal.addEventListener('show.bs.modal', event => {
     const trigger = event.relatedTarget;
 
-    // Set text fields
     document.getElementById('modalReportTitle').textContent = trigger.dataset.title;
     document.getElementById('modalReportDesc').textContent = trigger.dataset.description;
     document.getElementById('modalReportLoc').textContent = trigger.dataset.location;
@@ -213,56 +212,31 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modalReportName').textContent = trigger.dataset.name;
     document.getElementById('modalReportEmail').textContent = trigger.dataset.email;
 
-    // Handle photo
     const photoEl = document.getElementById('modalReportPhoto');
     const noPhoto = document.getElementById('noPhotoText');
+
     if (trigger.dataset.photo && trigger.dataset.photo.trim() !== '') {
       photoEl.src = trigger.dataset.photo;
       photoEl.classList.remove('d-none');
       noPhoto.classList.add('d-none');
     } else {
-      photoEl.src = ''; // Reset src just in case
+      photoEl.src = '';
       photoEl.classList.add('d-none');
       noPhoto.classList.remove('d-none');
     }
 
-    // Optional: Change badge color based on status
+    // Update status badge color
     const badge = document.getElementById('modalReportStatus');
     badge.classList.remove('text-bg-warning', 'text-bg-success', 'text-bg-danger', 'text-bg-info');
     if (trigger.dataset.status === 'Ongoing') badge.classList.add('text-bg-info');
     else if (trigger.dataset.status === 'Resolved') badge.classList.add('text-bg-success');
     else if (trigger.dataset.status === 'Rejected') badge.classList.add('text-bg-danger');
     else badge.classList.add('text-bg-warning');
+
+    // Show print button only if status is Ongoing
+    document.getElementById('printButton').classList.toggle('d-none', trigger.dataset.status !== 'Ongoing');
   });
 });
-
-
-function printReport() {
-  const getText = id => document.getElementById(id).textContent.trim() || 'N/A';
-  const content = `
-    <div style="display:flex;gap:20px;margin-bottom:30px;">
-      <img src="/images/santafe.png" style="height:90px;">
-      <div>
-        <h1 style="margin:0;font-size:26px;color:#0f172a;">Municipality of Santa Fe</h1>
-        <h3 style="margin:5px 0 0;font-weight:normal;color:#475569;">Incident Report Summary</h3>
-      </div>
-    </div>
-    <hr style="margin-bottom:30px;border-top:2px solid #94a3b8;">
-    <div style="font-size:16px;color:#1e293b;">
-      <p><strong>👤 Name:</strong> ${getText('modalReportName')}</p>
-      <p><strong>✉️ Email:</strong> ${getText('modalReportEmail')}</p>
-      <p><strong>📌 Title:</strong> ${getText('modalReportTitle')}</p>
-      <p><strong>📝 Description:</strong><br><span style="margin-left:20px;">${getText('modalReportDesc')}</span></p>
-      <p><strong>📍 Location:</strong> ${getText('modalReportLoc')}</p>
-      <p><strong>📊 Status:</strong> ${getText('modalReportStatus')}</p>
-      <p><strong>📅 Submitted:</strong> ${getText('modalReportDate')}</p>
-    </div>
-  `;
-  const w = window.open('', '_blank', 'width=900,height=700');
-  w.document.write(`<html><head><title>Santa Fe Incident Report</title></head><body>${content}</body></html>`);
-  w.document.close();
-  w.onload = ()=>{w.print(); w.close();}
-}
 
 lucide.createIcons();
 </script>
