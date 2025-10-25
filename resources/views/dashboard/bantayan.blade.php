@@ -304,7 +304,165 @@
 
 <!-- Add SweetAlert2 CDN (put this in your layout <head> or before closing </body>) -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- 📌 Submit Concern Modal --> <div id="reportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4"> <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn"> <div class="flex justify-between items-center border-b pb-3 mb-4"> <h3 class="text-lg font-semibold text-gray-800">Submit Concern</h3> <button onclick="closeModal('reportModal')" class="text-gray-400 hover:text-gray-700">&times;</button> </div> <form method="POST" action="{{ route('reports.store') }}" enctype="multipart/form-data" class="space-y-4"> @csrf <div> <label class="block text-sm font-medium text-gray-700">Category</label> <select name="category" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" required> <option value="" disabled selected>Select category</option> <option>Road Issue</option> <option>Water Management</option> <option>Waste Management</option> <option>Fire Management</option> </select> </div> <div> <label class="block text-sm font-medium text-gray-700">Title</label> <input type="text" name="title" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="E.g. Broken streetlight" required> </div> <div> <label class="block text-sm font-medium text-gray-700">Description</label> <textarea name="description" rows="4" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="Describe your concern..." required></textarea> </div> <div> <label class="block text-sm font-medium text-gray-700">Upload Photo (optional)</label> <input type="file" name="photo" accept="image/*" class="w-full border rounded-lg px-3 py-2"> </div> <div class="flex justify-end gap-3 pt-4 border-t"> <button type="button" onclick="closeModal('reportModal')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button> <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">Submit</button> </div> </form> </div> </div>
+
+<!-- 📌 Submit Concern Modal -->
+<div id="reportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h3 class="text-lg font-semibold text-gray-800">Submit Concern</h3>
+      <button type="button" onclick="closeModal('reportModal')" class="text-gray-400 hover:text-gray-700">&times;</button>
+    </div>
+
+    <form id="reportForm" method="POST" action="{{ route('reports.store') }}" enctype="multipart/form-data" class="space-y-4">
+      @csrf
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Category</label>
+        <select name="category" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" required>
+          <option value="" disabled selected>Select category</option>
+          <option>Road Issue</option>
+          <option>Water Management</option>
+          <option>Waste Management</option>
+          <option>Fire Management</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Title</label>
+        <input type="text" name="title" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="E.g. Broken streetlight" required>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea name="description" rows="4" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="Describe your concern..." required></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Upload Photo (optional)</label>
+        <input type="file" name="photo" accept="image/*" class="w-full border rounded-lg px-3 py-2">
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t">
+        <button type="button" id="cancelReportBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
+        <button type="submit" id="submitReportBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- SweetAlert + modal JS (place near page bottom) -->
+<script>
+  // Simple modal helper if you don't already have one
+  function closeModal(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('hidden');
+  }
+  function openModal(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('hidden');
+  }
+
+  // Ask for confirmation before submitting the form
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('reportForm');
+    const cancelBtn = document.getElementById('cancelReportBtn');
+
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', (e) => {
+        // ask if user really wants to cancel
+        Swal.fire({
+          title: 'Discard changes?',
+          text: "Your input will be lost.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, discard',
+          cancelButtonText: 'Keep editing'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            closeModal('reportModal');
+            // optional: reset form fields
+            form.reset();
+          }
+        });
+      });
+    }
+
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault(); // stop normal submit until user confirms
+
+        // Optional: quick client-side validation before confirm (you can expand this)
+        const title = form.querySelector('input[name="title"]').value.trim();
+        const description = form.querySelector('textarea[name="description"]').value.trim();
+        const category = form.querySelector('select[name="category"]').value;
+
+        if (!category || !title || !description) {
+          Swal.fire({
+            title: 'Missing fields',
+            text: 'Please fill in category, title and description.',
+            icon: 'error'
+          });
+          return;
+        }
+
+        Swal.fire({
+          title: 'Submit concern?',
+          text: "Make sure the information is correct before sending.",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, submit',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // show a small loading state then submit
+            Swal.fire({
+              title: 'Submitting...',
+              allowOutsideClick: false,
+              didOpen: () => {
+                Swal.showLoading();
+                // submit the form (this will reload the page)
+                form.submit();
+              }
+            });
+          } else {
+            // do nothing; user canceled
+          }
+        });
+      });
+    }
+  });
+
+  // Laravel flash alerts: show success/error messages after redirect
+  document.addEventListener('DOMContentLoaded', () => {
+    @if (session('success'))
+      Swal.fire({
+        title: 'Success',
+        text: {!! json_encode(session('success')) !!},
+        icon: 'success',
+        timer: 3000,
+        showConfirmButton: false
+      });
+    @endif
+
+    @if (session('error'))
+      Swal.fire({
+        title: 'Error',
+        text: {!! json_encode(session('error')) !!},
+        icon: 'error'
+      });
+    @endif
+
+    @if ($errors->any())
+      // show the first validation error (or iterate to show all)
+      Swal.fire({
+        title: 'Validation error',
+        text: {!! json_encode($errors->first()) !!},
+        icon: 'error'
+      });
+    @endif
+  });
+</script>
 
 <!-- TikTok-Style Dark Report Progress Modal (Tailwind) -->
 <div id="reportProgressModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
