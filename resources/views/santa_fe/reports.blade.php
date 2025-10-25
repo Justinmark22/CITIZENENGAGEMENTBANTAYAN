@@ -196,134 +196,151 @@
     <button class="btn btn-primary w-100"><i data-lucide="filter" class="me-1"></i> Filter</button>
   </div>
 </form>
-<div class="reports-list">
 
-  <!-- Loop through reports -->
-  @forelse ($reports as $report)
-    <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
-      <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
+ <!-- Reports List -->
+@forelse ($reports as $report)
+  <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
+    <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
+<!-- Report Info -->
+<div class="flex-grow-1 pe-3">
+  <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
+      data-bs-toggle="modal"
+      data-bs-target="#reportModal"
+      data-title="{{ $report->title }}"
+      data-description="{{ $report->description }}"
+      data-location="{{ $report->location }}"
+      data-status="{{ $report->status }}"
+      data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+     data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
+        {{ $report->title }}
+  </h6>
 
-        <!-- Report Info -->
-        <div class="flex-grow-1 pe-3">
-          <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
-              data-bs-toggle="modal"
-              data-bs-target="#reportModal"
-              data-id="{{ $report->id }}"
-              data-title="{{ $report->title }}"
-              data-description="{{ $report->description }}"
-              data-location="{{ $report->location }}"
-              data-status="{{ $report->status }}"
-              data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-              data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}"
-              data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
-              data-user-email="{{ $report->user->email ?? 'No Email' }}">
-              {{ $report->title }}
-          </h6>
 
-          <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
 
-          <!-- Report Meta Info -->
-          <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-1">
-            <span><i data-lucide="map-pin" class="me-1"></i> {{ $report->location }}</span>
-            <span><i data-lucide="clock" class="me-1"></i> {{ $report->created_at->format('M d, Y H:i') }}</span>
-          </div>
-          <div class="text-muted small d-flex align-items-center flex-wrap gap-3">
-            <span><i data-lucide="user" class="me-1"></i> {{ $report->user->name ?? 'Anonymous' }}</span>
-            <span><i data-lucide="mail" class="me-1"></i> {{ $report->user->email ?? 'No Email' }}</span>
-          </div>
+        <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
+
+        <!-- Report Meta Info -->
+        <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-1">
+          <span><i data-lucide="map-pin" class="me-1"></i> {{ $report->location }}</span>
+          <span><i data-lucide="clock" class="me-1"></i> {{ $report->created_at->format('M d, Y H:i') }}</span>
         </div>
+<div class="text-muted small d-flex align-items-center flex-wrap gap-3">
+  <span><i data-lucide="user" class="me-1"></i> {{ $report->user->name ?? 'Anonymous' }}</span>
+  <span><i data-lucide="mail" class="me-1"></i> {{ $report->user->email ?? 'No Email' }}</span>
+</div>
 
-        <!-- Report Status & Dropdown -->
-        <div class="text-end" style="z-index: 1050;">
+      </div>
 
-          <!-- Status Badge -->
-          <span class="badge rounded-pill px-3 py-2 fw-semibold text-uppercase shadow-sm mb-2 d-inline-block
-            @if($report->status === 'Resolved') bg-gradient-success 
-            @elseif($report->status === 'Rejected') bg-gradient-danger 
-            @elseif($report->status === 'Ongoing') bg-gradient-info 
-            @else bg-gradient-warning 
-            @endif">
-            {{ $report->status }}
-          </span>
+<div class="mt-4">
+    {{ $reports->withQueryString()->links() }}
+</div>
 
-          <!-- Dropdown Actions -->
-          <div class="dropup">
-            <button 
-              class="btn btn-sm bg-light border-0 shadow-sm rounded-3 px-3 py-2 d-flex align-items-center gap-2 dropdown-toggle" 
-              type="button" 
-              data-bs-toggle="dropdown" 
-              aria-expanded="false"
-              style="font-size: 0.875rem;">
-              <i data-lucide="settings" class="text-muted"></i> Actions
-            </button>
+      <!-- Report Status & Dropdown -->
+      <div class="text-end" style="z-index: 1050;">
+        <!-- Status Badge -->
+        <span class="badge rounded-pill px-3 py-2 fw-semibold text-uppercase shadow-sm mb-2 d-inline-block
+          @if($report->status === 'Resolved') bg-gradient-success 
+          @elseif($report->status === 'Rejected') bg-gradient-danger 
+          @elseif($report->status === 'Ongoing') bg-gradient-info 
+          @else bg-gradient-warning 
+          @endif">
+          {{ $report->status }}
+        </span>
 
-            <ul class="dropdown-menu dropdown-menu-end shadow rounded-3" style="z-index: 2000;">
-              @if($report->status === 'Resolved')
-                <li>
-                  <a href="{{ route('santafe.export', $report->id) }}" class="dropdown-item d-flex align-items-center gap-2 text-primary">
-                    <i data-lucide="download"></i> Export PDF
-                  </a>
-                </li>
-              @else
-                @foreach (['Ongoing' => 'info', 'Resolved' => 'success', 'Rejected' => 'danger'] as $statusValue => $color)
-                  <li>
-                    <form method="POST" action="{{ route('santafe.reports.update', $report->id) }}">
-                      @csrf @method('PUT')
-                      <input type="hidden" name="status" value="{{ $statusValue }}">
-                      <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-{{ $color }}">
-                        <i data-lucide="{{ $statusValue === 'Ongoing' ? 'loader' : ($statusValue === 'Resolved' ? 'check-circle' : 'x-circle') }}"></i>
-                        Mark as {{ $statusValue }}
-                      </button>
-                    </form>
-                  </li>
-                @endforeach
-              @endif
-            </ul>
-          </div>
+        <!-- Dropdown Actions -->
+        <div class="dropup">
+          <button 
+            class="btn btn-sm bg-light border-0 shadow-sm rounded-3 px-3 py-2 d-flex align-items-center gap-2 dropdown-toggle" 
+            type="button" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+            style="font-size: 0.875rem;">
+            <i data-lucide="settings" class="text-muted"></i> Actions
+          </button>
+
+          <ul class="dropdown-menu dropdown-menu-end shadow rounded-3" style="z-index: 2000;">
+            @if($report->status === 'Resolved')
+              <li>
+                <a href="{{ route('santafe.export', $report->id) }}" class="dropdown-item d-flex align-items-center gap-2 text-primary">
+                  <i data-lucide="download"></i> Export PDF
+                </a>
+              </li>
+            @else
+              <li>
+                <form method="POST" action="{{ route('santafe.reports.update', $report->id) }}">
+                  @csrf @method('PUT')
+                  <input type="hidden" name="status" value="Ongoing">
+                  <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-info">
+                    <i data-lucide="loader"></i> Mark as Ongoing
+                  </button>
+                </form>
+              </li>
+              <li>
+                <form method="POST" action="{{ route('santafe.reports.update', $report->id) }}">
+                  @csrf @method('PUT')
+                  <input type="hidden" name="status" value="Resolved">
+                  <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-success">
+                    <i data-lucide="check-circle"></i> Mark as Resolved
+                  </button>
+                </form>
+              </li>
+              <li>
+                <form method="POST" action="{{ route('santafe.reports.update', $report->id) }}">
+                  @csrf @method('PUT')
+                  <input type="hidden" name="status" value="Rejected">
+                  <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger">
+                    <i data-lucide="x-circle"></i> Mark as Rejected
+                  </button>
+                </form>
+              </li>
+            @endif
+          </ul>
         </div>
       </div>
     </div>
-  @empty
-    <div class="alert alert-info">No reports found.</div>
-  @endforelse
+  </div>
+@empty
+  <div class="alert alert-info">No reports found.</div>
+@endforelse
 
-  <!-- Pagination -->
-  <div class="mt-4">
-    {{ $reports->withQueryString()->links() }}
+
+
   </div>
 </div>
-
 <!-- 🌟 Clean & Polished Report Modal -->
 <div class="modal fade custom-fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-animated">
-    <div class="modal-content shadow-xl border-0 rounded-4" style="backdrop-filter: blur(18px); background: rgba(255,255,255,0.96); transition: all 0.4s ease;">
+    <div class="modal-content shadow-xl border-0 rounded-4"
+         style="backdrop-filter: blur(18px); background: rgba(255,255,255,0.96); transition: all 0.4s ease;">
 
-      <!-- Header -->
-      <div class="modal-header text-white py-3 px-4" style="background: linear-gradient(135deg, #3b82f6, #06b6d4); border-bottom: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+      <!-- 🔹 Header -->
+      <div class="modal-header text-white py-3 px-4"
+           style="background: linear-gradient(135deg, #3b82f6, #06b6d4); border-bottom: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
         <h4 class="modal-title d-flex align-items-center gap-2 fw-bold" id="reportModalLabel">
           <i data-lucide="radar" class="me-1"></i> Report Overview
         </h4>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <!-- Reporter Info -->
+      <!-- 🔹 Reporter Info -->
       <div class="px-5 pt-4 pb-3 border-bottom" style="border-color: rgba(0,0,0,0.08);">
         <div class="d-flex flex-wrap gap-4 text-muted small">
           <div class="d-flex align-items-center gap-2">
             <i data-lucide="user" class="text-primary"></i>
-            <span id="modalReportName" class="fw-semibold text-dark"></span>
+            <span id="modalReportName" class="fw-semibold text-dark">{{ $report->user->name ?? 'Anonymous' }}</span>
           </div>
           <div class="d-flex align-items-center gap-2">
             <i data-lucide="mail" class="text-primary"></i>
-            <span id="modalReportEmail" class="fw-semibold text-dark"></span>
+            <span id="modalReportEmail" class="fw-semibold text-dark">{{ $report->user->email ?? 'No Email' }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Body -->
+      <!-- 🔹 Body -->
       <div class="modal-body px-5 py-4">
         <div class="row g-4">
-          <!-- Left Column: Details -->
+
+          <!-- 📌 Left Column: Details -->
           <div class="col-md-7">
             <div class="mb-3">
               <label class="text-muted small">Title</label>
@@ -343,7 +360,8 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="text-muted small">Status</label>
-                <div id="modalReportStatus" class="badge rounded-pill px-3 py-2 fs-6 text-bg-warning text-uppercase fw-semibold shadow-sm"></div>
+                <div id="modalReportStatus"
+                     class="badge rounded-pill px-3 py-2 fs-6 text-bg-warning text-uppercase fw-semibold shadow-sm"></div>
               </div>
               <div class="col-md-6 mb-3">
                 <label class="text-muted small">Submitted</label>
@@ -352,23 +370,23 @@
             </div>
           </div>
 
-          <!-- Right Column: Photo -->
+          <!-- 📌 Right Column: Photo -->
           <div class="col-md-5">
             <label class="text-muted small">Photo</label>
             <div class="bg-light p-3 rounded-3 shadow-sm text-center">
-              <img id="modalReportPhoto" src="" alt="Report Photo" class="img-fluid rounded-3 shadow-sm d-none" style="max-height: 280px; object-fit: cover;">
+              <img id="modalReportPhoto" src="" alt="Report Photo"
+                   class="img-fluid rounded-3 shadow-sm d-none" style="max-height: 280px; object-fit: cover;">
               <p id="noPhotoText" class="text-muted m-0">No photo available</p>
             </div>
           </div>
+
         </div>
       </div>
-
-      <!-- Footer -->
-      <div class="modal-footer bg-light border-top rounded-bottom px-4 py-3 d-flex justify-content-between align-items-center">
-        <small class="text-muted d-flex align-items-center gap-2">
-          <i data-lucide="cpu"></i> Santa Fe
-        </small>
-    
+<!-- 🔹 Footer -->
+<div class="modal-footer bg-light border-top rounded-bottom px-4 py-3 d-flex justify-content-between align-items-center">
+  <small class="text-muted d-flex align-items-center gap-2">
+    <i data-lucide="cpu"></i> Santa Fe
+  </small>
 
  @foreach ($reports as $report)
   <div id="report-{{ $report->id }}" class="card border-0 shadow-sm mb-4">
@@ -397,84 +415,111 @@
     </div>
   </div>
 @endforeach
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
-  // =========================
-  // Forward Report Function
-  // =========================
-  function forwardReport(reportId, office) {
+function forwardReport(reportId, office) {
+  Swal.fire({
+    title: "Forward Report?",
+    text: `Do you want to forward report #${reportId} to ${office}?`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Yes, forward",
+    cancelButtonText: "Cancel"
+  }).then((result) => {
+    if (!result.isConfirmed) return;
+
     Swal.fire({
-      title: "Forward Report?",
-      text: `Do you want to forward report #${reportId} to ${office}?`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, forward",
-      cancelButtonText: "Cancel"
-    }).then((result) => {
-      if (!result.isConfirmed) return;
+      title: "Forwarding...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
 
-      Swal.fire({
-        title: "Forwarding...",
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-      });
-
-      fetch("{{ route('reports.forward') }}", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-          report_id: reportId,
-          forwarded_to: office
-        })
+    fetch("{{ route('reports.forward') }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        report_id: reportId,
+        forwarded_to: office
       })
-      .then(async res => {
-        let data = await res.json();
-        Swal.close();
-        if (res.ok && data.success) {
-          Swal.fire({
-            icon: "success",
-            title: "Forwarded!",
-            text: `Report has been forwarded to ${office}.`,
-            timer: 2000,
-            showConfirmButton: false
-          });
+    })
+    .then(async res => {
+      let data = await res.json();
+      Swal.close();
+      if (res.ok && data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Forwarded!",
+          text: `Report has been forwarded to ${office}.`,
+          timer: 2000,
+          showConfirmButton: false
+        });
 
-          // Update badge dynamically
-          const badge = document.querySelector(`#report-${reportId} [data-role="status-badge"]`);
-          if (badge) {
-            badge.textContent = `Forwarded to ${office}`;
-            badge.classList.remove("bg-secondary");
-            badge.classList.add("bg-success");
-          }
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: data.message || "Something went wrong."
-          });
+        const badge = document.querySelector(`#report-${reportId} [data-role="status-badge"]`);
+        if (badge) {
+          badge.textContent = `Forwarded to ${office}`;
+          badge.classList.remove("bg-secondary");
+          badge.classList.add("bg-success");
         }
-      })
-      .catch(err => {
-        Swal.close();
+      } else {
         Swal.fire({
           icon: "error",
-          title: "Request Failed",
-          text: err.message || "Please try again."
+          title: "Error",
+          text: data.message || "Something went wrong."
         });
+      }
+    })
+    .catch(err => {
+      Swal.close();
+      Swal.fire({
+        icon: "error",
+        title: "Request Failed",
+        text: err.message || "Please try again."
       });
     });
+  });
+}
+</script>
+
+    <!-- Existing Buttons -->
+    <button type="button" class="btn btn-outline-secondary hover-scale" data-bs-dismiss="modal">
+      <i data-lucide="x" class="me-1"></i> Close
+    </button>
+    <button type="button" id="printButton" class="btn btn-primary hover-scale d-none" onclick="printReport()">
+      <i data-lucide="printer" class="me-1"></i> Print
+    </button>
+  </div>
+</div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Custom Professional Animations -->
+<style>
+  .modal.fade.custom-fade .modal-dialog {
+    opacity: 0;
+    transform: translateY(40px) scale(0.97);
+    transition: all 0.4s ease;
   }
 
-  // =========================
-  // Modal Dynamic Population
-  // =========================
+  .modal.fade.custom-fade.show .modal-dialog {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .hover-scale {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+</style>
+
+<script>
   document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('reportModal');
 
@@ -486,21 +531,21 @@
       const loc = trigger.getAttribute('data-location');
       const status = trigger.getAttribute('data-status');
       const date = trigger.getAttribute('data-date');
-      const photo = trigger.getAttribute('data-photo');
-      const userName = trigger.getAttribute('data-user-name');
-      const userEmail = trigger.getAttribute('data-user-email');
+      const photo = trigger.getAttribute('data-photo'); // ✅ Fetch photo URL
+
+      const name = document.getElementById('modalReportName').textContent.trim();
+      const email = document.getElementById('modalReportEmail').textContent.trim();
 
       document.getElementById('modalReportTitle').textContent = title;
       document.getElementById('modalReportDesc').textContent = desc;
       document.getElementById('modalReportLoc').textContent = loc;
       document.getElementById('modalReportStatus').textContent = status;
       document.getElementById('modalReportDate').textContent = date;
-      document.getElementById('modalReportName').textContent = userName;
-      document.getElementById('modalReportEmail').textContent = userEmail;
 
-      // Handle photo display
+      // ✅ Handle Photo Display
       const photoElement = document.getElementById('modalReportPhoto');
       const noPhotoText = document.getElementById('noPhotoText');
+
       if (photo && photo.trim() !== '') {
         photoElement.src = photo;
         photoElement.classList.remove('d-none');
@@ -521,59 +566,129 @@
       // Show print button only if status is Ongoing
       document.getElementById('printButton').classList.toggle('d-none', status !== 'Ongoing');
     });
-  });
+});
 
-  // =========================
-  // Custom Animations & Hover Effects
-  // =========================
-  lucide.createIcons();
+function printReport() {
+  // Get modal content safely
+  const getText = (id) => {
+    const el = document.getElementById(id);
+    return el ? el.textContent.trim() : 'N/A';
+  };
 
-  const style = document.createElement('style');
-  style.innerHTML = `
-    .modal.fade.custom-fade .modal-dialog {
-      opacity: 0;
-      transform: translateY(40px) scale(0.97);
-      transition: all 0.4s ease;
-    }
-    .modal.fade.custom-fade.show .modal-dialog {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-    .hover-scale {
-      transition: transform 0.2s ease-in-out;
-    }
-    .hover-scale:hover {
-      transform: scale(1.05);
-    }
+  const title = getText('modalReportTitle');
+  const desc = getText('modalReportDesc');
+  const location = getText('modalReportLoc');
+  const status = getText('modalReportStatus');
+  const date = getText('modalReportDate');
+  const name = getText('modalReportName');
+  const email = getText('modalReportEmail');
+
+  const content = `
+    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
+      <img src="/images/santafe.png" alt="Santa Fe Logo" style="height: 90px;">
+      <div>
+        <h1 style="margin: 0; font-size: 26px; color: #0f172a;">Municipality of Santa Fe</h1>
+        <h3 style="margin: 5px 0 0; font-weight: normal; color: #475569;">Incident Report Summary</h3>
+      </div>
+    </div>
+
+    <hr style="margin-bottom: 30px; border-top: 2px solid #94a3b8;">
+
+    <div style="font-size: 16px; color: #1e293b;">
+      <p><strong>👤 Name:</strong> ${name}</p>
+      <p><strong>✉️ Email:</strong> ${email}</p>
+      <p><strong>📌 Title:</strong> ${title}</p>
+      <p><strong>📝 Description:</strong><br><span style="margin-left: 20px;">${desc}</span></p>
+      <p><strong>📍 Location:</strong> ${location}</p>
+      <p><strong>📊 Status:</strong> ${status}</p>
+      <p><strong>📅 Submitted:</strong> ${date}</p>
+    </div>
   `;
-  document.head.appendChild(style);
 
-  // =========================
-  // Fetch Chart Data
-  // =========================
-  fetch('/reports/chart-data')
-    .then(res => res.json())
-    .then(data => {
-      const ctx = document.getElementById('reportsChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: data.labels,
-          datasets: [{
-            label: 'Report Count',
-            data: data.counts,
-            backgroundColor: ['#facc15', '#f97316', '#22c55e'], // Yellow, Orange, Green
-            borderRadius: 10
-          }]
-        },
-        options: {
-          responsive: true,
-          animation: { duration: 1000 },
-          scales: { y: { beginAtZero: true } }
+  const printWindow = window.open('', '_blank', 'width=900,height=700');
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Santa Fe Incident Report</title>
+      <style>
+        body {
+          font-family: 'Segoe UI', sans-serif;
+          padding: 40px;
+          color: #1f2937;
+          background-color: #fff;
         }
-      });
-    });
+        h1, h3 {
+          margin: 0;
+        }
+        p {
+          margin: 12px 0;
+          line-height: 1.6;
+        }
+        hr {
+          border: none;
+          border-top: 1px solid #ccc;
+        }
+        @media print {
+          body {
+            margin: 0;
+            padding: 20px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      ${content}
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.onload = () => {
+    printWindow.print();
+    printWindow.close();
+  };
+}
+
 </script>
 
+
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    lucide.createIcons();
+
+    fetch('/reports/chart-data')
+      .then(res => res.json())
+      .then(data => {
+        const ctx = document.getElementById('reportsChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: 'Report Count',
+              data: data.counts,
+              backgroundColor: ['#facc15', '#f97316', '#22c55e'], // Yellow, Orange, Green
+              borderRadius: 10
+            }]
+          },
+          options: {
+            responsive: true,
+            animation: {
+              duration: 1000
+            },
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      });
+  </script>
 </body>
 </html>
