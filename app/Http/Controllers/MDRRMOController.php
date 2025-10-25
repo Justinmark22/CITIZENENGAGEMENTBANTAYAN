@@ -180,16 +180,59 @@ class MDRRMOController extends Controller
 
         return view('mdrrmo.reports-madridejos', compact('reports'));
     }    // Santa.Fe Forwarded Reports
-    public function reportsBantayan()
-    {
-        // Only Pending or Ongoing reports
-        $reports = ForwardedReport::where('location', 'Bantayan')
-                    ->whereIn('status', ['Forwarded','Pending','Ongoing'])
-                    ->latest()
-                    ->paginate(10);
+   
+public function reportsBantayan()
+{
+    // 🔹 Forwarded Reports for Bantayan
+    $forwarded = ForwardedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'forwarded' as type") // mark type
+    )
+    ->where('location', 'Bantayan')
+    ->where(function ($q) {
+        $q->where('category', 'MDRRMO')
+          ->orWhere('forwarded_to', 'MDRRMO')
+          ->orWhere('status', 'Rerouted to MDRRMO');
+    })
+    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to MDRRMO']);
 
-        return view('mdrrmo.reports-bantayan', compact('reports'));
-    }
+    // 🔹 Rerouted Reports for Bantayan
+    $rerouted = ReroutedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'rerouted' as type") // mark type
+    )
+    ->where('location', 'Bantayan')
+    ->where('status', 'like', 'Rerouted%');
+
+    // 🔹 Combine both using union
+    $combinedQuery = $forwarded->unionAll($rerouted);
+
+    // 🔹 Wrap in query builder for ordering and pagination
+    $reports = DB::table(DB::raw("({$combinedQuery->toSql()}) as reports"))
+        ->mergeBindings($combinedQuery->getQuery())
+        ->orderByDesc('created_at')
+        ->paginate(10);
+
+    return view('water.reports-bantayan', compact('reports'));
+}
 
 
     // Fetch the user relationship

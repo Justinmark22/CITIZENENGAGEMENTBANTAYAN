@@ -142,7 +142,10 @@
                   <td class="px-4 py-2">
                     <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">{{ $locationLabel }}</span>
                   </td>
-                  <td class="px-4 py-2">{{ $user->created_at->format('d M Y') }}</td>
+<td class="px-4 py-2">
+  {{ optional($user->created_at)->format('d M Y') ?? 'N/A' }}
+</td>
+
                   <td class="px-4 py-2">{{ $user->id }}</td>
                   <td class="px-4 py-2 text-center">
                     <a href="{{ route('admin.users.edit', $user->id) }}" class="text-yellow-600 hover:text-yellow-800 mx-1" aria-label="Edit {{ $user->name }}">
