@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Report;
 
 class ReportController extends Controller
-{
-public function store(Request $request)
+{public function store(Request $request)
 {
     $validated = $request->validate([
         'category' => 'required|string',
@@ -24,14 +23,17 @@ public function store(Request $request)
         // Just timestamp as filename
         $photoName = time() . '.' . $photo->getClientOriginalExtension();
 
-        // Ensure folder exists
-        Storage::disk('public')->makeDirectory('reports');
+        // Ensure folder exists in public/reports
+        $destinationPath = public_path('reports');
+        if (!file_exists($destinationPath)) {
+            mkdir($destinationPath, 0755, true);
+        }
 
-        // Save file in storage/app/public/reports
-        $path = $photo->storeAs('reports', $photoName, 'public');
+        // Move the uploaded file directly to public/reports
+        $photo->move($destinationPath, $photoName);
 
         // Save relative path in DB like reports/1761192830.png
-        $validated['photo'] = $path;
+        $validated['photo'] = 'reports/' . $photoName;
     }
 
     $validated['status'] = 'Pending';
