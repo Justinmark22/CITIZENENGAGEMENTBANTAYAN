@@ -192,29 +192,6 @@
     </div>
   </div>
 </div>
-@forelse ($reports as $report)
-  <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
-    <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
-      <div class="flex-grow-1 pe-3">
-        <h6 class="fw-bold text-dark mb-1 cursor-pointer"
-            data-bs-toggle="modal"
-            data-bs-target="#reportModal"
-            data-title="{{ $report->title }}"
-            data-description="{{ $report->description }}"
-            data-location="{{ $report->location }}"
-            data-status="{{ $report->status }}"
-            data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-            data-photo="{{ $report->photo ? url('reports/' . $report->photo) : '' }}"
-            data-name="{{ $report->user->name ?? 'Anonymous' }}"
-            data-email="{{ $report->user->email ?? 'No Email' }}">
-          {{ $report->title }}
-        </h6>
-      </div>
-    </div>
-  </div>
-@empty
-  <p class="text-muted">No reports found.</p>
-@endforelse
 
 
 <!-- Modal JS -->
