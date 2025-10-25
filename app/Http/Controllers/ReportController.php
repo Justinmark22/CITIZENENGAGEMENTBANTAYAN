@@ -23,17 +23,14 @@ class ReportController extends Controller
         // Just timestamp as filename
         $photoName = time() . '.' . $photo->getClientOriginalExtension();
 
-        // Ensure folder exists in public/reports
-        $destinationPath = public_path('reports');
-        if (!file_exists($destinationPath)) {
-            mkdir($destinationPath, 0755, true);
-        }
+        // Ensure folder exists in storage/app/public/reports
+        Storage::disk('public')->makeDirectory('reports');
 
-        // Move the uploaded file directly to public/reports
-        $photo->move($destinationPath, $photoName);
+        // Store the file in storage/app/public/reports
+        $path = $photo->storeAs('reports', $photoName, 'public');
 
         // Save relative path in DB like reports/1761192830.png
-        $validated['photo'] = 'reports/' . $photoName;
+        $validated['photo'] = $path;
     }
 
     $validated['status'] = 'Pending';
@@ -44,6 +41,7 @@ class ReportController extends Controller
 
     return redirect()->back()->with('success', 'Report submitted!');
 }
+
 
 
 
