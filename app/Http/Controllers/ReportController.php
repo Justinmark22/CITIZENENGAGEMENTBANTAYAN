@@ -8,35 +8,31 @@ use App\Models\Report;
 
 class ReportController extends Controller
 {
-    public function store(Request $request)
+  
+public function store(Request $request)
 {
-    // ✅ Validate the form input
-    $validated = $request->validate([
+    $request->validate([
         'category' => 'required|string',
-        'title' => 'required|string|max:255',
+        'title' => 'required|string',
         'description' => 'required|string',
-        'photo' => 'nullable|image|max:2048',
+        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // optional validation
     ]);
 
-    // ✅ Handle image upload (store in storage/app/public/reports)
-    if ($request->hasFile('photo')) {
-        $photo = $request->file('photo');
-        $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+    $report = new Report();
+    $report->category = $request->category;
+    $report->title = $request->title;
+    $report->description = $request->description;
+    $report->user_id = auth()->id();
 
-        // Store and get relative path like 'reports/xxxx.jpg'
-        $photo->storeAs('public/reports', $photoName);
-        $validated['photo'] = 'reports/' . $photoName;
+    // Handle photo upload
+    if ($request->hasFile('photo')) {
+        $file = $request->file('photo');
+        $path = $file->store('reports', 'public'); // stores in storage/app/public/reports
+        $report->photo = $path;
     }
 
-    // ✅ Default + relational fields
-    $validated['status'] = 'Pending';
-    $validated['location'] = auth()->user()->location ?? 'Unknown';
-    $validated['user_id'] = auth()->id();
+    $report->save();
 
-    // ✅ Save report to database
-    Report::create($validated);
-
-    // ✅ Return success message
     return redirect()->back()->with('success', 'Report submitted successfully!');
 }
 
