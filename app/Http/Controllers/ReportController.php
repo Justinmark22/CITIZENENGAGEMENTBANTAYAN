@@ -20,12 +20,17 @@ public function store(Request $request)
 
     if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
         $photo = $request->file('photo');
-        $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+
+        // Just timestamp as filename
+        $photoName = time() . '.' . $photo->getClientOriginalExtension();
 
         // Ensure folder exists
         Storage::disk('public')->makeDirectory('reports');
 
+        // Save file in storage/app/public/reports
         $path = $photo->storeAs('reports', $photoName, 'public');
+
+        // Save relative path in DB like reports/1761192830.png
         $validated['photo'] = $path;
     }
 
