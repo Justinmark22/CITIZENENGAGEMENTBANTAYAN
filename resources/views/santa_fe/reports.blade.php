@@ -107,7 +107,8 @@
     data-location="{{ $report->location }}"
     data-status="{{ $report->status }}"
     data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-    data-photo="{{ $reports->photo ? asset('reports/' . $reports->photo) : '' }}"
+    data-photo="{{ $report->photo ? url('reports/' . $report->photo) : '' }}"
+
     data-name="{{ $report->user->name ?? 'Anonymous' }}"
     data-email="{{ $report->user->email ?? 'No Email' }}">
   {{ $report->title }}
@@ -214,15 +215,18 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modalReportName').textContent = trigger.dataset.name;
     document.getElementById('modalReportEmail').textContent = trigger.dataset.email;
 
-    const photoEl = document.getElementById('modalReportPhoto');
-    const noPhoto = document.getElementById('noPhotoText');
+const photoEl = document.getElementById('modalReportPhoto');
+const noPhoto = document.getElementById('noPhotoText');
+
 if(trigger.dataset.photo && trigger.dataset.photo.trim() !== ''){
-    photoEl.src = trigger.dataset.photo;
-    photoEl.classList.remove('d-none');
-    noPhoto.classList.add('d-none');
+  photoEl.src = trigger.dataset.photo; // This will now be the correct full URL
+  photoEl.classList.remove('d-none');
+  noPhoto.classList.add('d-none');
 } else {
-    photoEl.classList.add('d-none');
-    noPhoto.classList.remove('d-none');
+  photoEl.classList.add('d-none');
+  noPhoto.classList.remove('d-none');
+}
+.remove('d-none');
 }
 
 
