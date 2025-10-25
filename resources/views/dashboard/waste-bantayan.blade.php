@@ -30,18 +30,30 @@
               </svg>
               Reports
           </a>
-          <a href="#" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17a4 4 0 100-8 4 4 0 000 8z"/>
-              </svg>
-              Analytics
-          </a>
+
+    <div>
+      <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Communications</p>
+      <a href="" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+        <i data-lucide="megaphone" class="w-5 h-5"></i>
+        <span>Announcements</span>
+      </a>
+    </div>
           <a href="#" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/>
               </svg>
               Settings
           </a>
+           <!-- Logout -->
+        <div class="px-6 py-5 border-t border-white/20 mt-auto">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="w-full flex items-center justify-center px-4 py-3 bg-white/15 hover:bg-white/25 text-white font-semibold rounded-lg shadow-inner transition">
+                    <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"/>
+                    </svg>
+                    Logout
+                </button>
       </nav>
   </aside>
 
