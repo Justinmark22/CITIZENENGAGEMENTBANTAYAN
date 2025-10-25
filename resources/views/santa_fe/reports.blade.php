@@ -107,6 +107,7 @@
             data-status="{{ $report->status }}"
             data-date="{{ $report->created_at->format('M d, Y H:i') }}"
             data-photo="{{ $report->photo ? asset('storage/reports/' . $report->photo) : '' }}"
+            
             data-name="{{ $report->user->name ?? 'Anonymous' }}"
             data-email="{{ $report->user->email ?? 'No Email' }}">
           {{ $report->title }}
@@ -122,13 +123,12 @@
         </div>
 
         <!-- Photo Preview -->
-        @if($report->photo)
-        <div class="mt-3">
-          <img src="{{ asset('storage/reports/' . $report->photo) }}" 
-               alt="Report Photo" 
-               class="rounded-md w-full md:w-2/3 lg:w-1/2 h-48 object-cover border border-gray-200">
-        </div>
-        @endif
+      @if($report->photo)
+  <img src="{{ asset('storage/'.$report->photo) }}" 
+       alt="Report Photo" 
+       class="rounded-md w-full md:w-2/3 lg:w-1/2 h-48 object-cover border border-gray-200">
+@endif
+
       </div>
 
       <!-- Status Badge -->
