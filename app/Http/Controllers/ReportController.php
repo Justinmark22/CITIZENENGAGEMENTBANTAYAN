@@ -8,34 +8,37 @@ use App\Models\Report;
 
 class ReportController extends Controller
 {
-     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'category' => 'required|string',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'photo' => 'nullable|image|max:2048',
-        ]);
+    public function store(Request $request)
+{
+    // ✅ Validate the form input
+    $validated = $request->validate([
+        'category' => 'required|string',
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'photo' => 'nullable|image|max:2048',
+    ]);
 
-        // ✅ Handle image upload
-        if ($request->hasFile('photo')) {
-            $photo = $request->file('photo');
-            $photoName = time() . '.' . $photo->getClientOriginalExtension();
-            $validated['photo'] = $photo->storeAs('reports', $photoName, 'public');
-        }
+    // ✅ Handle image upload (store in storage/app/public/reports)
+    if ($request->hasFile('photo')) {
+        $photo = $request->file('photo');
+        $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
 
-        // ✅ Assign default and relational values
-        $validated['status'] = 'Pending';
-        $validated['location'] = auth()->user()->location ?? 'Unknown';
-        $validated['user_id'] = auth()->id(); // Link to logged-in user
-
-        // ✅ Save report
-        Report::create($validated);
-
-        // ✅ Redirect back with success message
-        return redirect()->back()->with('success', 'Report submitted!');
+        // Store and get relative path like 'reports/xxxx.jpg'
+        $photo->storeAs('public/reports', $photoName);
+        $validated['photo'] = 'reports/' . $photoName;
     }
 
+    // ✅ Default + relational fields
+    $validated['status'] = 'Pending';
+    $validated['location'] = auth()->user()->location ?? 'Unknown';
+    $validated['user_id'] = auth()->id();
+
+    // ✅ Save report to database
+    Report::create($validated);
+
+    // ✅ Return success message
+    return redirect()->back()->with('success', 'Report submitted successfully!');
+}
 
 public function stafeDashboard()
 {
