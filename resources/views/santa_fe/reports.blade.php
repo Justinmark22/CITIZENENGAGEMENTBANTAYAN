@@ -224,28 +224,41 @@
                       type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.875rem;">
                 <i data-lucide="settings" class="text-muted"></i> Actions
               </button>
+<ul class="dropdown-menu dropdown-menu-end shadow rounded-3" style="z-index:2000;">
+  @if($report->status === 'Resolved')
+    <li>
+      <a href="{{ route('santafe.export', $report->id) }}" class="dropdown-item d-flex align-items-center gap-2 text-primary">
+        <i data-lucide="download"></i> Export PDF
+      </a>
+    </li>
+  @else
+    @php
+      $statuses = ['Ongoing' => 'info', 'Resolved' => 'success', 'Rejected' => 'danger'];
+    @endphp
 
-              <ul class="dropdown-menu dropdown-menu-end shadow rounded-3" style="z-index:2000;">
-                @if($report->status === 'Resolved')
-                  <li>
-                    <a href="{{ route('santafe.export', $report->id) }}" class="dropdown-item d-flex align-items-center gap-2 text-primary">
-                      <i data-lucide="download"></i> Export PDF
-                    </a>
-                  </li>
-                @else
-                  @foreach(['Ongoing'=>'info','Resolved'=>'success','Rejected'=>'danger'] as $status => $color)
-                    <li>
-                      <form method="POST" action="{{ route('santafe.reports.update', $report->id) }}">
-                        @csrf @method('PUT')
-                        <input type="hidden" name="status" value="{{ $status }}">
-                        <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-{{ $color }}">
-                          <i data-lucide="{{ strtolower($status) === 'ongoing' ? 'loader' : strtolower($status) === 'resolved' ? 'check-circle' : 'x-circle' }}"></i> Mark as {{ $status }}
-                        </button>
-                      </form>
-                    </li>
-                  @endforeach
-                @endif
-              </ul>
+    @foreach($statuses as $status => $color)
+      <li>
+        <form method="POST" action="{{ route('santafe.reports.update', $report->id) }}">
+          @csrf
+          @method('PUT')
+          <input type="hidden" name="status" value="{{ $status }}">
+          <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-{{ $color }}">
+            @php
+              $icon = match($status) {
+                'Ongoing' => 'loader',
+                'Resolved' => 'check-circle',
+                'Rejected' => 'x-circle',
+                default => 'settings'
+              };
+            @endphp
+            <i data-lucide="{{ $icon }}"></i> Mark as {{ $status }}
+          </button>
+        </form>
+      </li>
+    @endforeach
+  @endif
+</ul>
+
             </div>
           </div>
 
