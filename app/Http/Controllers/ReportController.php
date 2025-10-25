@@ -13,14 +13,15 @@ class ReportController extends Controller
         'category' => 'required|string',
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'photo' => 'nullable|image|max:2048', // 2MB max
+        'photo' => 'nullable|image|max:2048', // allow image only
     ]);
 
     if ($request->hasFile('photo')) {
         $photo = $request->file('photo');
         $photoName = time() . '.' . $photo->getClientOriginalExtension();
-        $path = $photo->storeAs('reports', $photoName, 'public'); // saves in storage/app/public/reports
-        $validated['photo'] = $path;
+        // Store in storage/app/public/reports
+        $path = $photo->storeAs('reports', $photoName, 'public');
+        $validated['photo'] = $path; // save path to DB
     }
 
     $validated['status'] = 'Pending';
@@ -29,7 +30,7 @@ class ReportController extends Controller
 
     Report::create($validated);
 
-    return redirect()->back()->with('success', 'Report submitted successfully!');
+    return redirect()->back()->with('success', 'Report submitted!');
 }
 
 
