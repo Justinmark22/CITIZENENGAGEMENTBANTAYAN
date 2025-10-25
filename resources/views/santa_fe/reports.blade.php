@@ -196,23 +196,26 @@
     <button class="btn btn-primary w-100"><i data-lucide="filter" class="me-1"></i> Filter</button>
   </div>
 </form>
-<!-- Reports List -->
+
+ <!-- Reports List -->
 @forelse ($reports as $report)
   <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
-      <!-- Report Info -->
-      <div class="flex-grow-1 pe-3">
-     <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
-    data-bs-toggle="modal"
-    data-bs-target="#reportModal"
-    data-title="{{ $report->title }}"
-    data-description="{{ $report->description }}"
-    data-location="{{ $report->location }}"
-    data-status="{{ $report->status }}"
-    data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-    data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
-  {{ $report->title }}
-</h6>
+<!-- Report Info -->
+<div class="flex-grow-1 pe-3">
+  <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
+      data-bs-toggle="modal"
+      data-bs-target="#reportModal"
+      data-title="{{ $report->title }}"
+      data-description="{{ $report->description }}"
+      data-location="{{ $report->location }}"
+      data-status="{{ $report->status }}"
+      data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+     data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
+        {{ $report->title }}
+  </h6>
+
+
 
         <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
 
@@ -221,26 +224,16 @@
           <span><i data-lucide="map-pin" class="me-1"></i> {{ $report->location }}</span>
           <span><i data-lucide="clock" class="me-1"></i> {{ $report->created_at->format('M d, Y H:i') }}</span>
         </div>
+<div class="text-muted small d-flex align-items-center flex-wrap gap-3">
+  <span><i data-lucide="user" class="me-1"></i> {{ $report->user->name ?? 'Anonymous' }}</span>
+  <span><i data-lucide="mail" class="me-1"></i> {{ $report->user->email ?? 'No Email' }}</span>
+</div>
 
-        <div class="text-muted small d-flex align-items-center flex-wrap gap-3">
-          <span><i data-lucide="user" class="me-1"></i> {{ $report->user->name ?? 'Anonymous' }}</span>
-          <span><i data-lucide="mail" class="me-1"></i> {{ $report->user->email ?? 'No Email' }}</span>
-        </div>
-
-        <!-- Debug Photo -->
-        <div class="mt-2">
-          @if ($report->photo)
-            <p class="text-success small">Photo exists: {{ asset('storage/'.$report->photo) }}</p>
-            <img src="{{ asset('storage/'.$report->photo) }}" alt="Report Photo" class="img-thumbnail" style="max-width:150px;">
-          @else
-            <p class="text-danger small">No photo uploaded</p>
-          @endif
-        </div>
       </div>
 
-      <div class="mt-4">
-        {{ $reports->withQueryString()->links() }}
-      </div>
+<div class="mt-4">
+    {{ $reports->withQueryString()->links() }}
+</div>
 
       <!-- Report Status & Dropdown -->
       <div class="text-end" style="z-index: 1050;">
@@ -309,6 +302,7 @@
 @empty
   <div class="alert alert-info">No reports found.</div>
 @endforelse
+
 
 
   </div>
@@ -421,193 +415,280 @@
     </div>
   </div>
 @endforeach
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/lucide/dist/lucide.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-  // Initialize Lucide icons
-  lucide.createIcons();
+function forwardReport(reportId, office) {
+  Swal.fire({
+    title: "Forward Report?",
+    text: `Do you want to forward report #${reportId} to ${office}?`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Yes, forward",
+    cancelButtonText: "Cancel"
+  }).then((result) => {
+    if (!result.isConfirmed) return;
 
-  // Forward report function
-  function forwardReport(reportId, office) {
     Swal.fire({
-      title: "Forward Report?",
-      text: `Do you want to forward report #${reportId} to ${office}?`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, forward",
-      cancelButtonText: "Cancel"
-    }).then((result) => {
-      if (!result.isConfirmed) return;
+      title: "Forwarding...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
 
-      Swal.fire({
-        title: "Forwarding...",
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-      });
-
-      fetch("{{ route('reports.forward') }}", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({ report_id: reportId, forwarded_to: office })
+    fetch("{{ route('reports.forward') }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        report_id: reportId,
+        forwarded_to: office
       })
-      .then(async res => {
-        let data = await res.json();
-        Swal.close();
-        if (res.ok && data.success) {
-          Swal.fire({
-            icon: "success",
-            title: "Forwarded!",
-            text: `Report has been forwarded to ${office}.`,
-            timer: 2000,
-            showConfirmButton: false
-          });
-          const badge = document.querySelector(`#report-${reportId} [data-role="status-badge"]`);
-          if (badge) {
-            badge.textContent = `Forwarded to ${office}`;
-            badge.classList.remove("bg-secondary");
-            badge.classList.add("bg-success");
-          }
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: data.message || "Something went wrong."
-          });
+    })
+    .then(async res => {
+      let data = await res.json();
+      Swal.close();
+      if (res.ok && data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Forwarded!",
+          text: `Report has been forwarded to ${office}.`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+        const badge = document.querySelector(`#report-${reportId} [data-role="status-badge"]`);
+        if (badge) {
+          badge.textContent = `Forwarded to ${office}`;
+          badge.classList.remove("bg-secondary");
+          badge.classList.add("bg-success");
         }
-      })
-      .catch(err => {
-        Swal.close();
+      } else {
         Swal.fire({
           icon: "error",
-          title: "Request Failed",
-          text: err.message || "Please try again."
+          title: "Error",
+          text: data.message || "Something went wrong."
         });
+      }
+    })
+    .catch(err => {
+      Swal.close();
+      Swal.fire({
+        icon: "error",
+        title: "Request Failed",
+        text: err.message || "Please try again."
       });
-    });
-  }
-
- // Modal event listener
-document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('reportModal');
-
-  modal.addEventListener('show.bs.modal', function (event) {
-    const trigger = event.relatedTarget;
-
-    const title = trigger.getAttribute('data-title') || 'N/A';
-    const desc = trigger.getAttribute('data-description') || 'N/A';
-    const loc = trigger.getAttribute('data-location') || 'Unknown';
-    const status = trigger.getAttribute('data-status') || 'Pending';
-    const date = trigger.getAttribute('data-date') || new Date().toLocaleString();
-    const photo = trigger.getAttribute('data-photo') || '';
-
-    document.getElementById('modalReportTitle').textContent = title;
-    document.getElementById('modalReportDesc').textContent = desc;
-    document.getElementById('modalReportLoc').textContent = loc;
-    document.getElementById('modalReportStatus').textContent = status;
-    document.getElementById('modalReportDate').textContent = date;
-
-    // Photo handling: match store() logic
-    const photoElement = document.getElementById('modalReportPhoto');
-    const noPhotoText = document.getElementById('noPhotoText');
-const photo = trigger.getAttribute('data-photo') || '';
-
-if (photo && /\.(jpe?g|png|gif|bmp|svg|webp)$/i.test(photo)) {
-  photoElement.src = photo;
-  photoElement.classList.remove('d-none');
-  noPhotoText.classList.add('d-none');
-} else {
-  photoElement.classList.add('d-none');
-  noPhotoText.classList.remove('d-none');
-}
-
-
-    // Status badge color
-    const badge = document.getElementById('modalReportStatus');
-    badge.classList.remove('text-bg-warning', 'text-bg-success', 'text-bg-danger', 'text-bg-info');
-    if (status === 'Ongoing') badge.classList.add('text-bg-info');
-    else if (status === 'Resolved') badge.classList.add('text-bg-success');
-    else if (status === 'Rejected') badge.classList.add('text-bg-danger');
-    else badge.classList.add('text-bg-warning');
-  
-
-      // Print button
-      document.getElementById('printButton').classList.toggle('d-none', status !== 'Ongoing');
     });
   });
+}
+</script>
 
-  // Print function
-  function printReport() {
-    const getText = (id) => document.getElementById(id)?.textContent.trim() || 'N/A';
-    const title = getText('modalReportTitle');
-    const desc = getText('modalReportDesc');
-    const location = getText('modalReportLoc');
-    const status = getText('modalReportStatus');
-    const date = getText('modalReportDate');
-    const name = getText('modalReportName');
-    const email = getText('modalReportEmail');
+    <!-- Existing Buttons -->
+    <button type="button" class="btn btn-outline-secondary hover-scale" data-bs-dismiss="modal">
+      <i data-lucide="x" class="me-1"></i> Close
+    </button>
+    <button type="button" id="printButton" class="btn btn-primary hover-scale d-none" onclick="printReport()">
+      <i data-lucide="printer" class="me-1"></i> Print
+    </button>
+  </div>
+</div>
 
-    const content = `
-      <div style="display:flex; align-items:center; gap:20px; margin-bottom:30px;">
-        <img src="/images/santafe.png" alt="Santa Fe Logo" style="height:90px;">
-        <div>
-          <h1 style="margin:0; font-size:26px; color:#0f172a;">Municipality of Santa Fe</h1>
-          <h3 style="margin:5px 0 0; font-weight:normal; color:#475569;">Incident Report Summary</h3>
-        </div>
-      </div>
-      <hr style="margin-bottom:30px; border-top:2px solid #94a3b8;">
-      <div style="font-size:16px; color:#1e293b;">
-        <p><strong>👤 Name:</strong> ${name}</p>
-        <p><strong>✉️ Email:</strong> ${email}</p>
-        <p><strong>📌 Title:</strong> ${title}</p>
-        <p><strong>📝 Description:</strong><br><span style="margin-left:20px;">${desc}</span></p>
-        <p><strong>📍 Location:</strong> ${location}</p>
-        <p><strong>📊 Status:</strong> ${status}</p>
-        <p><strong>📅 Submitted:</strong> ${date}</p>
-      </div>
-    `;
+    </div>
+  </div>
+</div>
 
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
-    printWindow.document.write(`<!DOCTYPE html><html><head><title>Santa Fe Incident Report</title><style>
-      body { font-family:'Segoe UI',sans-serif; padding:40px; color:#1f2937; background:#fff; }
-      h1,h3 { margin:0; } p { margin:12px 0; line-height:1.6; } hr { border:none; border-top:1px solid #ccc; }
-      @media print { body { margin:0; padding:20px; } }
-    </style></head><body>${content}</body></html>`);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.onload = () => { printWindow.print(); printWindow.close(); };
+<!-- Custom Professional Animations -->
+<style>
+  .modal.fade.custom-fade .modal-dialog {
+    opacity: 0;
+    transform: translateY(40px) scale(0.97);
+    transition: all 0.4s ease;
   }
 
-  // Fetch reports chart
-  fetch('/reports/chart-data')
-    .then(res => res.json())
-    .then(data => {
-      const ctx = document.getElementById('reportsChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: data.labels,
-          datasets: [{
-            label: 'Report Count',
-            data: data.counts,
-            backgroundColor: ['#facc15','#f97316','#22c55e'],
-            borderRadius: 10
-          }]
-        },
-        options: {
-          responsive: true,
-          animation: { duration: 1000 },
-          scales: { y: { beginAtZero: true } }
-        }
-      });
+  .modal.fade.custom-fade.show .modal-dialog {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .hover-scale {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('reportModal');
+
+    modal.addEventListener('show.bs.modal', function (event) {
+      const trigger = event.relatedTarget;
+
+      const title = trigger.getAttribute('data-title');
+      const desc = trigger.getAttribute('data-description');
+      const loc = trigger.getAttribute('data-location');
+      const status = trigger.getAttribute('data-status');
+      const date = trigger.getAttribute('data-date');
+      const photo = trigger.getAttribute('data-photo'); // ✅ Fetch photo URL
+
+      const name = document.getElementById('modalReportName').textContent.trim();
+      const email = document.getElementById('modalReportEmail').textContent.trim();
+
+      document.getElementById('modalReportTitle').textContent = title;
+      document.getElementById('modalReportDesc').textContent = desc;
+      document.getElementById('modalReportLoc').textContent = loc;
+      document.getElementById('modalReportStatus').textContent = status;
+      document.getElementById('modalReportDate').textContent = date;
+
+      // ✅ Handle Photo Display
+      const photoElement = document.getElementById('modalReportPhoto');
+      const noPhotoText = document.getElementById('noPhotoText');
+
+      if (photo && photo.trim() !== '') {
+        photoElement.src = photo;
+        photoElement.classList.remove('d-none');
+        noPhotoText.classList.add('d-none');
+      } else {
+        photoElement.classList.add('d-none');
+        noPhotoText.classList.remove('d-none');
+      }
+
+      // Dynamic color for status badge
+      const badge = document.getElementById('modalReportStatus');
+      badge.classList.remove('text-bg-warning', 'text-bg-success', 'text-bg-danger', 'text-bg-info');
+      if (status === 'Ongoing') badge.classList.add('text-bg-info');
+      else if (status === 'Resolved') badge.classList.add('text-bg-success');
+      else if (status === 'Rejected') badge.classList.add('text-bg-danger');
+      else badge.classList.add('text-bg-warning');
+
+      // Show print button only if status is Ongoing
+      document.getElementById('printButton').classList.toggle('d-none', status !== 'Ongoing');
     });
+});
+
+function printReport() {
+  // Get modal content safely
+  const getText = (id) => {
+    const el = document.getElementById(id);
+    return el ? el.textContent.trim() : 'N/A';
+  };
+
+  const title = getText('modalReportTitle');
+  const desc = getText('modalReportDesc');
+  const location = getText('modalReportLoc');
+  const status = getText('modalReportStatus');
+  const date = getText('modalReportDate');
+  const name = getText('modalReportName');
+  const email = getText('modalReportEmail');
+
+  const content = `
+    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
+      <img src="/images/santafe.png" alt="Santa Fe Logo" style="height: 90px;">
+      <div>
+        <h1 style="margin: 0; font-size: 26px; color: #0f172a;">Municipality of Santa Fe</h1>
+        <h3 style="margin: 5px 0 0; font-weight: normal; color: #475569;">Incident Report Summary</h3>
+      </div>
+    </div>
+
+    <hr style="margin-bottom: 30px; border-top: 2px solid #94a3b8;">
+
+    <div style="font-size: 16px; color: #1e293b;">
+      <p><strong>👤 Name:</strong> ${name}</p>
+      <p><strong>✉️ Email:</strong> ${email}</p>
+      <p><strong>📌 Title:</strong> ${title}</p>
+      <p><strong>📝 Description:</strong><br><span style="margin-left: 20px;">${desc}</span></p>
+      <p><strong>📍 Location:</strong> ${location}</p>
+      <p><strong>📊 Status:</strong> ${status}</p>
+      <p><strong>📅 Submitted:</strong> ${date}</p>
+    </div>
+  `;
+
+  const printWindow = window.open('', '_blank', 'width=900,height=700');
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Santa Fe Incident Report</title>
+      <style>
+        body {
+          font-family: 'Segoe UI', sans-serif;
+          padding: 40px;
+          color: #1f2937;
+          background-color: #fff;
+        }
+        h1, h3 {
+          margin: 0;
+        }
+        p {
+          margin: 12px 0;
+          line-height: 1.6;
+        }
+        hr {
+          border: none;
+          border-top: 1px solid #ccc;
+        }
+        @media print {
+          body {
+            margin: 0;
+            padding: 20px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      ${content}
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.onload = () => {
+    printWindow.print();
+    printWindow.close();
+  };
+}
+
 </script>
+
+
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    lucide.createIcons();
+
+    fetch('/reports/chart-data')
+      .then(res => res.json())
+      .then(data => {
+        const ctx = document.getElementById('reportsChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: 'Report Count',
+              data: data.counts,
+              backgroundColor: ['#facc15', '#f97316', '#22c55e'], // Yellow, Orange, Green
+              borderRadius: 10
+            }]
+          },
+          options: {
+            responsive: true,
+            animation: {
+              duration: 1000
+            },
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      });
+  </script>
 </body>
 </html>
