@@ -182,7 +182,7 @@ class MDRRMOController extends Controller
     }
 public function reportsBantayan()
 {
-    // 🔹 Forwarded Reports specifically for MDRRMO
+    // 🔹 Forwarded Reports (MDRRMO)
     $forwarded = ForwardedReport::select(
         'id',
         'title',
@@ -190,20 +190,20 @@ public function reportsBantayan()
         'category',
         'status',
         'location',
-        'photo',
+        DB::raw("CONCAT('storage/', REPLACE(photo, 'public/', '')) AS photo"),
         'user_id',
         'created_at',
         'updated_at',
-        DB::raw("'forwarded' as type") // mark type
+        DB::raw("'forwarded' as type")
     )
     ->where('location', 'Bantayan')
     ->where(function ($q) {
         $q->where('forwarded_to', 'MDRRMO')
           ->orWhere('status', 'like', 'Rerouted to MDRRMO%');
     })
-    ->where('status', '!=', 'Rerouted away'); // ❌ exclude hidden reports
+    ->where('status', '!=', 'Rerouted away');
 
-    // 🔹 Rerouted Reports specifically to MDRRMO
+    // 🔹 Rerouted Reports (MDRRMO)
     $rerouted = ReroutedReport::select(
         'id',
         'title',
@@ -211,19 +211,19 @@ public function reportsBantayan()
         'category',
         'status',
         'location',
-        'photo',
+        DB::raw("CONCAT('storage/', REPLACE(photo, 'public/', '')) AS photo"),
         'user_id',
         'created_at',
         'updated_at',
-        DB::raw("'rerouted' as type") // mark type
+        DB::raw("'rerouted' as type")
     )
     ->where('location', 'Bantayan')
     ->where('status', 'like', 'Rerouted to MDRRMO%');
 
-    // 🔹 Combine both using unionAll
+    // 🔹 Combine both queries
     $combinedQuery = $forwarded->unionAll($rerouted);
 
-    // 🔹 Wrap in query builder for ordering and pagination
+    // 🔹 Wrap and paginate results
     $reports = DB::table(DB::raw("({$combinedQuery->toSql()}) as reports"))
         ->mergeBindings($combinedQuery->getQuery())
         ->orderByDesc('created_at')
