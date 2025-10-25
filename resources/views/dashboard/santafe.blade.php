@@ -244,13 +244,15 @@
 </section>
 <!-- Report Modal -->
 <div id="reportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn overflow-y-auto max-h-[90vh]">
     <div class="flex justify-between items-center border-b pb-3 mb-4">
       <h3 class="text-lg font-semibold text-gray-800">Submit Concern</h3>
       <button onclick="closeModal('reportModal')" class="text-gray-500 hover:text-gray-800">
         <i data-lucide="x"></i>
       </button>
     </div>
+
+    <!-- Form -->
     <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
       @csrf
       <div>
