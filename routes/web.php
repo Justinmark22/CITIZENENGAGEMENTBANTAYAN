@@ -930,3 +930,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reports/{id}/reroute', [WaterDashboardController::class, 'reroute'])
         ->name('reports.reroute');
 });
+//water announcemnets
+Route::get('/water/announcement-bantayan', [WaterDashboardController::class, 'announcementBantayan'])
+    ->name('water.announcement-bantayan');
