@@ -107,7 +107,7 @@
           data-date="{{ $report->created_at->format('M d, Y H:i') }}"
           data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}"
           data-update-url="{{ route('bantayan.reports.update', $report->id) }}"
-          data-delete-url="{{ route('bantayan.reports.destroy', $report->id) }}"
+         
           data-forward-url="{{ route('reports.forward') }}"
           onclick="openModalFromCard(this)"
         >
