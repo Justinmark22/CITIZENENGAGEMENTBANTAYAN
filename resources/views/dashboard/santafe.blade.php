@@ -201,6 +201,16 @@
           @endforelse
         </div>
       </div>
+<button onclick="openReportModal(this)"
+        data-title="{{ $report->title }}"
+        data-description="{{ $report->description }}"
+        data-location="{{ $report->location }}"
+        data-status="{{ $report->status }}"
+        data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+        data-name="{{ $report->user->name }}"
+        data-email="{{ $report->user->email }}"
+        data-photo="{{ $report->photo ? asset('storage/' . $report->photo) : '' }}"
+        class="px-3 py-1 bg-blue-500 text-white rounded">View</button>
 
       <!-- Waste Reports Column -->
       <div class="bg-white rounded-3xl shadow-xl p-6 h-full flex flex-col">
@@ -242,17 +252,15 @@
     </section>
   </div>
 </section>
-<!-- Report Modal -->
-<div id="reportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
+<!-- Submit Report Modal -->
+<div id="submitReportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn overflow-y-auto max-h-[90vh]">
     <div class="flex justify-between items-center border-b pb-3 mb-4">
       <h3 class="text-lg font-semibold text-gray-800">Submit Concern</h3>
-      <button onclick="closeModal('reportModal')" class="text-gray-500 hover:text-gray-800">
+      <button onclick="closeModal('submitReportModal')" class="text-gray-500 hover:text-gray-800">
         <i data-lucide="x"></i>
       </button>
     </div>
-
-    <!-- Form -->
     <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
       @csrf
       <div>
@@ -277,15 +285,88 @@
         <input type="file" name="photo" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-green-100 file:text-green-700 hover:file:bg-green-200 transition">
       </div>
       <div class="flex justify-end gap-2">
-        <button type="button" onclick="closeModal('reportModal')" class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition">Cancel</button>
+        <button type="button" onclick="closeModal('submitReportModal')" class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition">Cancel</button>
         <button type="submit" class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition">Submit</button>
       </div>
     </form>
   </div>
 </div>
 
+<!-- View Report Modal -->
+<div id="viewReportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn overflow-y-auto max-h-[90vh]">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h3 class="text-lg font-semibold text-gray-800" id="modalReportTitle">Report Title</h3>
+      <button onclick="closeModal('viewReportModal')" class="text-gray-500 hover:text-gray-800">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <div class="space-y-2">
+      <p><strong>Description:</strong> <span id="modalReportDesc"></span></p>
+      <p><strong>Location:</strong> <span id="modalReportLoc"></span></p>
+      <p><strong>Status:</strong> <span id="modalReportStatus"></span></p>
+      <p><strong>Submitted:</strong> <span id="modalReportDate"></span></p>
+      <p><strong>Reporter:</strong> <span id="modalReportName"></span> | <span id="modalReportEmail"></span></p>
+
+      <!-- Photo -->
+      <div class="mt-2">
+        <img id="modalReportPhoto" src="" alt="Report Photo" class="w-full rounded-lg hidden">
+        <p id="noPhotoText" class="text-gray-500 italic">No photo available</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Scripts -->
 <script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+  window.openReportModal = function(trigger) {
+    const title = trigger.getAttribute('data-title') || 'N/A';
+    const desc = trigger.getAttribute('data-description') || 'N/A';
+    const loc = trigger.getAttribute('data-location') || 'N/A';
+    const status = trigger.getAttribute('data-status') || 'Pending';
+    const date = trigger.getAttribute('data-date') || 'N/A';
+    const photo = trigger.getAttribute('data-photo') || '';
+    const name = trigger.getAttribute('data-name') || 'Anonymous';
+    const email = trigger.getAttribute('data-email') || 'No Email';
+
+    document.getElementById('modalReportTitle').textContent = title;
+    document.getElementById('modalReportDesc').textContent = desc;
+    document.getElementById('modalReportLoc').textContent = loc;
+    document.getElementById('modalReportStatus').textContent = status;
+    document.getElementById('modalReportDate').textContent = date;
+    document.getElementById('modalReportName').textContent = name;
+    document.getElementById('modalReportEmail').textContent = email;
+
+    const photoElement = document.getElementById('modalReportPhoto');
+    const noPhotoText = document.getElementById('noPhotoText');
+
+    if (photo && photo.trim() !== '') {
+      photoElement.src = photo;
+      photoElement.classList.remove('hidden');
+      noPhotoText.classList.add('hidden');
+    } else {
+      photoElement.classList.add('hidden');
+      noPhotoText.classList.remove('hidden');
+    }
+
+    openModal('viewReportModal');
+  };
+
+  window.openModal = function(id) {
+    document.getElementById(id).classList.remove('hidden');
+    document.getElementById(id).classList.add('flex');
+  };
+
+  window.closeModal = function(id) {
+    document.getElementById(id).classList.add('hidden');
+    document.getElementById(id).classList.remove('flex');
+  };
+
+});
+
   function toggleDropdown(id) {
     document.getElementById(id).classList.toggle('hidden');
   }
