@@ -234,11 +234,6 @@
       </div>
     </div>
 
-  </div>
-</div>
-@empty
-<p>No reports yet.</p>
-@endforelse
 
 
       </div>
