@@ -91,13 +91,7 @@
         </div>
       </div>
 
-      <div class="glass p-4 rounded-xl shadow-sm">
-        <h3 class="text-sm font-semibold mb-2">Quick Actions</h3>
-        <div class="flex flex-col gap-2">
-          <a href="{{ route('bantayan.reports.create') ?? '#' }}" class="px-3 py-2 rounded-lg bg-white/80 text-sm hover:bg-white">Create Report</a>
-          <a href="{{ route('bantayan.export-all') ?? '#' }}" class="px-3 py-2 rounded-lg bg-white/80 text-sm hover:bg-white">Export All (PDF)</a>
-        </div>
-      </div>
+     
     </section>
 
     <!-- Reports grid -->
