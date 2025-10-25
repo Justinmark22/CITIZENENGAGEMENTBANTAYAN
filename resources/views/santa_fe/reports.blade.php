@@ -369,6 +369,8 @@
               </div>
             </div>
           </div>
+<p>Debug path: {{ asset('storage/' . $report->photo) }}</p>
+<p>DB photo: {{ $report->photo }}</p>
 
          <!-- Right Column: Photo -->
 <div class="col-md-5">
