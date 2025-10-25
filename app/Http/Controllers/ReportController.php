@@ -2,49 +2,36 @@
 
 namespace App\Http\Controllers;
 use App\Models\Announcement;
-use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Http\Request;
 use App\Models\Report;
 
 class ReportController extends Controller
-{public function store(Request $request)
+{
+    public function store(Request $request)
 {
     $validated = $request->validate([
         'category' => 'required|string',
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'photo' => 'nullable|mimes:jpeg,jpg,png,gif,bmp,svg,webp|max:5120',
+        'photo' => 'nullable|image|max:2048',
     ]);
 
-    if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+    if ($request->hasFile('photo')) {
         $photo = $request->file('photo');
-
-        // Just timestamp as filename
         $photoName = time() . '.' . $photo->getClientOriginalExtension();
-
-        // Ensure folder exists in storage/app/public/reports
-        Storage::disk('public')->makeDirectory('reports');
-
-        // Store the file in storage/app/public/reports
-        $path = $photo->storeAs('reports', $photoName, 'public');
-
-        // Save relative path in DB like reports/1761192830.png
-        $validated['photo'] = $path;
+        $validated['photo'] = $photo->storeAs('reports', $photoName, 'public');
     }
 
+    // Assign default values
     $validated['status'] = 'Pending';
     $validated['location'] = auth()->user()->location ?? 'Unknown';
-    $validated['user_id'] = auth()->id();
+    $validated['user_id'] = auth()->id(); // ✅ THIS is what links the report to the user
 
     Report::create($validated);
 
     return redirect()->back()->with('success', 'Report submitted!');
 }
-
-
-
-
 
 public function stafeDashboard()
 {
