@@ -10,26 +10,19 @@ class ReportController extends Controller
 {
     public function store(Request $request)
 {
-    // Validate input
+    // Validate the request
     $validated = $request->validate([
-        'category' => 'required|string',
         'title' => 'required|string|max:255',
+        'category' => 'required|string|max:100',
         'description' => 'required|string',
-        'photo' => 'nullable|image|max:2048', // optional, max 2MB
+        'attachment' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
     ]);
 
-    // Handle photo upload
-    if ($request->hasFile('photo')) {
-        $photo = $request->file('photo');
-        $photoName = time() . '.' . $photo->getClientOriginalExtension();
-        $validated['photo'] = $photo->storeAs('reports', $photoName, 'public'); 
-        // Stored in storage/app/public/reports
+    // Handle file upload
+    if ($request->hasFile('attachment')) {
+        $path = $request->file('attachment')->store('reports', 'public'); 
+        $validated['attachment'] = $path; // Save path to DB
     }
-
-    // Assign default values
-    $validated['status'] = 'Pending';
-    $validated['location'] = auth()->user()->location ?? 'Unknown';
-    $validated['user_id'] = auth()->id(); // links report to user
 
     // Save report
     Report::create($validated);
