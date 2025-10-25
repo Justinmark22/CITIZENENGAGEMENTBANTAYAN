@@ -376,15 +376,15 @@
 <div class="col-md-5">
     <label class="text-muted small">Photo</label>
     <div class="bg-light p-3 rounded-3 shadow-sm text-center">
-        @if($report->photo)
-            <img id="modalReportPhoto" 
-                 src="{{ asset('storage/' . $report->photo) }}" 
-                 alt="Report Photo"
-                 class="img-fluid rounded-3 shadow-sm"
-                 style="max-height: 280px; object-fit: cover;">
-        @else
-            <p id="noPhotoText" class="text-muted m-0">No photo available</p>
-        @endif
+@if($report->photo && Storage::disk('public')->exists($report->photo))
+    <img src="{{ asset('storage/' . $report->photo) }}" 
+         alt="Report Photo" 
+         class="img-fluid rounded-3 shadow-sm" 
+         style="max-height: 280px; object-fit: cover;">
+@else
+    <p class="text-muted m-0">No photo available</p>
+@endif
+
     </div>
 </div>
 
