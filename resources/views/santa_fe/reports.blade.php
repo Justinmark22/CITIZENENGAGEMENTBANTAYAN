@@ -107,11 +107,12 @@
     data-location="{{ $report->location }}"
     data-status="{{ $report->status }}"
     data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-    data-photo="{{ $report->photo ? asset('reports/' . $report->photo) : '' }}"
+    data-photo="{{ $reports->photo ? asset('reports/' . $reports->photo) : '' }}"
     data-name="{{ $report->user->name ?? 'Anonymous' }}"
     data-email="{{ $report->user->email ?? 'No Email' }}">
   {{ $report->title }}
 </h6>
+
 
 
         <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
