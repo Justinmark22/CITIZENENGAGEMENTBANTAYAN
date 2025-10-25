@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sta.Fe Dashboard</title>
+  <title>Santa.Fe Full Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -11,7 +11,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
-<!-- 🌐 Navbar -->
+<!-- Navbar -->
 <nav class="w-full bg-white/90 backdrop-blur-md border-b shadow-sm px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-50">
   <a href="#" class="flex items-center gap-3">
     <img src="{{ asset('images/citizen.png') }}" alt="Logo"
@@ -19,17 +19,15 @@
     <span class="text-lg md:text-xl font-bold text-gray-900 tracking-tight">Santa.Fe Dashboard</span>
   </a>
 
-  <!-- Mobile menu toggle -->
   <button id="mobileMenuBtn" type="button" aria-label="Toggle menu"
           class="md:hidden p-2 rounded-xl text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200">
     <i data-lucide="menu" class="w-6 h-6"></i>
   </button>
 
-  <!-- Right side items -->
   <div id="navbarLinks"
        class="hidden md:flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-5 flex-wrap text-sm absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none rounded-b-2xl md:rounded-none p-5 md:p-0 transition-all duration-300 ease-in-out origin-top">
 
-    <!-- 🔔 Alerts Dropdown -->
+    <!-- Notifications -->
     <div class="relative w-full md:w-auto">
       <button onclick="toggleDropdown('alertsDropdown'); clearBadge();"
               class="flex items-center gap-2 w-full md:w-auto text-gray-700 hover:text-green-700 transition font-medium">
@@ -48,7 +46,6 @@
         @endif
       </button>
 
-      <!-- Dropdown -->
       <div id="alertsDropdown"
            class="hidden absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50">
         <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
@@ -120,7 +117,7 @@
   </div>
 </nav>
 
-<!-- 🌟 Hero Section -->
+<!-- Hero -->
 <section class="relative overflow-hidden py-12 md:py-16 bg-gradient-to-r from-green-50 to-lime-50">
   <div class="absolute top-0 left-0 w-40 md:w-56 h-40 md:h-56 bg-green-200 rounded-full opacity-30 blur-2xl -z-10"></div>
   <div class="absolute top-0 right-0 w-60 md:w-80 h-60 md:h-80 bg-lime-200 rounded-full opacity-30 blur-2xl -z-10"></div>
@@ -142,12 +139,11 @@
 
     <section class="grid lg:grid-cols-2 gap-6 lg:w-1/2">
 
-      <!-- MDRRMO Resolved Reports -->
+      <!-- MDRRMO Reports -->
       <div class="bg-white rounded-3xl shadow-xl p-6 h-full flex flex-col">
         <h5 class="text-success font-bold mb-6 flex items-center gap-3 text-xl animate-pulse">
           <i class="bi bi-megaphone-fill text-success"></i> MDRRMO Resolved Reports
         </h5>
-
         <div class="overflow-auto space-y-5 flex-1" style="max-height: 480px;">
           @php
             use Carbon\Carbon;
@@ -155,7 +151,7 @@
                         ->where('location', 'Santa.Fe')
                         ->where('status', 'Resolved')
                         ->latest()
-                        ->get(['id', 'title', 'description', 'category', 'user_id', 'created_at', 'updated_at']);
+                        ->get();
           @endphp
 
           @forelse ($reports as $report)
@@ -171,9 +167,7 @@
                     Hello {{ $report->user ? $report->user->name : 'Citizen' }},
                   </strong>
                   <p class="text-gray-700 text-sm">
-                    Your report titled <em>"{{ $report->title }}"</em> in the category 
-                    <span class="font-semibold text-success">{{ $report->category }}</span> 
-                    has been successfully resolved by <strong>MDRRMO</strong>.
+                    Your report titled <em>"{{ $report->title }}"</em> in <span class="font-semibold text-success">{{ $report->category }}</span> has been resolved.
                   </p>
                   <div class="text-xs text-gray-500 mt-2 space-y-1 flex flex-col">
                     <div class="flex items-center gap-1"><i class="bi bi-calendar-event-fill text-green-600"></i> Submitted: {{ $report->created_at->format('M d, Y h:i A') }}</div>
@@ -193,10 +187,9 @@
                   </span>
                 </div>
               </div>
-
               <div class="mt-4 flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                 <button class="bg-success text-white px-3 py-1 rounded-lg text-xs hover:bg-success/80 flex items-center gap-1 animate-bounce">
-                  <i class="bi bi-eye-fill"></i> View Details
+                  <i class="bi bi-eye-fill"></i> View
                 </button>
                 <button class="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs hover:bg-green-200 flex items-center gap-1 animate-pulse">
                   <i class="bi bi-chat-left-text-fill"></i> Comment
@@ -209,11 +202,48 @@
         </div>
       </div>
 
+      <!-- Waste Reports Column -->
+      <div class="bg-white rounded-3xl shadow-xl p-6 h-full flex flex-col">
+        <h5 class="text-warning font-bold mb-6 flex items-center gap-3 text-xl animate-pulse">
+          <i class="bi bi-trash-fill text-warning"></i> Waste Ongoing Reports
+        </h5>
+        <div class="overflow-auto space-y-5 flex-1" style="max-height: 480px;">
+          @php
+            $wasteReports = \App\Models\WasteReport::with('user')
+                                ->where('location', 'Santa.Fe')
+                                ->where('status', 'Ongoing')
+                                ->latest()
+                                ->get();
+          @endphp
+          @forelse ($wasteReports as $report)
+            <div class="relative group bg-yellow-50 border-l-4 border-warning rounded-2xl p-5 shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-500 overflow-hidden animate-fadeIn">
+              <div class="absolute inset-0 bg-yellow-100/10 rounded-2xl -z-10"></div>
+              <div class="flex justify-between items-start gap-3">
+                <div class="flex flex-col gap-2">
+                  <strong class="text-gray-800 text-md">{{ $report->user ? $report->user->name : 'Citizen' }}</strong>
+                  <p class="text-gray-700 text-sm">Report: <em>{{ $report->title }}</em> - {{ $report->category }}</p>
+                  <div class="text-xs text-gray-500 mt-2">
+                    <div>Submitted: {{ $report->created_at->format('M d, Y h:i A') }}</div>
+                    <div>Status: {{ $report->status }}</div>
+                    <div>ID: {{ $report->id }}</div>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                  <span class="px-3 py-1 rounded-full text-xs font-semibold bg-warning/30 text-warning">{{ $report->category }}</span>
+                </div>
+              </div>
+            </div>
+          @empty
+            <p class="text-gray-400 text-center py-6">No ongoing waste reports.</p>
+          @endforelse
+        </div>
+      </div>
+
     </section>
   </div>
 </section>
 
-<!-- 📌 Report Modal -->
+<!-- Report Modal -->
 <div id="reportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn">
     <div class="flex justify-between items-center border-b pb-3 mb-4">
@@ -253,7 +283,7 @@
   </div>
 </div>
 
-<!-- 🟢 Scripts -->
+<!-- Scripts -->
 <script>
   function toggleDropdown(id) {
     document.getElementById(id).classList.toggle('hidden');
