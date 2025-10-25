@@ -7,32 +7,31 @@ use Illuminate\Http\Request;
 use App\Models\Report;
 
 class ReportController extends Controller
-{ public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'category' => 'required|string',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'photo' => 'nullable|image|max:2048', // allow image only
-        ]);
+{public function store(Request $request)
+{
+    $validated = $request->validate([
+        'category' => 'required|string',
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'photo' => 'nullable|mimes:jpeg,jpg,png,gif,bmp,svg,webp|max:5120', // accept any common image, max 5MB
+    ]);
 
-        if ($request->hasFile('photo')) {
-            $photo = $request->file('photo');
-            $photoName = time() . '.' . $photo->getClientOriginalExtension();
-            // Store in storage/app/public/reports
-            $path = $photo->storeAs('reports', $photoName, 'public');
-            $validated['photo'] = $path; // save path to DB
-        }
-
-        // Assign default values
-        $validated['status'] = 'Pending';
-        $validated['location'] = auth()->user()->location ?? 'Unknown';
-        $validated['user_id'] = auth()->id();
-
-        Report::create($validated);
-
-        return redirect()->back()->with('success', 'Report submitted!');
+    if ($request->hasFile('photo')) {
+        $photo = $request->file('photo');
+        $photoName = time() . '.' . $photo->getClientOriginalExtension();
+        $path = $photo->storeAs('reports', $photoName, 'public');
+        $validated['photo'] = $path; // save path to DB
     }
+
+    $validated['status'] = 'Pending';
+    $validated['location'] = auth()->user()->location ?? 'Unknown';
+    $validated['user_id'] = auth()->id();
+
+    Report::create($validated);
+
+    return redirect()->back()->with('success', 'Report submitted!');
+}
+
 
 
 
