@@ -15,6 +15,11 @@ class ReportController extends Controller
             'description' => 'required|string',
             'photo' => 'nullable|image|max:2048', // allow image only
         ]);
+if ($request->hasFile('photo')) {
+    dd('Photo exists!');
+} else {
+    dd('No photo received!');
+}
 
         if ($request->hasFile('photo')) {
             $photo = $request->file('photo');
