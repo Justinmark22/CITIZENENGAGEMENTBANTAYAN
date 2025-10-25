@@ -1,11 +1,10 @@
-# Allow access to storage
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^index\.php$ - [L]
-</IfModule>
 
-# Optional: block hidden files
-<FilesMatch "^\.">
-    Require all denied
-</FilesMatch>
+        # Redirect all requests to the public folder
+        RewriteRule ^(.*)$ public/$1 [L]
+<IfModule>
+<Filesmatch "^(\.env|\.git|composer\.json|artisan|server\.php|storage|vendor)">
+    Order allow,deny
+    Deny from all
+<Filesmatch>
