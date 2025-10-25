@@ -162,8 +162,7 @@
                 </div>
               </div>
 
-              <!-- delete -->
-              <button class="text-xs px-2 py-1 rounded-md border text-red-600" onclick="event.stopPropagation(); deleteReportConfirm({{ $report->id }}, '{{ route('bantayan.reports.destroy', $report->id) }}')">Delete</button>
+            
             </div>
           </div>
         </article>
