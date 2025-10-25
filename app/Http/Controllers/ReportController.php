@@ -16,13 +16,16 @@ class ReportController extends Controller
         'photo' => 'nullable|mimes:jpeg,jpg,png,gif,bmp,svg,webp|max:5120', // max 5MB
     ]);
 
-    // Handle photo upload
     if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
-        $photo = $request->file('photo');
-        $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
-        // store in storage/app/public/reports
-        $path = $photo->storeAs('reports', $photoName, 'public');
-        $validated['photo'] = $path; // save path to DB
+    $photo = $request->file('photo');
+    $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+
+    // Ensure folder exists
+    Storage::disk('public')->makeDirectory('reports');
+
+    $path = $photo->storeAs('reports', $photoName, 'public');
+    $validated['photo'] = $path;
+
     } else {
         $validated['photo'] = null; // ensure DB gets null if no photo
     }
