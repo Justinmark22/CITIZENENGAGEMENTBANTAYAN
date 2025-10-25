@@ -450,14 +450,24 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('modalReportName').textContent = name;
         document.getElementById('modalReportEmail').textContent = email;
 
-        // Handle photo
+        // Handle photo with actual existence check
         const photoElement = document.getElementById('modalReportPhoto');
         const noPhotoText = document.getElementById('noPhotoText');
 
         if (photo.trim() !== '') {
-            photoElement.src = photo;
-            photoElement.classList.remove('d-none');
-            noPhotoText.classList.add('d-none');
+            const img = new Image();
+            img.src = photo;
+
+            img.onload = () => {
+                photoElement.src = photo;
+                photoElement.classList.remove('d-none');
+                noPhotoText.classList.add('d-none');
+            };
+
+            img.onerror = () => {
+                photoElement.classList.add('d-none');
+                noPhotoText.classList.remove('d-none');
+            };
         } else {
             photoElement.classList.add('d-none');
             noPhotoText.classList.remove('d-none');
