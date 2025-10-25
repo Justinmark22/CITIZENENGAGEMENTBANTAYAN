@@ -312,8 +312,7 @@
 
 
   </div>
-</div>
-<!-- 🌟 Clean & Polished Report Modal -->
+</div><!-- 🌟 Clean & Polished Report Modal -->
 <div class="modal fade custom-fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-animated">
     <div class="modal-content shadow-xl border-0 rounded-4"
@@ -322,7 +321,7 @@
       <!-- 🔹 Header -->
       <div class="modal-header text-white py-3 px-4"
            style="background: linear-gradient(135deg, #3b82f6, #06b6d4); border-bottom: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
-        <h4 class="modal-title d-flex align-items-center gap-2 fw-bold" id="reportModalLabel">
+        <h4 class="modal-title d-flex align-items-center gap-2" id="reportModalLabel">
           <i data-lucide="radar" class="me-1"></i> Report Overview
         </h4>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -333,11 +332,11 @@
         <div class="d-flex flex-wrap gap-4 text-muted small">
           <div class="d-flex align-items-center gap-2">
             <i data-lucide="user" class="text-primary"></i>
-            <span id="modalReportName" class="fw-semibold text-dark">{{ $report->user->name ?? 'Anonymous' }}</span>
+            <span id="modalReportName" class="fw-semibold text-dark">Anonymous</span>
           </div>
           <div class="d-flex align-items-center gap-2">
             <i data-lucide="mail" class="text-primary"></i>
-            <span id="modalReportEmail" class="fw-semibold text-dark">{{ $report->user->email ?? 'No Email' }}</span>
+            <span id="modalReportEmail" class="fw-semibold text-dark">No Email</span>
           </div>
         </div>
       </div>
@@ -388,222 +387,76 @@
 
         </div>
       </div>
-<!-- 🔹 Footer -->
-<div class="modal-footer bg-light border-top rounded-bottom px-4 py-3 d-flex justify-content-between align-items-center">
-  <small class="text-muted d-flex align-items-center gap-2">
-    <i data-lucide="cpu"></i> Santa Fe
-  </small>
 
- @foreach ($reports as $report)
-  <div id="report-{{ $report->id }}" class="card border-0 shadow-sm mb-4">
-    <div class="card-body d-flex justify-content-between align-items-center">
-
-      <!-- Status badge -->
-      <span class="badge {{ $report->status === 'Forwarded' ? 'bg-success' : 'bg-secondary' }}" data-role="status-badge">
-        {{ $report->status ?? 'Pending' }}
-      </span>
-
-      <!-- Forward Dropdown -->
-      <div class="dropdown">
-        <button class="btn btn-outline-primary dropdown-toggle" type="button"
-                id="forwardDropdown{{ $report->id }}" data-bs-toggle="dropdown" aria-expanded="false">
-          <i data-lucide="send" class="me-1"></i> Forward To
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3"
-            aria-labelledby="forwardDropdown{{ $report->id }}">
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'MDRRMO')">MDRRMO</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'WASTEMANAGEMENT')">WASTEMANAGEMENT</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'WATERMANAGEMENT')">WATERMANAGEMENT</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Health Office')">Health Office</a></li>
-        </ul>
+      <!-- 🔹 Footer -->
+      <div class="modal-footer bg-light border-top rounded-bottom px-4 py-3 d-flex justify-content-between align-items-center">
+        <small class="text-muted d-flex align-items-center gap-2">
+          <i data-lucide="cpu"></i> Santa Fe
+        </small>
+        <div>
+          <button type="button" class="btn btn-outline-secondary hover-scale" data-bs-dismiss="modal">
+            <i data-lucide="x" class="me-1"></i> Close
+          </button>
+          <button type="button" id="printButton" class="btn btn-primary hover-scale d-none" onclick="printReport()">
+            <i data-lucide="printer" class="me-1"></i> Print
+          </button>
+        </div>
       </div>
 
     </div>
   </div>
-@endforeach
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/lucide/dist/lucide.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</div>
 
+<!-- 🔹 Modal JS -->
 <script>
-  // Initialize Lucide icons
-  lucide.createIcons();
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('reportModal');
 
-  // Forward report function
-  function forwardReport(reportId, office) {
-    Swal.fire({
-      title: "Forward Report?",
-      text: `Do you want to forward report #${reportId} to ${office}?`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, forward",
-      cancelButtonText: "Cancel"
-    }).then((result) => {
-      if (!result.isConfirmed) return;
+  modal.addEventListener('show.bs.modal', function (event) {
+    const trigger = event.relatedTarget;
 
-      Swal.fire({
-        title: "Forwarding...",
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-      });
+    const title = trigger.getAttribute('data-title');
+    const desc = trigger.getAttribute('data-description');
+    const loc = trigger.getAttribute('data-location');
+    const status = trigger.getAttribute('data-status');
+    const date = trigger.getAttribute('data-date');
+    const photo = trigger.getAttribute('data-photo');
+    const name = trigger.getAttribute('data-name') || 'Anonymous';
+    const email = trigger.getAttribute('data-email') || 'No Email';
 
-      fetch("{{ route('reports.forward') }}", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({ report_id: reportId, forwarded_to: office })
-      })
-      .then(async res => {
-        let data = await res.json();
-        Swal.close();
-        if (res.ok && data.success) {
-          Swal.fire({
-            icon: "success",
-            title: "Forwarded!",
-            text: `Report has been forwarded to ${office}.`,
-            timer: 2000,
-            showConfirmButton: false
-          });
-          const badge = document.querySelector(`#report-${reportId} [data-role="status-badge"]`);
-          if (badge) {
-            badge.textContent = `Forwarded to ${office}`;
-            badge.classList.remove("bg-secondary");
-            badge.classList.add("bg-success");
-          }
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: data.message || "Something went wrong."
-          });
-        }
-      })
-      .catch(err => {
-        Swal.close();
-        Swal.fire({
-          icon: "error",
-          title: "Request Failed",
-          text: err.message || "Please try again."
-        });
-      });
-    });
-  }
+    document.getElementById('modalReportTitle').textContent = title;
+    document.getElementById('modalReportDesc').textContent = desc;
+    document.getElementById('modalReportLoc').textContent = loc;
+    document.getElementById('modalReportStatus').textContent = status;
+    document.getElementById('modalReportDate').textContent = date;
+    document.getElementById('modalReportName').textContent = name;
+    document.getElementById('modalReportEmail').textContent = email;
 
-  // Modal event listener
-  document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('reportModal');
+    // Photo handling
+    const photoElement = document.getElementById('modalReportPhoto');
+    const noPhotoText = document.getElementById('noPhotoText');
+    if (photo && photo.trim() !== '') {
+      photoElement.src = photo;
+      photoElement.classList.remove('d-none');
+      noPhotoText.classList.add('d-none');
+    } else {
+      photoElement.classList.add('d-none');
+      noPhotoText.classList.remove('d-none');
+    }
 
-    modal.addEventListener('show.bs.modal', function (event) {
-      const trigger = event.relatedTarget;
+    // Status badge color
+    const badge = document.getElementById('modalReportStatus');
+    badge.classList.remove('text-bg-warning', 'text-bg-success', 'text-bg-danger', 'text-bg-info');
+    if (status === 'Ongoing') badge.classList.add('text-bg-info');
+    else if (status === 'Resolved') badge.classList.add('text-bg-success');
+    else if (status === 'Rejected') badge.classList.add('text-bg-danger');
+    else badge.classList.add('text-bg-warning');
 
-      const title = trigger.getAttribute('data-title');
-      const desc = trigger.getAttribute('data-description');
-      const loc = trigger.getAttribute('data-location');
-      const status = trigger.getAttribute('data-status');
-      const date = trigger.getAttribute('data-date');
-      const photo = trigger.getAttribute('data-photo');
-
-      document.getElementById('modalReportTitle').textContent = title;
-      document.getElementById('modalReportDesc').textContent = desc;
-      document.getElementById('modalReportLoc').textContent = loc;
-      document.getElementById('modalReportStatus').textContent = status;
-      document.getElementById('modalReportDate').textContent = date;
-
-      // Photo handling
-      const photoElement = document.getElementById('modalReportPhoto');
-      const noPhotoText = document.getElementById('noPhotoText');
-      if(photo && photo.trim() !== '') {
-        photoElement.src = photo;
-        photoElement.classList.remove('d-none');
-        noPhotoText.classList.add('d-none');
-      } else {
-        photoElement.classList.add('d-none');
-        noPhotoText.classList.remove('d-none');
-      }
-
-      // Status badge color
-      const badge = document.getElementById('modalReportStatus');
-      badge.classList.remove('text-bg-warning', 'text-bg-success', 'text-bg-danger', 'text-bg-info');
-      if (status === 'Ongoing') badge.classList.add('text-bg-info');
-      else if (status === 'Resolved') badge.classList.add('text-bg-success');
-      else if (status === 'Rejected') badge.classList.add('text-bg-danger');
-      else badge.classList.add('text-bg-warning');
-
-      // Print button
-      document.getElementById('printButton').classList.toggle('d-none', status !== 'Ongoing');
-    });
+    // Show print button only if status is Ongoing
+    document.getElementById('printButton').classList.toggle('d-none', status !== 'Ongoing');
   });
-
-  // Print function
-  function printReport() {
-    const getText = (id) => document.getElementById(id)?.textContent.trim() || 'N/A';
-    const title = getText('modalReportTitle');
-    const desc = getText('modalReportDesc');
-    const location = getText('modalReportLoc');
-    const status = getText('modalReportStatus');
-    const date = getText('modalReportDate');
-    const name = getText('modalReportName');
-    const email = getText('modalReportEmail');
-
-    const content = `
-      <div style="display:flex; align-items:center; gap:20px; margin-bottom:30px;">
-        <img src="/images/santafe.png" alt="Santa Fe Logo" style="height:90px;">
-        <div>
-          <h1 style="margin:0; font-size:26px; color:#0f172a;">Municipality of Santa Fe</h1>
-          <h3 style="margin:5px 0 0; font-weight:normal; color:#475569;">Incident Report Summary</h3>
-        </div>
-      </div>
-      <hr style="margin-bottom:30px; border-top:2px solid #94a3b8;">
-      <div style="font-size:16px; color:#1e293b;">
-        <p><strong>👤 Name:</strong> ${name}</p>
-        <p><strong>✉️ Email:</strong> ${email}</p>
-        <p><strong>📌 Title:</strong> ${title}</p>
-        <p><strong>📝 Description:</strong><br><span style="margin-left:20px;">${desc}</span></p>
-        <p><strong>📍 Location:</strong> ${location}</p>
-        <p><strong>📊 Status:</strong> ${status}</p>
-        <p><strong>📅 Submitted:</strong> ${date}</p>
-      </div>
-    `;
-
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
-    printWindow.document.write(`<!DOCTYPE html><html><head><title>Santa Fe Incident Report</title><style>
-      body { font-family:'Segoe UI',sans-serif; padding:40px; color:#1f2937; background:#fff; }
-      h1,h3 { margin:0; } p { margin:12px 0; line-height:1.6; } hr { border:none; border-top:1px solid #ccc; }
-      @media print { body { margin:0; padding:20px; } }
-    </style></head><body>${content}</body></html>`);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.onload = () => { printWindow.print(); printWindow.close(); };
-  }
-
-  // Fetch reports chart
-  fetch('/reports/chart-data')
-    .then(res => res.json())
-    .then(data => {
-      const ctx = document.getElementById('reportsChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: data.labels,
-          datasets: [{
-            label: 'Report Count',
-            data: data.counts,
-            backgroundColor: ['#facc15','#f97316','#22c55e'],
-            borderRadius: 10
-          }]
-        },
-        options: {
-          responsive: true,
-          animation: { duration: 1000 },
-          scales: { y: { beginAtZero: true } }
-        }
-      });
-    });
+});
 </script>
+
 </body>
 </html>
