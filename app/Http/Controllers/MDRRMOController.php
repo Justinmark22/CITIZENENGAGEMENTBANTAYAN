@@ -182,22 +182,52 @@ class MDRRMOController extends Controller
     }
 public function reportsBantayan()
 {
-    $forwarded = ForwardedReport::where('location', 'Bantayan')
-        ->where(function ($q) {
-            $q->where('forwarded_to', 'MDRRMO')
-              ->orWhere('status', 'like', 'Rerouted to MDRRMO%');
-        })
-        ->where('status', '!=', 'Rerouted away')
-        ->get();
+    // 🔹 Forwarded Reports specifically for MDRRMO
+    $forwarded = ForwardedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'forwarded' as type") // mark type
+    )
+    ->where('location', 'Bantayan')
+    ->where(function ($q) {
+        $q->where('forwarded_to', 'MDRRMO')
+          ->orWhere('status', 'like', 'Rerouted to MDRRMO%');
+    })
+    ->where('status', '!=', 'Rerouted away'); // ❌ exclude hidden reports
 
-    $rerouted = ReroutedReport::where('location', 'Bantayan')
-        ->where('status', 'like', 'Rerouted to MDRRMO%')
-        ->get();
+    // 🔹 Rerouted Reports specifically to MDRRMO
+    $rerouted = ReroutedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'rerouted' as type") // mark type
+    )
+    ->where('location', 'Bantayan')
+    ->where('status', 'like', 'Rerouted to MDRRMO%');
 
-    // ✅ Combine as Eloquent collections (preserves all accessors)
-    $reports = $forwarded->merge($rerouted)
-        ->sortByDesc('created_at')
-        ->paginate(10); // You can use a manual paginator here if needed
+    // 🔹 Combine both using unionAll
+    $combinedQuery = $forwarded->unionAll($rerouted);
+
+    // 🔹 Wrap in query builder for ordering and pagination
+    $reports = DB::table(DB::raw("({$combinedQuery->toSql()}) as reports"))
+        ->mergeBindings($combinedQuery->getQuery())
+        ->orderByDesc('created_at')
+        ->paginate(10);
 
     return view('mdrrmo.reports-bantayan', compact('reports'));
 }
