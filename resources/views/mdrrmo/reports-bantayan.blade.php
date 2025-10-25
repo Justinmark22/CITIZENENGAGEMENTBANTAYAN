@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -178,14 +180,23 @@
 
             </div>
 
-            <!-- Photo -->
-            @if($report->photo)
-            <img 
-                src="{{ asset('storage/'.$report->photo) }}" 
-                alt="Report Photo" 
-                class="rounded-md w-full md:w-2/3 lg:w-1/2 h-48 object-cover border border-gray-200"
-            >
-            @endif
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
+@if(!empty($report->photo))
+    <img 
+        src="{{ Storage::exists($report->photo) ? Storage::url($report->photo) : asset('images/no-photo.png') }}" 
+        alt="Report Photo" 
+        class="rounded-md w-full md:w-2/3 lg:w-1/2 h-48 object-cover border border-gray-200 shadow-sm"
+    >
+@else
+    <img 
+        src="{{ asset('images/no-photo.png') }}" 
+        alt="No Photo" 
+        class="rounded-md w-full md:w-2/3 lg:w-1/2 h-48 object-cover border border-gray-200 opacity-50"
+    >
+@endif
 
 <!-- Buttons -->
 <div class="flex justify-end space-x-2 mt-4">
