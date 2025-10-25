@@ -107,7 +107,8 @@
     data-location="{{ $report->location }}"
     data-status="{{ $report->status }}"
     data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-    data-photo="{{ $report->photo ? asset('storage/' . $report->photo) : '' }}"
+data-photo="{{ $report->photo ? asset('storage/reports/'.$report->photo) : '' }}"
+
     data-name="{{ $report->user->name ?? 'Anonymous' }}"
     data-email="{{ $report->user->email ?? 'No Email' }}">
   {{ $report->title }}
