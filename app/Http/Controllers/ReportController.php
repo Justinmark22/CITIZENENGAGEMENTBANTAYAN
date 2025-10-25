@@ -8,27 +8,30 @@ use App\Models\Report;
 
 class ReportController extends Controller
 {
-   public function store(Request $request)
+    public function store(Request $request)
 {
     $validated = $request->validate([
-        'category' => 'required|string|max:255',
+        'category' => 'required|string',
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'photo' => 'nullable|image|max:2048',
     ]);
 
     if ($request->hasFile('photo')) {
-        // Save to storage/app/public/reports
-        $path = $request->file('photo')->store('public/reports');
-        // Convert path to public-accessible format (public/storage/reports)
-        $validated['photo'] = str_replace('public/', 'storage/', $path);
+        $photo = $request->file('photo');
+        $photoName = time() . '.' . $photo->getClientOriginalExtension();
+        $validated['photo'] = $photo->storeAs('reports', $photoName, 'public');
     }
+
+    // Assign default values
+    $validated['status'] = 'Pending';
+    $validated['location'] = auth()->user()->location ?? 'Unknown';
+    $validated['user_id'] = auth()->id(); // ✅ THIS is what links the report to the user
 
     Report::create($validated);
 
-    return redirect()->back()->with('success', 'Report submitted successfully!');
+    return redirect()->back()->with('success', 'Report submitted!');
 }
-
 
 public function stafeDashboard()
 {
