@@ -180,27 +180,17 @@ class MDRRMOController extends Controller
 
         return view('mdrrmo.reports-madridejos', compact('reports'));
     }    // Santa.Fe Forwarded Reports
-    public function reportsSantafe()
+    public function reportsBantayan()
     {
         // Only Pending or Ongoing reports
-        $reports = ForwardedReport::where('location', 'Santa.Fe')
+        $reports = ForwardedReport::where('location', 'Bantayan')
                     ->whereIn('status', ['Forwarded','Pending','Ongoing'])
                     ->latest()
                     ->paginate(10);
 
-        return view('mdrrmo.reports-santafe', compact('reports'));
+        return view('mdrrmo.reports-bantayan', compact('reports'));
     }
 
-    // Madridejos Forwarded Reports
-    public function reportsMadridejos()
-    {
-        $reports = ForwardedReport::where('location', 'Madridejos')
-                    ->whereIn('status', ['Forwarded','Pending','Ongoing'])
-                    ->latest()
-                    ->paginate(10);
-
-        return view('mdrrmo.reports-madridejos', compact('reports'));
-    }
 
     // Fetch the user relationship
     public function user()
