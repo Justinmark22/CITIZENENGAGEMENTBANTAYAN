@@ -202,17 +202,17 @@
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
       <!-- Report Info -->
       <div class="flex-grow-1 pe-3">
-        <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
-            data-bs-toggle="modal"
-            data-bs-target="#reportModal"
-            data-title="{{ $report->title }}"
-            data-description="{{ $report->description }}"
-            data-location="{{ $report->location }}"
-            data-status="{{ $report->status }}"
-            data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-            data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
-          {{ $report->title }}
-        </h6>
+     <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
+    data-bs-toggle="modal"
+    data-bs-target="#reportModal"
+    data-title="{{ $report->title }}"
+    data-description="{{ $report->description }}"
+    data-location="{{ $report->location }}"
+    data-status="{{ $report->status }}"
+    data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+    data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
+  {{ $report->title }}
+</h6>
 
         <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
 
@@ -517,16 +517,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Photo handling: match store() logic
     const photoElement = document.getElementById('modalReportPhoto');
     const noPhotoText = document.getElementById('noPhotoText');
+const photo = trigger.getAttribute('data-photo') || '';
 
-    // Only show image if path exists and ends with a common image extension
-    if (photo && /\.(jpe?g|png|gif|bmp|svg|webp)$/i.test(photo)) {
-      photoElement.src = photo;
-      photoElement.classList.remove('d-none');
-      noPhotoText.classList.add('d-none');
-    } else {
-      photoElement.classList.add('d-none');
-      noPhotoText.classList.remove('d-none');
-    }
+if (photo && /\.(jpe?g|png|gif|bmp|svg|webp)$/i.test(photo)) {
+  photoElement.src = photo;
+  photoElement.classList.remove('d-none');
+  noPhotoText.classList.add('d-none');
+} else {
+  photoElement.classList.add('d-none');
+  noPhotoText.classList.remove('d-none');
+}
+
 
     // Status badge color
     const badge = document.getElementById('modalReportStatus');
