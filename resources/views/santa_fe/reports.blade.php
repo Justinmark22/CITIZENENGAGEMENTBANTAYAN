@@ -94,25 +94,23 @@
     <button class="btn btn-primary w-100"><i data-lucide="filter" class="me-1"></i> Filter</button>
   </div>
 </form>
-
 @forelse ($reports as $report)
   <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
       <div class="flex-grow-1 pe-3">
-<h6 class="fw-bold text-dark mb-1 cursor-pointer"
-    data-bs-toggle="modal"
-    data-bs-target="#reportModal"
-    data-title="{{ $report->title }}"
-    data-description="{{ $report->description }}"
-    data-location="{{ $report->location }}"
-    data-status="{{ $report->status }}"
-    data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-    data-photo="{{ $report->photo ? asset('storage/reports/' . $report->photo) : '' }}"
-    data-name="{{ $report->user->name ?? 'Anonymous' }}"
-    data-email="{{ $report->user->email ?? 'No Email' }}">
-    {{ $report->title }}
-</h6>
-
+        <h6 class="fw-bold text-dark mb-1 cursor-pointer"
+            data-bs-toggle="modal"
+            data-bs-target="#reportModal"
+            data-title="{{ $report->title }}"
+            data-description="{{ $report->description }}"
+            data-location="{{ $report->location }}"
+            data-status="{{ $report->status }}"
+            data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+            data-photo="{{ $report->photo ? asset('storage/reports/' . $report->photo) : '' }}"
+            data-name="{{ $report->user->name ?? 'Anonymous' }}"
+            data-email="{{ $report->user->email ?? 'No Email' }}">
+          {{ $report->title }}
+        </h6>
         <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
         <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-1">
           <span><i data-lucide="map-pin" class="me-1"></i> {{ $report->location }}</span>
@@ -122,6 +120,15 @@
           <span><i data-lucide="user" class="me-1"></i> {{ $report->user->name ?? 'Anonymous' }}</span>
           <span><i data-lucide="mail" class="me-1"></i> {{ $report->user->email ?? 'No Email' }}</span>
         </div>
+
+        <!-- Photo Preview -->
+        @if($report->photo)
+        <div class="mt-3">
+          <img src="{{ asset('storage/reports/' . $report->photo) }}" 
+               alt="Report Photo" 
+               class="rounded-md w-full md:w-2/3 lg:w-1/2 h-48 object-cover border border-gray-200">
+        </div>
+        @endif
       </div>
 
       <!-- Status Badge -->
@@ -174,19 +181,12 @@
               <div class="col-md-6 mb-3"><label class="text-muted small">Submitted</label><div id="modalReportDate" class="fs-6 text-dark"></div></div>
             </div>
           </div>
-         <div class="bg-light p-3 rounded-3 shadow-sm text-center">
-    @if($report->photo)
-        <img 
-            src="{{ asset('storage/reports/' . $report->photo) }}" 
-            alt="Report Photo" 
-            class="img-fluid rounded-3 shadow-sm"
-            style="max-height: 280px; object-fit: cover;"
-        >
-    @else
-        <p class="text-muted m-0">No photo available</p>
-    @endif
-</div>
-
+          <div class="col-md-5">
+            <label class="text-muted small">Photo</label>
+            <div class="bg-light p-3 rounded-3 shadow-sm text-center">
+              <img id="modalReportPhoto" src="" alt="Report Photo" class="img-fluid rounded-3 shadow-sm d-none" style="max-height: 280px; object-fit: cover;">
+              <p id="noPhotoText" class="text-muted m-0">No photo available</p>
+            </div>
           </div>
         </div>
       </div>
