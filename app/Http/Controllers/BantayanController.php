@@ -94,19 +94,5 @@ public function export(Report $report)
     $pdf = Pdf::loadView('bantayan.export', compact('report'));
     return $pdf->download('report-'.$report->id.'.pdf');
 }
-public function show($id)
-{
-    $report = Report::with('user')->findOrFail($id);
-
-    return response()->json([
-        'id' => $report->id,
-        'title' => $report->title,
-        'description' => $report->description,
-        'location' => $report->location,
-        'status' => $report->status,
-        'created_at' => $report->created_at->format('M d, Y H:i'),
-        'photo' => $report->photo ? asset('storage/' . $report->photo) : null,
-    ]);
-}
 
 }
