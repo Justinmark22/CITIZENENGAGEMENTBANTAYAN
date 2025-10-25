@@ -214,7 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modalReportDate').textContent = trigger.dataset.date;
     document.getElementById('modalReportName').textContent = trigger.dataset.name;
     document.getElementById('modalReportEmail').textContent = trigger.dataset.email;
-
 const photoEl = document.getElementById('modalReportPhoto');
 const noPhoto = document.getElementById('noPhotoText');
 
@@ -226,8 +225,7 @@ if(trigger.dataset.photo && trigger.dataset.photo.trim() !== ''){
   photoEl.classList.add('d-none');
   noPhoto.classList.remove('d-none');
 }
-.remove('d-none');
-}
+
 
 
     // Update status badge color
