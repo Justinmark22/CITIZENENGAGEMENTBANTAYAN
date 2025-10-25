@@ -13,21 +13,30 @@ class ReportController extends Controller
         'category' => 'required|string',
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'photo' => 'nullable|mimes:jpeg,jpg,png,gif,bmp,svg,webp|max:5120', // accept any common image, max 5MB
+        'photo' => 'nullable|mimes:jpeg,jpg,png,gif,bmp,svg,webp|max:5120', // max 5MB
     ]);
 
-    if ($request->hasFile('photo')) {
+    // Handle photo upload
+    if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
         $photo = $request->file('photo');
-        $photoName = time() . '.' . $photo->getClientOriginalExtension();
+        $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+        // store in storage/app/public/reports
         $path = $photo->storeAs('reports', $photoName, 'public');
         $validated['photo'] = $path; // save path to DB
+    } else {
+        $validated['photo'] = null; // ensure DB gets null if no photo
     }
 
+    // Set other fields
     $validated['status'] = 'Pending';
     $validated['location'] = auth()->user()->location ?? 'Unknown';
     $validated['user_id'] = auth()->id();
 
-    Report::create($validated);
+    // Create report
+    $report = Report::create($validated);
+
+    // Optional: debug
+    // dd($report);
 
     return redirect()->back()->with('success', 'Report submitted!');
 }
