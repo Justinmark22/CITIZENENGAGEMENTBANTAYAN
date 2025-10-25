@@ -244,66 +244,45 @@
 </section>
 <!-- Report Modal -->
 <div id="reportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn overflow-y-auto max-h-[90vh]">
     <div class="flex justify-between items-center border-b pb-3 mb-4">
       <h3 class="text-lg font-semibold text-gray-800">Submit Concern</h3>
-      <button type="button" onclick="closeModal('reportModal')" class="text-gray-500 hover:text-gray-800">
+      <button onclick="closeModal('reportModal')" class="text-gray-500 hover:text-gray-800">
         <i data-lucide="x"></i>
       </button>
     </div>
 
+    <!-- Form -->
     <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
       @csrf
       <div>
         <label class="block text-gray-700 text-sm font-medium mb-1">Title</label>
-        <input type="text" name="title" required
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none">
+        <input type="text" name="title" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none">
       </div>
-
       <div>
         <label class="block text-gray-700 text-sm font-medium mb-1">Category</label>
-        <select name="category" required
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none">
+        <select name="category" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none">
           <option value="">Select Category</option>
           <option value="Health">Health</option>
           <option value="Environment">Environment</option>
           <option value="Safety">Safety</option>
         </select>
       </div>
-
       <div>
         <label class="block text-gray-700 text-sm font-medium mb-1">Description</label>
-        <textarea name="description" rows="4" required
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"></textarea>
+        <textarea name="description" rows="4" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"></textarea>
       </div>
-
       <div>
         <label class="block text-gray-700 text-sm font-medium mb-1">Photo (Optional)</label>
-        <input type="file" name="photo" accept="image/*"
-          class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-green-100 file:text-green-700 hover:file:bg-green-200 transition">
+        <input type="file" name="photo" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-green-100 file:text-green-700 hover:file:bg-green-200 transition">
       </div>
-
       <div class="flex justify-end gap-2">
-        <button type="button" onclick="closeModal('reportModal')"
-          class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition">Cancel</button>
-        <button type="submit"
-          class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition">Submit</button>
+        <button type="button" onclick="closeModal('reportModal')" class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition">Cancel</button>
+        <button type="submit" class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition">Submit</button>
       </div>
     </form>
   </div>
 </div>
-
-<script>
-  function openModal(id) {
-    document.getElementById(id).classList.remove('hidden');
-    document.getElementById(id).classList.add('flex');
-  }
-
-  function closeModal(id) {
-    document.getElementById(id).classList.add('hidden');
-    document.getElementById(id).classList.remove('flex');
-  }
-</script>
 
 <!-- Scripts -->
 <script>
