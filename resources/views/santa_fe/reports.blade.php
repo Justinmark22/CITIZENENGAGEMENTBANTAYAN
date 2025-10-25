@@ -92,27 +92,14 @@
       </div>
       <div class="col-md-2">
         <button class="btn btn-primary w-100"><i data-lucide="filter" class="me-1"></i> Filter</button>
-      </div>
-    </form>
-@forelse ($reports as $report)
-  <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
-    <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
-      <!-- Report Info -->
-      <div class="flex-grow-1 pe-3">
-<h6 class="fw-bold text-dark mb-1 cursor-pointer"
-    data-bs-toggle="modal"
-    data-bs-target="#reportModal"
-    data-title="{{ $report->title }}"
-    data-description="{{ $report->description }}"
-    data-location="{{ $report->location }}"
-    data-status="{{ $report->status }}"
-    data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-    data-photo="{{ $report->photo ? url('reports/' . $report->photo) : '' }}"
+      data-status="{{ $report->status }}"
+            data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+            data-photo="{{ $report->photo ? url('reports/' . $report->photo) : '' }}"
+            data-name="{{ $report->user->name ?? 'Anonymous' }}"
+            data-email="{{ $report->user->email ?? 'No Email' }}">
+          {{ $report->title }}
+        </h6>
 
-    data-name="{{ $report->user->name ?? 'Anonymous' }}"
-    data-email="{{ $report->user->email ?? 'No Email' }}">
-  {{ $report->title }}
-</h6>
 
 
 
@@ -145,7 +132,6 @@
 @empty
   <div class="alert alert-info">No reports found.</div>
 @endforelse
-
 
 <!-- Report Modal -->
 <div class="modal fade custom-fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
@@ -200,6 +186,32 @@
   </div>
 </div>
 
+<!-- Reports List -->
+@forelse ($reports as $report)
+  <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
+    <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
+      <div class="flex-grow-1 pe-3">
+        <h6 class="fw-bold text-dark mb-1 cursor-pointer"
+            data-bs-toggle="modal"
+            data-bs-target="#reportModal"
+            data-title="{{ $report->title }}"
+            data-description="{{ $report->description }}"
+            data-location="{{ $report->location }}"
+            data-status="{{ $report->status }}"
+            data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+            data-photo="{{ $report->photo ? url('reports/' . $report->photo) : '' }}"
+            data-name="{{ $report->user->name ?? 'Anonymous' }}"
+            data-email="{{ $report->user->email ?? 'No Email' }}">
+          {{ $report->title }}
+        </h6>
+      </div>
+    </div>
+  </div>
+@empty
+  <p class="text-muted">No reports found.</p>
+@endforelse
+
+<!-- Modal JS -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('reportModal');
@@ -207,6 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
   modal.addEventListener('show.bs.modal', event => {
     const trigger = event.relatedTarget;
 
+    // Fill modal fields
     document.getElementById('modalReportTitle').textContent = trigger.dataset.title;
     document.getElementById('modalReportDesc').textContent = trigger.dataset.description;
     document.getElementById('modalReportLoc').textContent = trigger.dataset.location;
@@ -214,21 +227,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modalReportDate').textContent = trigger.dataset.date;
     document.getElementById('modalReportName').textContent = trigger.dataset.name;
     document.getElementById('modalReportEmail').textContent = trigger.dataset.email;
-const photoEl = document.getElementById('modalReportPhoto');
-const noPhoto = document.getElementById('noPhotoText');
 
-if(trigger.dataset.photo && trigger.dataset.photo.trim() !== ''){
-  photoEl.src = trigger.dataset.photo; // This will now be the correct full URL
-  photoEl.classList.remove('d-none');
-  noPhoto.classList.add('d-none');
-} else {
-  photoEl.classList.add('d-none');
-  noPhoto.classList.remove('d-none');
-}
+    const photoEl = document.getElementById('modalReportPhoto');
+    const noPhoto = document.getElementById('noPhotoText');
 
+    if(trigger.dataset.photo && trigger.dataset.photo.trim() !== ''){
+      photoEl.src = trigger.dataset.photo;
+      photoEl.classList.remove('d-none');
+      noPhoto.classList.add('d-none');
+    } else {
+      photoEl.classList.add('d-none');
+      noPhoto.classList.remove('d-none');
+    }
 
-
-    // Update status badge color
+    // Update badge color
     const badge = document.getElementById('modalReportStatus');
     badge.classList.remove('text-bg-warning', 'text-bg-success', 'text-bg-danger', 'text-bg-info');
     if (trigger.dataset.status === 'Ongoing') badge.classList.add('text-bg-info');
@@ -241,6 +253,7 @@ if(trigger.dataset.photo && trigger.dataset.photo.trim() !== ''){
   });
 });
 
+// Initialize Lucide icons
 lucide.createIcons();
 </script>
 
