@@ -9,6 +9,7 @@ class Report extends Model
 {
     use HasFactory;
 
+    // ✅ These fields can be mass assigned (used by Report::create)
     protected $fillable = [
         'category',
         'title',
@@ -19,7 +20,7 @@ class Report extends Model
         'user_id',
     ];
 
-    // Move this outside the fillable block
+    // ✅ Relationship: each report belongs to one user
     public function user()
     {
         return $this->belongsTo(User::class);

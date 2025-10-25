@@ -8,6 +8,35 @@ use App\Models\Report;
 
 class ReportController extends Controller
 {
+     public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'category' => 'required|string',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'photo' => 'nullable|image|max:2048',
+        ]);
+
+        // ✅ Handle image upload
+        if ($request->hasFile('photo')) {
+            $photo = $request->file('photo');
+            $photoName = time() . '.' . $photo->getClientOriginalExtension();
+            $validated['photo'] = $photo->storeAs('reports', $photoName, 'public');
+        }
+
+        // ✅ Assign default and relational values
+        $validated['status'] = 'Pending';
+        $validated['location'] = auth()->user()->location ?? 'Unknown';
+        $validated['user_id'] = auth()->id(); // Link to logged-in user
+
+        // ✅ Save report
+        Report::create($validated);
+
+        // ✅ Redirect back with success message
+        return redirect()->back()->with('success', 'Report submitted!');
+    }
+
+
 public function stafeDashboard()
 {
     $reports = Report::latest()->take(5)->get();
