@@ -196,38 +196,50 @@
     <button class="btn btn-primary w-100"><i data-lucide="filter" class="me-1"></i> Filter</button>
   </div>
 </form>
-
- <!-- Reports List -->
+<!-- Reports List -->
 @forelse ($reports as $report)
-  <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
-    <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
-<!-- Report Info -->
-<div class="flex-grow-1 pe-3">
-  <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
-      data-bs-toggle="modal"
-      data-bs-target="#reportModal"
-      data-title="{{ $report->title }}"
-      data-description="{{ $report->description }}"
-      data-location="{{ $report->location }}"
-      data-status="{{ $report->status }}"
-      data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-     data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
+<div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
+  <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
+
+    <!-- Report Info -->
+    <div class="flex-grow-1 pe-3">
+      <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
+          data-bs-toggle="modal"
+          data-bs-target="#reportModal"
+          data-title="{{ $report->title }}"
+          data-description="{{ $report->description }}"
+          data-location="{{ $report->location }}"
+          data-status="{{ $report->status }}"
+          data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+          data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
         {{ $report->title }}
-  </h6>
+      </h6>
 
+      <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
 
+      @if($report->photo)
+      <img src="{{ asset('storage/'.$report->photo) }}" alt="Report Photo"
+           class="mb-2 rounded shadow-sm w-full max-w-xs">
+      @endif
 
-        <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
+      <!-- Report Meta Info -->
+      <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-1">
+        <span><i data-lucide="map-pin" class="me-1"></i> {{ $report->location }}</span>
+        <span><i data-lucide="clock" class="me-1"></i> {{ $report->created_at->format('M d, Y H:i') }}</span>
+      </div>
 
-        <!-- Report Meta Info -->
-        <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-1">
-          <span><i data-lucide="map-pin" class="me-1"></i> {{ $report->location }}</span>
-          <span><i data-lucide="clock" class="me-1"></i> {{ $report->created_at->format('M d, Y H:i') }}</span>
-        </div>
-<div class="text-muted small d-flex align-items-center flex-wrap gap-3">
-  <span><i data-lucide="user" class="me-1"></i> {{ $report->user->name ?? 'Anonymous' }}</span>
-  <span><i data-lucide="mail" class="me-1"></i> {{ $report->user->email ?? 'No Email' }}</span>
+      <div class="text-muted small d-flex align-items-center flex-wrap gap-3">
+        <span><i data-lucide="user" class="me-1"></i> {{ $report->user->name ?? 'Anonymous' }}</span>
+        <span><i data-lucide="mail" class="me-1"></i> {{ $report->user->email ?? 'No Email' }}</span>
+      </div>
+    </div>
+
+  </div>
 </div>
+@empty
+<p>No reports yet.</p>
+@endforelse
+
 
       </div>
 
