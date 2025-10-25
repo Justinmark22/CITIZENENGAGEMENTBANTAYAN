@@ -242,7 +242,6 @@
     </section>
   </div>
 </section>
-
 <!-- Report Modal -->
 <div id="reportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn">
@@ -272,8 +271,8 @@
         <textarea name="description" rows="4" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"></textarea>
       </div>
       <div>
-        <label class="block text-gray-700 text-sm font-medium mb-1">Attachment (Optional)</label>
-        <input type="file" name="attachment" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-green-100 file:text-green-700 hover:file:bg-green-200 transition">
+        <label class="block text-gray-700 text-sm font-medium mb-1">Photo (Optional)</label>
+        <input type="file" name="photo" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-green-100 file:text-green-700 hover:file:bg-green-200 transition">
       </div>
       <div class="flex justify-end gap-2">
         <button type="button" onclick="closeModal('reportModal')" class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition">Cancel</button>
