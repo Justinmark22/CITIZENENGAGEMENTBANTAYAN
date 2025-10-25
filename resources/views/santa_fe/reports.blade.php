@@ -99,19 +99,20 @@
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
       <!-- Report Info -->
       <div class="flex-grow-1 pe-3">
-        <h6 class="fw-bold text-dark mb-1 cursor-pointer"
-            data-bs-toggle="modal"
-            data-bs-target="#reportModal"
-            data-title="{{ $report->title }}"
-            data-description="{{ $report->description }}"
-            data-location="{{ $report->location }}"
-            data-status="{{ $report->status }}"
-            data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-            data-photo="{{ $report->photo ? asset('storage/' . $report->photo) : '' }}"
-            data-name="{{ $report->user->name ?? 'Anonymous' }}"
-            data-email="{{ $report->user->email ?? 'No Email' }}">
-          {{ $report->title }}
-        </h6>
+<h6 class="fw-bold text-dark mb-1 cursor-pointer"
+    data-bs-toggle="modal"
+    data-bs-target="#reportModal"
+    data-title="{{ $report->title }}"
+    data-description="{{ $report->description }}"
+    data-location="{{ $report->location }}"
+    data-status="{{ $report->status }}"
+    data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+    data-photo="{{ $report->photo ? asset('reports/' . $report->photo) : '' }}"
+    data-name="{{ $report->user->name ?? 'Anonymous' }}"
+    data-email="{{ $report->user->email ?? 'No Email' }}">
+  {{ $report->title }}
+</h6>
+
 
         <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
 
@@ -214,16 +215,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const photoEl = document.getElementById('modalReportPhoto');
     const noPhoto = document.getElementById('noPhotoText');
+if(trigger.dataset.photo && trigger.dataset.photo.trim() !== ''){
+    photoEl.src = trigger.dataset.photo;
+    photoEl.classList.remove('d-none');
+    noPhoto.classList.add('d-none');
+} else {
+    photoEl.classList.add('d-none');
+    noPhoto.classList.remove('d-none');
+}
 
-    if (trigger.dataset.photo && trigger.dataset.photo.trim() !== '') {
-      photoEl.src = trigger.dataset.photo;
-      photoEl.classList.remove('d-none');
-      noPhoto.classList.add('d-none');
-    } else {
-      photoEl.src = '';
-      photoEl.classList.add('d-none');
-      noPhoto.classList.remove('d-none');
-    }
 
     // Update status badge color
     const badge = document.getElementById('modalReportStatus');
