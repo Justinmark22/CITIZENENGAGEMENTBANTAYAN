@@ -99,19 +99,20 @@
       <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
         <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
           <div class="flex-grow-1 pe-3">
-            <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
-                data-bs-toggle="modal"
-                data-bs-target="#reportModal"
-                data-title="{{ $report->title }}"
-                data-description="{{ $report->description }}"
-                data-location="{{ $report->location }}"
-                data-status="{{ $report->status }}"
-                data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-                data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}"
-                data-name="{{ $report->user->name ?? 'Anonymous' }}"
-                data-email="{{ $report->user->email ?? 'No Email' }}">
-              {{ $report->title }}
-            </h6>
+<h6 class="fw-bold text-dark mb-1 cursor-pointer"
+    data-bs-toggle="modal"
+    data-bs-target="#reportModal"
+    data-title="{{ $report->title }}"
+    data-description="{{ $report->description }}"
+    data-location="{{ $report->location }}"
+    data-status="{{ $report->status }}"
+    data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+    data-photo="{{ $report->photo ? asset('storage/' . $report->photo) : '' }}"
+    data-name="{{ $report->user->name ?? 'Anonymous' }}"
+    data-email="{{ $report->user->email ?? 'No Email' }}">
+  {{ $report->title }}
+</h6>
+
             <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
             <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-1">
               <span><i data-lucide="map-pin" class="me-1"></i> {{ $report->location }}</span>
@@ -197,8 +198,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('reportModal');
+
   modal.addEventListener('show.bs.modal', event => {
     const trigger = event.relatedTarget;
+
+    // Set text fields
     document.getElementById('modalReportTitle').textContent = trigger.dataset.title;
     document.getElementById('modalReportDesc').textContent = trigger.dataset.description;
     document.getElementById('modalReportLoc').textContent = trigger.dataset.location;
@@ -207,27 +211,29 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modalReportName').textContent = trigger.dataset.name;
     document.getElementById('modalReportEmail').textContent = trigger.dataset.email;
 
+    // Handle photo
     const photoEl = document.getElementById('modalReportPhoto');
     const noPhoto = document.getElementById('noPhotoText');
-    if(trigger.dataset.photo && trigger.dataset.photo.trim() !== ''){
+    if (trigger.dataset.photo && trigger.dataset.photo.trim() !== '') {
       photoEl.src = trigger.dataset.photo;
       photoEl.classList.remove('d-none');
       noPhoto.classList.add('d-none');
     } else {
+      photoEl.src = ''; // Reset src just in case
       photoEl.classList.add('d-none');
       noPhoto.classList.remove('d-none');
     }
 
+    // Optional: Change badge color based on status
     const badge = document.getElementById('modalReportStatus');
     badge.classList.remove('text-bg-warning', 'text-bg-success', 'text-bg-danger', 'text-bg-info');
-    if(trigger.dataset.status==='Ongoing') badge.classList.add('text-bg-info');
-    else if(trigger.dataset.status==='Resolved') badge.classList.add('text-bg-success');
-    else if(trigger.dataset.status==='Rejected') badge.classList.add('text-bg-danger');
+    if (trigger.dataset.status === 'Ongoing') badge.classList.add('text-bg-info');
+    else if (trigger.dataset.status === 'Resolved') badge.classList.add('text-bg-success');
+    else if (trigger.dataset.status === 'Rejected') badge.classList.add('text-bg-danger');
     else badge.classList.add('text-bg-warning');
-
-    document.getElementById('printButton').classList.toggle('d-none', trigger.dataset.status!=='Ongoing');
   });
 });
+
 
 function printReport() {
   const getText = id => document.getElementById(id).textContent.trim() || 'N/A';
