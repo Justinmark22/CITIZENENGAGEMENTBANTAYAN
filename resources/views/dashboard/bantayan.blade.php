@@ -320,39 +320,50 @@
 }
 .animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
 </style>
-<form id="firebaseReportForm" enctype="multipart/form-data" class="space-y-4">
-  <div>
-    <label class="block text-sm font-medium text-gray-700">Category</label>
-    <select name="category" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" required>
-      <option value="" disabled selected>Select category</option>
-      <option>Road Issue</option>
-      <option>Water Management</option>
-      <option>Waste Management</option>
-      <option>Noise Complaint</option>
-    </select>
-  </div>
 
-  <div>
-    <label class="block text-sm font-medium text-gray-700">Title</label>
-    <input type="text" name="title" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="E.g. Broken streetlight" required>
-  </div>
+<!-- 📌 Submit Concern Modal -->
+<div id="reportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h3 class="text-lg font-semibold text-gray-800">Submit Concern</h3>
+      <button onclick="closeModal('reportModal')" class="text-gray-400 hover:text-gray-700">&times;</button>
+    </div>
 
-  <div>
-    <label class="block text-sm font-medium text-gray-700">Description</label>
-    <textarea name="description" rows="4" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="Describe your concern..." required></textarea>
-  </div>
+    <form method="POST" action="{{ route('reports.store') }}" enctype="multipart/form-data" class="space-y-4">
+      @csrf
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Category</label>
+        <select name="category" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" required>
+          <option value="" disabled selected>Select category</option>
+          <option>Road Issue</option>
+          <option>Water Management</option>
+          <option>Waste Management</option>
+          <option>Noise Complaint</option>
+        </select>
+      </div>
 
-  <div>
-    <label class="block text-sm font-medium text-gray-700">Upload Photo (optional)</label>
-    <input type="file" name="photo" accept="image/*" class="w-full border rounded-lg px-3 py-2">
-  </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Title</label>
+        <input type="text" name="title" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="E.g. Broken streetlight" required>
+      </div>
 
-  <div class="flex justify-end gap-3 pt-4 border-t">
-    <button type="button" onclick="closeModal('reportModal')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
-    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">Submit</button>
-  </div>
-</form>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea name="description" rows="4" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="Describe your concern..." required></textarea>
+      </div>
 
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Upload Photo (optional)</label>
+        <input type="file" name="photo" accept="image/*" class="w-full border rounded-lg px-3 py-2">
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t">
+        <button type="button" onclick="closeModal('reportModal')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
 <!-- TikTok-Style Dark Report Progress Modal (Tailwind) -->
 <div id="reportProgressModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
   <div class="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-6 relative text-gray-100 overflow-hidden">
@@ -499,69 +510,7 @@ function closeReportModal() {
 
 <script>
   
-// Import the necessary Firebase modules
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-  import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-  // ✅ Your Firebase configuration
-  const firebaseConfig = {
-   apiKey: "AIzaSyALUEscSDYxBneCFlS4a0foGS1saJbnSX0",
-    authDomain: "bantayan-911.firebaseapp.com",
-    projectId: "bantayan-911",
-    storageBucket: "bantayan-911.firebasestorage.app",
-    messagingSenderId: "696240200583",
-    appId: "1:696240200583:web:46e463212e19dea2e81122",
-    measurementId: "G-JPK3E2NWR7"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const storage = getStorage(app);
-
-  // ✅ Handle form submission
-  document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector("#firebaseReportForm");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const category = form.category.value;
-      const title = form.title.value;
-      const description = form.description.value;
-      const file = form.photo.files[0];
-
-      try {
-        let photoURL = "";
-
-        // ✅ Upload photo if exists
-        if (file) {
-          const storageRef = sRef(storage, "reports/" + Date.now() + "_" + file.name);
-          await uploadBytes(storageRef, file);
-          photoURL = await getDownloadURL(storageRef);
-        }
-
-        // ✅ Push data to Firebase Realtime Database
-        const newReportRef = push(ref(db, "reports"));
-        await set(newReportRef, {
-          category,
-          title,
-          description,
-          photo: photoURL || null,
-          created_at: new Date().toISOString()
-        });
-
-        alert("✅ Report submitted successfully!");
-        form.reset();
-        closeModal("reportModal");
-
-      } catch (error) {
-        console.error("❌ Error submitting report:", error);
-        alert("Failed to submit report. Please try again.");
-      }
-    });
-  });
   // Mobile menu toggle
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
   const navbarLinks = document.getElementById("navbarLinks");
