@@ -25,4 +25,4 @@ yarn-error.log
 # =========================================
 # Optional: keep public storage symlink ignored
 # (If you want to track reports, leave /public/storage/ out)
-/public/storage/*
+!/public/storage/*
