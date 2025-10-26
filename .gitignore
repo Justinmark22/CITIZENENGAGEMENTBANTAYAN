@@ -6,8 +6,8 @@
 /.phpunit.cache
 /public/build
 /public/hot
-!/.env
-/.env.* 
+/.env
+/.env.*
 Homestead.json
 Homestead.yaml
 npm-debug.log
@@ -16,13 +16,20 @@ yarn-error.log
 /.vscode
 
 # =========================================
-# Ignore all storage except reports
+# Ignore all storage except public/reports
 # =========================================
-!/storage/*
-!/storage/app/public/reports/
-!.gitignore
+/storage/*
+!/storage/app/
+!/storage/app/public/
+!/storage/app/public/reports/**
 
 # =========================================
-# Optional: keep public storage symlink ignored
-# (If you want to track reports, leave /public/storage/ out)
-!/public/storage/*
+# Ignore Laravel log, cache, and framework files
+# =========================================
+/storage/framework/*
+/storage/logs/*
+
+# =========================================
+# Optional: ignore symlink (public/storage)
+# =========================================
+!/public/storage
