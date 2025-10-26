@@ -328,7 +328,7 @@
       <h3 class="text-lg font-semibold text-gray-800">Submit Concern</h3>
       <button onclick="closeModal('reportModal')" class="text-gray-400 hover:text-gray-700">&times;</button>
     </div>
-<form action="{{ route('report.store') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
       <div>
         <label class="block text-sm font-medium text-gray-700">Category</label>
