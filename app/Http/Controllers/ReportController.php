@@ -8,7 +8,7 @@ use App\Models\Report;
 
 class ReportController extends Controller
 {
-    public function store(Request $request)
+   public function store(Request $request)
 {
     $validated = $request->validate([
         'category' => 'required|string',
@@ -20,18 +20,22 @@ class ReportController extends Controller
     if ($request->hasFile('photo')) {
         $photo = $request->file('photo');
         $photoName = time() . '.' . $photo->getClientOriginalExtension();
-        $validated['photo'] = $photo->storeAs('reports', $photoName, 'public');
+        // ✅ Store in "storage/app/public/reports"
+        $path = $photo->storeAs('reports', $photoName, 'public');
+        // Save only the relative path (like "reports/12345.png")
+        $validated['photo'] = $path;
     }
 
-    // Assign default values
+    // ✅ Assign default values
     $validated['status'] = 'Pending';
     $validated['location'] = auth()->user()->location ?? 'Unknown';
-    $validated['user_id'] = auth()->id(); // ✅ THIS is what links the report to the user
+    $validated['user_id'] = auth()->id();
 
     Report::create($validated);
 
     return redirect()->back()->with('success', 'Report submitted!');
 }
+
 
 public function stafeDashboard()
 {

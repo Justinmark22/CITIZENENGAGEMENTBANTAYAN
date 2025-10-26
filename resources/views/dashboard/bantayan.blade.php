@@ -329,8 +329,8 @@
       <button onclick="closeModal('reportModal')" class="text-gray-400 hover:text-gray-700">&times;</button>
     </div>
 
-    <form method="POST" action="{{ route('reports.store') }}" enctype="multipart/form-data" class="space-y-4">
-      @csrf
+   <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
       <div>
         <label class="block text-sm font-medium text-gray-700">Category</label>
         <select name="category" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" required>
