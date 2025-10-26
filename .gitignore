@@ -6,7 +6,7 @@
 /.phpunit.cache
 /public/build
 /public/hot
-/.env
+!/.env
 /.env.* 
 Homestead.json
 Homestead.yaml
