@@ -328,10 +328,8 @@
       <h3 class="text-lg font-semibold text-gray-800">Submit Concern</h3>
       <button onclick="closeModal('reportModal')" class="text-gray-400 hover:text-gray-700">&times;</button>
     </div>
-
-<form action="{{ route('reports.store') }}" method="POST">
-
-      @csrf
+<form action="{{ route('report.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
       <div>
         <label class="block text-sm font-medium text-gray-700">Category</label>
         <select name="category" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" required>
@@ -348,10 +346,16 @@
         <input type="text" name="title" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="E.g. Broken streetlight" required>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Description</label>
-        <textarea name="description" rows="4" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="Describe your concern..." required></textarea>
-      </div>
+    <div>
+    <label class="block text-sm font-medium text-gray-700">Description</label>
+    <textarea name="description" rows="4" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="Describe your concern..." required></textarea>
+</div>
+
+<div>
+    <label class="block text-sm font-medium text-gray-700">Upload Photo (Optional)</label>
+    <input type="file" name="photo" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500">
+</div>
+
 
 
       <div class="flex justify-end gap-3 pt-4 border-t">

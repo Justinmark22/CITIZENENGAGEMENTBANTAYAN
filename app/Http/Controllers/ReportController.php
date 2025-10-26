@@ -13,6 +13,7 @@ class ReportController extends Controller
         'category' => 'required|string',
         'title' => 'required|string|max:255',
         'description' => 'required|string',
+        'photo' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // Validation for photo
     ]);
 
     // ✅ Assign default values
@@ -20,10 +21,27 @@ class ReportController extends Controller
     $validated['location'] = auth()->user()->location ?? 'Unknown';
     $validated['user_id'] = auth()->id();
 
+    // Check if a photo was uploaded
+    if ($request->hasFile('photo')) {
+        // Get the file
+        $file = $request->file('photo');
+
+        // Generate a unique name for the photo
+        $filename = time() . '.' . $file->getClientOriginalExtension();
+
+        // Store the photo in the 'public' directory and get its path
+        $filePath = $file->storeAs('reports/photos', $filename, 'public');
+
+        // Add the file path to the validated data
+        $validated['photo'] = $filePath;
+    }
+
+    // Create the report
     Report::create($validated);
 
     return redirect()->back()->with('success', 'Report submitted!');
 }
+
 
 
 
