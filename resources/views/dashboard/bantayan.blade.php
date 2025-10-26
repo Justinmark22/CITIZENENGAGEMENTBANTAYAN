@@ -329,7 +329,8 @@
       <button onclick="closeModal('reportModal')" class="text-gray-400 hover:text-gray-700">&times;</button>
     </div>
 
-    <form method="POST" action="{{ route('reports.store') }}" enctype="multipart/form-data" class="space-y-4">
+<form action="{{ route('reports.store') }}" method="POST">
+
       @csrf
       <div>
         <label class="block text-sm font-medium text-gray-700">Category</label>
