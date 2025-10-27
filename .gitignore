@@ -38,7 +38,7 @@ yarn-error.log
 # =========================================
 # Laravel logs
 # =========================================
-/storage/logs/*
+!/storage/logs/*
 
 # =========================================
 # Optional: ignore symlink (public/storage)
