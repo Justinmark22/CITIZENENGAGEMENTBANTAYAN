@@ -128,20 +128,42 @@ Route::get('/', function () {
     $response->headers->set('Referrer-Policy', 'no-referrer');
 
     return $response;
-});
+});// ✅ LOGIN ROUTES
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
-    // ✅ Apply throttling based on IP + email
-    $key = Str::lower($request->input('email')).'|'.$request->ip();
+    $key = Str::lower($request->input('email')) . '|' . $request->ip();
 
-    if (RateLimiter::tooManyAttempts($key, 5)) {
+    if (RateLimiter::tooManyAttempts($key, 3)) {
         $seconds = RateLimiter::availableIn($key);
-        throw ValidationException::withMessages([
-            'email' => "Too many login attempts. Try again in $seconds seconds.",
-        ]);
+        return back()->withErrors([
+            'email' => "Too many login attempts. Please try again in {$seconds} seconds.",
+        ])->onlyInput('email');
     }
 
+    // ✅ reCAPTCHA v3 verification
+    $recaptchaResponse = $request->input('g-recaptcha-response');
+    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // replace with your key
+
+    if (!$recaptchaResponse) {
+        return back()->withErrors(['captcha' => 'Please complete the reCAPTCHA verification.'])
+            ->onlyInput('email');
+    }
+
+    $verifyResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+        'secret' => $secretKey,
+        'response' => $recaptchaResponse,
+        'remoteip' => $request->ip(),
+    ]);
+
+    $recaptchaData = $verifyResponse->json();
+
+    if (empty($recaptchaData['success']) || $recaptchaData['success'] !== true || $recaptchaData['score'] < 0.5) {
+        return back()->withErrors(['captcha' => 'Suspicious activity detected. Please try again.'])
+            ->onlyInput('email');
+    }
+
+    // ✅ Validate credentials
     $credentials = $request->validate([
         'email' => ['required', 'email', 'max:255'],
         'password' => ['required', 'string', 'max:255'],
@@ -149,7 +171,6 @@ Route::post('/login', function (Request $request) {
 
     $user = \App\Models\User::where('email', $credentials['email'])->first();
 
-    // ✅ Disabled user check
     if ($user && $user->status === 'disabled') {
         RateLimiter::hit($key, 60);
         return back()->withErrors([
@@ -157,53 +178,122 @@ Route::post('/login', function (Request $request) {
         ])->onlyInput('email');
     }
 
-    // ✅ Attempt login (uses bcrypt hashed password check)
     if (Auth::attempt($credentials, $request->boolean('remember'))) {
         $request->session()->regenerate();
         $user = Auth::user();
 
-        // ✅ Mark user as active
+        // ✅ Example cookies
+        cookie()->queue(cookie('user_name', $user->name, 60));
+        cookie()->queue(cookie('user_role', $user->role, 60));
+        cookie()->queue(cookie('secure_session', Str::random(32), 60, null, null, true, true));
+
         $user->status = 'active';
         $user->save();
+        RateLimiter::clear($key);
 
-        RateLimiter::clear($key); // ✅ Reset attempts on success
+        // ✅ Admins, Staff, or Admin Location → skip OTP
+        if (
+            in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water'])
+            || strtolower($user->location) === 'admin'
+        ) {
+            $route = match (strtolower($user->role)) {
+                'admin' => match (strtolower($user->location)) {
+                    'santa.fe' => 'dashboard.santafeadmin',
+                    'bantayan' => 'dashboard.bantayanadmin',
+                    'madridejos' => 'dashboard.madridejosadmin',
+                    'admin' => 'dashboard.admin',
+                    default => 'dashboard',
+                },
+                'mdrrmo' => match (strtolower($user->location)) {
+                    'santa.fe' => 'dashboard.mdrrmo-santafe',
+                    'bantayan' => 'dashboard.mdrrmo-bantayan',
+                    'madridejos' => 'dashboard.mdrrmo-madridejos',
+                    default => 'dashboard',
+                },
+                'waste' => match (strtolower($user->location)) {
+                    'santa.fe' => 'dashboard.waste-santafe',
+                    'bantayan' => 'dashboard.waste-bantayan',
+                    'madridejos' => 'dashboard.waste-madridejos',
+                    default => 'dashboard',
+                },
+                'water' => match (strtolower($user->location)) {
+                    'santa.fe' => 'dashboard.water-santafe',
+                    'bantayan' => 'dashboard.water-bantayan',
+                    'madridejos' => 'dashboard.water-madridejos',
+                    default => 'dashboard',
+                },
+                default => match (strtolower($user->location)) {
+                    'admin' => 'dashboard.admin',
+                    default => 'dashboard',
+                },
+            };
 
-       // ✅ Redirect based on role and location
-if (strtolower($user->role) === 'admin') {
-    return match ($user->location) {
-        'Santa.Fe'   => redirect()->route('dashboard.santafeadmin'),
-        'Bantayan'   => redirect()->route('dashboard.bantayanadmin'),
-        'Madridejos' => redirect()->route('dashboard.madridejosadmin'),
-        'Admin'      => redirect()->route('dashboard.admin'),
-        default      => redirect('/dashboard'),
-    };
-}
+            return redirect()->route($route);
+        }
 
-if (strtolower($user->role) === 'mdrrmo') {
-    return match ($user->location) {
-        'Santa.Fe'    => redirect()->route('dashboard.mdrrmo-santafe'),
-        'Bantayan'   => redirect()->route('dashboard.mdrrmo-bantayan'),
-        'Madridejos' => redirect()->route('dashboard.mdrrmo-madridejos'),
-        default      => redirect('/dashboard'),
-    };
-}
+        // ✅ Citizens only → Send OTP
+        $otp = rand(100000, 999999);
 
-// ✅ Citizens or fallback
-return match ($user->location) {
-    'Santa.Fe'   => redirect()->route('dashboard.santafe'),
-    'Bantayan'   => redirect()->route('dashboard.bantayan'),
-    'Madridejos' => redirect()->route('dashboard.madridejos'),
-    default      => redirect('/dashboard'),
-};
+        session([
+            'otp' => $otp,
+            'otp_expires' => now()->addMinutes(3),
+            'otp_user_id' => $user->id,
+        ]);
 
+        try {
+            Mail::to($user->email)->send(new SendOtpMail($otp));
+        } catch (\Exception $e) {
+            return back()->withErrors(['email' => 'Failed to send OTP: ' . $e->getMessage()]);
+        }
+
+        Auth::logout(); // logout until OTP verified
+        return redirect()->route('otp.verify')->with('status', 'OTP sent to your email. Please verify to continue.');
     }
 
-    RateLimiter::hit($key, 60); // ✅ Increment failed attempts
-
+    RateLimiter::hit($key, 60);
     return back()->withErrors([
-        'email' => 'The provided credentials do not match our records.',
+        'email' => 'Invalid email or password.',
     ])->onlyInput('email');
 })->name('login.submit');
+
+
+// ✅ OTP VERIFICATION ROUTES
+Route::get('/verify-otp', fn() => view('auth.verify-otp'))->name('otp.verify');
+
+Route::post('/verify-otp', function (Request $request) {
+    $request->validate(['otp' => 'required|numeric']);
+
+    $sessionOtp = session('otp');
+    $expires = session('otp_expires');
+    $userId = session('otp_user_id');
+
+    if (!$sessionOtp || now()->greaterThan($expires)) {
+        Auth::logout();
+        session()->forget(['otp', 'otp_expires', 'otp_user_id']);
+        return redirect()->route('login')->withErrors(['otp' => 'OTP expired. Please login again.']);
+    }
+
+    if ($request->otp != $sessionOtp) {
+        return back()->withErrors(['otp' => 'Invalid OTP code.']);
+    }
+
+    $user = \App\Models\User::find($userId);
+
+    if (!$user) {
+        return redirect()->route('login')->withErrors(['email' => 'User not found.']);
+    }
+
+    Auth::login($user);
+    session()->forget(['otp', 'otp_expires', 'otp_user_id']);
+
+    // ✅ Redirect based on location (for citizens)
+    return match ($user->location) {
+        'Santa.Fe'   => redirect()->route('dashboard.santafe'),
+        'Bantayan'   => redirect()->route('dashboard.bantayan'),
+        'Madridejos' => redirect()->route('dashboard.madridejos'),
+        default      => redirect('/dashboard'),
+    };
+})->name('otp.verify.submit');
 
 
 Route::post('/logout', function (Request $request) {
