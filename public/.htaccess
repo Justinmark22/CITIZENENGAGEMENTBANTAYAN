@@ -41,11 +41,9 @@
 # ======================================================
 # 🚫 Block Sensitive Files & Directories
 # ======================================================
-# ✅ Allow access to images in /public/reports
-<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg)$">
-    Require all granted
+<FilesMatch "(^\.|composer\.json|composer\.lock|artisan|server\.php|.env|.env.*|.git|.htaccess|storage|vendor)">
+    Require all denied
 </FilesMatch>
-
 
 # ======================================================
 # 🧯 Disable PHP Execution in Uploads or Cache (if exists)
