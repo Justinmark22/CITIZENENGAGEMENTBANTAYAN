@@ -1,71 +1,38 @@
-# ======================================================
-# 🚀 Laravel Public Directory .htaccess (Secure)
-# ======================================================
-
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
 
-    # ==================================================
-    # 🔁 Redirect Trailing Slashes (except folders)
-    # ==================================================
+    # Redirect trailing slashes for non-directories
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # ==================================================
-    # 🔐 Pass Authorization Header (for API/Auth)
-    # ==================================================
+    # Pass Authorization header for APIs
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # ==================================================
-    # 🚦 Route All Requests To index.php
-    # ==================================================
+    # Route all other requests to index.php
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
 
-# ======================================================
-# 🧱 Block Access To Hidden Files (.env, .git, etc.)
-# ======================================================
+# Block access to hidden files
 <FilesMatch "^\.">
     Require all denied
 </FilesMatch>
 
-# ======================================================
-# 🧨 Block Dangerous Files
-# ======================================================
+# Block sensitive files
 <FilesMatch "\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist|pem|key|env|gz|zip|rar)$">
     Require all denied
 </FilesMatch>
 
-# ======================================================
-# ✅ Allow Images & Public Assets
-# ======================================================
+# Allow public assets
 <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|css|js|woff|woff2|ttf|eot|ico)$">
     Require all granted
 </FilesMatch>
 
-# ======================================================
-# 🧯 Disable PHP Execution in Storage & Cache
-# ======================================================
-<Directory "storage">
-    Options +FollowSymLinks
-    php_flag engine off
-    Require all granted
-</Directory>
-
-<Directory "bootstrap/cache">
-    Options +FollowSymLinks
-    php_flag engine off
-    Require all granted
-</Directory>
-
-# ======================================================
-# 🧰 Security Headers
-# ======================================================
+# Security headers
 <IfModule mod_headers.c>
     Header set X-Content-Type-Options "nosniff"
     Header always append X-Frame-Options SAMEORIGIN
@@ -75,15 +42,11 @@
     Header set Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';"
 </IfModule>
 
-# ======================================================
-# ⚡ Force HTTPS
-# ======================================================
+# Force HTTPS
 <IfModule mod_rewrite.c>
     RewriteCond %{HTTPS} off
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
 
-# ======================================================
-# 🧹 Disable Directory Browsing
-# ======================================================
+# Disable directory browsing
 Options -Indexes
