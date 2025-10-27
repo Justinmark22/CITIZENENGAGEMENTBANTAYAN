@@ -6,6 +6,7 @@ use App\Models\Report;
 use Illuminate\Http\Request;
 use App\Models\Feedback;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class BantayanController extends Controller
 {
@@ -93,6 +94,36 @@ public function export(Report $report)
 {
     $pdf = Pdf::loadView('bantayan.export', compact('report'));
     return $pdf->download('report-'.$report->id.'.pdf');
+}
+
+public function forward(Request $request)
+{
+    $request->validate([
+        'report_id' => 'required|exists:reports,id',
+        'reporter_user_id' => 'required|exists:users,id',
+        'forwarded_to' => 'required|string|max:255',
+    ]);
+
+    $report = Report::findOrFail($request->report_id);
+
+    // Insert into forwarded_reports table
+    \App\Models\ForwardedReport::create([
+        'report_id' => $report->id,
+        'forwarded_to' => $request->forwarded_to,
+        'status' => 'Forwarded',
+        'user_id' => $request->reporter_user_id,
+        'location' => $report->location,
+        'title' => $report->title,
+        'description' => $report->description,
+        'category' => $report->category,
+        'photo' => $report->photo,
+    ]);
+
+    // Update original report status
+    $report->status = 'Forwarded';
+    $report->save();
+
+    return response()->json(['success' => true, 'message' => 'Report forwarded successfully!']);
 }
 
 }

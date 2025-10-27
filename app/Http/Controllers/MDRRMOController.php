@@ -231,7 +231,7 @@ public function reportsBantayan()
         ->orderByDesc('created_at')
         ->paginate(10);
 
-    return view('water.reports-bantayan', compact('reports'));
+    return view('mdrrmo.reports-bantayan', compact('reports'));
 }
 
 

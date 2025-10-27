@@ -93,16 +93,17 @@ Route::post('/register', function (Request $request) {
         ],
     ]);
 
-    // 👤 Create User Securely
-    $user = User::create([
-        'name' => e($validated['name']),
-        'email' => strtolower($validated['email']),
-        'location' => $validated['location'],
-        'password' => Hash::make($validated['password']), // Argon2id from config/hashing.php
-        'role' => 'user',
-        'status' => 'active',
-        'remember_token' => Str::random(60),
-    ]);
+$user = User::create([
+    'name' => e($validated['name']),
+    'email' => strtolower($validated['email']),
+    'location' => $validated['location'],
+    'password' => Hash::make($validated['password']),
+    'role' => 'user',
+    'status' => 'active',
+    'remember_token' => Str::random(60),
+]);
+
+$userId = $user->id; // auto-generated
 
     // 📩 Send the Bantayan 911 Welcome Email
     Mail::to($user->email)->send(new WelcomeNewUserEmail($user));
@@ -825,7 +826,7 @@ Route::prefix('admin/municipal-admins')->group(function () {
 Route::get('/certificate/request', [CertificateController::class, 'showRequestForm'])->name('certificate.request');
 Route::post('/certificate/request', [CertificateController::class, 'store'])->name('certificate.submit');
 //
-Route::post('/reports/forward', [SantaFeController::class, 'forward'])->name('reports.forward');
+Route::post('/reports/forward', [BantayanController::class, 'forward'])->name('reports.forward');
 //
 Route::get('/mdrrmo/santafe', [MDRRMOController::class, 'santafe'])->name('dashboard.mdrrmo-santafe');
 Route::get('/mdrrmo/bantayan', [MDRRMOController::class, 'bantayan'])->name('dashboard.mdrrmo-bantayan');

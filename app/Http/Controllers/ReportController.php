@@ -7,36 +7,27 @@ use Illuminate\Http\Request;
 use App\Models\Report;
 
 class ReportController extends Controller
-{public function store(Request $request)
+{
+    public function store(Request $request)
 {
     $validated = $request->validate([
         'category' => 'required|string',
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'photo' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // Validation for photo
+        'photo' => 'nullable|image|max:2048',
     ]);
 
-    // ✅ Assign default values
-    $validated['status'] = 'Pending';
-    $validated['location'] = auth()->user()->location ?? 'Unknown';
-    $validated['user_id'] = auth()->id();
-
-    // Check if a photo was uploaded
     if ($request->hasFile('photo')) {
-        // Get the file
-        $file = $request->file('photo');
-
-        // Generate a unique name for the photo
-        $filename = time() . '.' . $file->getClientOriginalExtension();
-
-        // Store the photo in the 'public' directory and get its path
-        $filePath = $file->storeAs('reports/photos', $filename, 'public');
-
-        // Add the file path to the validated data
-        $validated['photo'] = $filePath;
+        $photo = $request->file('photo');
+        $photoName = time() . '.' . $photo->getClientOriginalExtension();
+        $validated['photo'] = $photo->storeAs('reports', $photoName, 'public');
     }
 
-    // Create the report
+    // Assign default values
+    $validated['status'] = 'Pending';
+    $validated['location'] = auth()->user()->location ?? 'Unknown';
+    $validated['user_id'] = auth()->id(); // ✅ THIS is what links the report to the user
+
     Report::create($validated);
 
     return redirect()->back()->with('success', 'Report submitted!');

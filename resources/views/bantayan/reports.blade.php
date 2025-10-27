@@ -148,18 +148,7 @@
 
   <ul class="dropdown-menu dropdown-menu-end shadow-lg p-4 rounded-4" style="width: 280px;" aria-labelledby="adminDropdown">
     
-    <!-- Dark Mode Toggle -->
-    <li class="mb-3 d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center gap-2">
-        <i data-lucide="moon" class="text-secondary"></i>
-        <span class="text-muted">Dark Mode</span>
-      </div>
-      <div class="form-check form-switch m-0">
-        <input class="form-check-input" type="checkbox" id="darkModeToggle"
-               title="Toggle dark theme">
-      </div>
-    </li>
-
+  
     <li><hr class="dropdown-divider"></li>
 
     <!-- Logout -->
@@ -333,6 +322,11 @@
             <i data-lucide="mail" class="text-primary"></i>
             <span id="modalReportEmail" class="fw-semibold text-dark">{{ $report->user->email ?? 'No Email' }}</span>
           </div>
+          <div class="d-flex align-items-center gap-2">
+    <i data-lucide="hash" class="text-primary"></i>
+    <span id="modalReportUserId" class="fw-semibold text-dark">{{ $report->user_id ?? 'N/A' }}</span>
+</div>
+
         </div>
       </div>
 
@@ -405,7 +399,13 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3"
             aria-labelledby="forwardDropdown{{ $report->id }}">
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'MDRRMO')">MDRRMO</a></li>
+         <button type="button" 
+        class="btn btn-outline-primary dropdown-item" 
+        data-user-id="{{ $report->user_id }}" 
+        onclick="forwardReport({{ $report->id }}, this, 'MDRRMO')">
+  MDRRMO
+</button>
+
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Waste Management')">WASTEMANAGEMENT</a></li>
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Water Management')">WATERMANAGEMENT</a></li>
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Fire Department')">Fire Department</a></li>
@@ -416,10 +416,15 @@
   </div>
 @endforeach
 <script>
-function forwardReport(reportId, office) {
+function forwardReport(reportId, btn, office) {
+  const userId = btn.getAttribute('data-user-id'); // fetch reporter's user ID
+  console.log("DEBUG: reportId =", reportId);
+  console.log("DEBUG: reporterUserId =", userId);
+  console.log("DEBUG: forwarding to office =", office);
+
   Swal.fire({
     title: "Forward Report?",
-    text: `Do you want to forward report #${reportId} to ${office}?`,
+    text: `Do you want to forward report #${reportId} submitted by user #${userId} to ${office}?`,
     icon: "question",
     showCancelButton: true,
     confirmButtonText: "Yes, forward",
@@ -442,12 +447,15 @@ function forwardReport(reportId, office) {
       },
       body: JSON.stringify({
         report_id: reportId,
+        reporter_user_id: userId,
         forwarded_to: office
       })
     })
     .then(async res => {
       let data = await res.json();
+      console.log("DEBUG: API response", data); // log response
       Swal.close();
+
       if (res.ok && data.success) {
         Swal.fire({
           icon: "success",
@@ -464,6 +472,7 @@ function forwardReport(reportId, office) {
           badge.classList.add("bg-success");
         }
       } else {
+        console.error("DEBUG: Error forwarding report", data);
         Swal.fire({
           icon: "error",
           title: "Error",
@@ -472,6 +481,7 @@ function forwardReport(reportId, office) {
       }
     })
     .catch(err => {
+      console.error("DEBUG: Fetch error", err);
       Swal.close();
       Swal.fire({
         icon: "error",
@@ -481,6 +491,7 @@ function forwardReport(reportId, office) {
     });
   });
 }
+
 </script>
 
     <!-- Existing Buttons -->
