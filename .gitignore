@@ -18,7 +18,7 @@ yarn-error.log
 # =========================================
 # Ignore storage except specific folders we want to keep
 # =========================================
-/storage/*
+!/storage/*
 !/storage/app/
 !/storage/app/public/
 !/storage/app/public/reports/
