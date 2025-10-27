@@ -16,17 +16,28 @@ yarn-error.log
 /.vscode
 
 # =========================================
-# Ignore all storage except public/reports
+# Ignore storage except specific folders we want to keep
 # =========================================
 /storage/*
 !/storage/app/
 !/storage/app/public/
-!/storage/app/public/reports/**
+!/storage/app/public/reports/
+!/storage/framework/
+!/storage/framework/cache/
+!/storage/framework/sessions/
+!/storage/framework/views/
+
+# Ignore runtime files inside storage/framework
+/storage/framework/cache/*
+!/storage/framework/cache/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
 
 # =========================================
-# Ignore Laravel log, cache, and framework files
+# Laravel logs
 # =========================================
-/storage/framework/*
 /storage/logs/*
 
 # =========================================
