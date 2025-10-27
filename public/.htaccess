@@ -1,12 +1,8 @@
 # ======================================================
 # 🚀 Laravel Public Directory .htaccess (Secure)
 # ======================================================
-<IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        # Disable MultiViews & Directory Listing
-        Options -MultiViews -Indexes
-    </IfModule>
 
+<IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
 
@@ -39,52 +35,48 @@
 </FilesMatch>
 
 # ======================================================
-# 🚫 Block Sensitive Files & Directories
-# ======================================================
-# ✅ Allow access to images in /public/reports
-<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg)$">
-    Require all granted
-</FilesMatch>
-
-
-# ======================================================
-# 🧯 Disable PHP Execution in Uploads or Cache (if exists)
-# ======================================================
-<Directory "storage">
-    php_flag engine off
-</Directory>
-
-<Directory "bootstrap/cache">
-    php_flag engine off
-</Directory>
-
-# ======================================================
-# 🧰 Add Strong Security Headers
-# ======================================================
-<IfModule mod_headers.c>
-    # Prevent MIME sniffing
-    Header set X-Content-Type-Options "nosniff"
-    # Prevent clickjacking
-    Header always append X-Frame-Options SAMEORIGIN
-    # Basic XSS protection
-    Header set X-XSS-Protection "1; mode=block"
-    # Force HTTPS for one year
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
-    # Hide server info
-    Header unset X-Powered-By
-    # Content Security Policy (optional, strong)
-    Header set Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';"
-</IfModule>
-
-# ======================================================
-# 🧨 Block Dangerous File Extensions
+# 🧨 Block Dangerous Files
 # ======================================================
 <FilesMatch "\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist|pem|key|env|gz|zip|rar)$">
     Require all denied
 </FilesMatch>
 
 # ======================================================
-# ⚡ Optional: Force HTTPS (if not already enforced)
+# ✅ Allow Images & Public Assets
+# ======================================================
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|css|js|woff|woff2|ttf|eot|ico)$">
+    Require all granted
+</FilesMatch>
+
+# ======================================================
+# 🧯 Disable PHP Execution in Storage & Cache
+# ======================================================
+<Directory "storage">
+    Options +FollowSymLinks
+    php_flag engine off
+    Require all granted
+</Directory>
+
+<Directory "bootstrap/cache">
+    Options +FollowSymLinks
+    php_flag engine off
+    Require all granted
+</Directory>
+
+# ======================================================
+# 🧰 Security Headers
+# ======================================================
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header always append X-Frame-Options SAMEORIGIN
+    Header set X-XSS-Protection "1; mode=block"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header unset X-Powered-By
+    Header set Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';"
+</IfModule>
+
+# ======================================================
+# ⚡ Force HTTPS
 # ======================================================
 <IfModule mod_rewrite.c>
     RewriteCond %{HTTPS} off
