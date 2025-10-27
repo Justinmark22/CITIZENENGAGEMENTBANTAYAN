@@ -7,7 +7,7 @@
 /public/build
 /public/hot
 /.env
-/.env.*
+/.env.* 
 Homestead.json
 Homestead.yaml
 npm-debug.log
@@ -16,31 +16,13 @@ yarn-error.log
 /.vscode
 
 # =========================================
-# Ignore storage except specific folders we want to keep
+# Ignore all storage except reports
 # =========================================
-!/storage/*
-!/storage/app/
-!/storage/app/public/
+/storage/*
 !/storage/app/public/reports/
-!/storage/framework/
-!/storage/framework/cache/
-!/storage/framework/sessions/
-!/storage/framework/views/
-
-# Ignore runtime files inside storage/framework
-/storage/framework/cache/*
-!/storage/framework/cache/.gitignore
-/storage/framework/sessions/*
-!/storage/framework/sessions/.gitignore
-/storage/framework/views/*
-!/storage/framework/views/.gitignore
+!.gitignore
 
 # =========================================
-# Laravel logs
-# =========================================
-!/storage/logs/*
-
-# =========================================
-# Optional: ignore symlink (public/storage)
-# =========================================
-!/public/storage
+# Optional: keep public storage symlink ignored
+# (If you want to track reports, leave /public/storage/ out)
+/public/storage/*
