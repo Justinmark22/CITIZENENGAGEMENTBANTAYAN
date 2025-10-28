@@ -27,3 +27,4 @@ yarn-error.log
 # Optional: keep public storage symlink ignored
 # =========================================
 /public/storage/*
+.env
