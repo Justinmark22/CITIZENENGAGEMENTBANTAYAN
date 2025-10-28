@@ -128,7 +128,9 @@ Route::get('/', function () {
     $response->headers->set('Referrer-Policy', 'no-referrer');
 
     return $response;
-});// ✅ LOGIN ROUTES
+});
+
+// ✅ LOGIN ROUTES
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
@@ -294,7 +296,6 @@ Route::post('/verify-otp', function (Request $request) {
         default      => redirect('/dashboard'),
     };
 })->name('otp.verify.submit');
-
 
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
