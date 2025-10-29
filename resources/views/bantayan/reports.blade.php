@@ -5,7 +5,6 @@
   <title>bantayan- Reports</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -255,33 +254,7 @@
                 </a>
               </li>
             @else
-              <li>
-                <form method="POST" action="{{ route('bantayan.reports.update', $report->id) }}">
-                  @csrf @method('PUT')
-                  <input type="hidden" name="status" value="Ongoing">
-                  <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-info">
-                    <i data-lucide="loader"></i> Mark as Ongoing
-                  </button>
-                </form>
-              </li>
-              <li>
-                <form method="POST" action="{{ route('bantayan.reports.update', $report->id) }}">
-                  @csrf @method('PUT')
-                  <input type="hidden" name="status" value="Resolved">
-                  <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-success">
-                    <i data-lucide="check-circle"></i> Mark as Resolved
-                  </button>
-                </form>
-              </li>
-              <li>
-                <form method="POST" action="{{ route('bantayan.reports.update', $report->id) }}">
-                  @csrf @method('PUT')
-                  <input type="hidden" name="status" value="Rejected">
-                  <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger">
-                    <i data-lucide="x-circle"></i> Mark as Rejected
-                  </button>
-                </form>
-              </li>
+              <li class="dropdown-item text-muted small">No actions available</li>
             @endif
           </ul>
         </div>
@@ -502,9 +475,6 @@ function forwardReport(reportId, btn, office) {
     <button type="button" class="btn btn-outline-secondary hover-scale" data-bs-dismiss="modal">
       <i data-lucide="x" class="me-1"></i> Close
     </button>
-    <button type="button" id="printButton" class="btn btn-primary hover-scale d-none" onclick="printReport()">
-      <i data-lucide="printer" class="me-1"></i> Print
-    </button>
   </div>
 </div>
 
@@ -578,94 +548,9 @@ function forwardReport(reportId, btn, office) {
       else if (status === 'Rejected') badge.classList.add('text-bg-danger');
       else badge.classList.add('text-bg-warning');
 
-      // Show print button only if status is Ongoing
-      document.getElementById('printButton').classList.toggle('d-none', status !== 'Ongoing');
+      // (print button removed)
     });
 });
-
-function printReport() {
-  // Get modal content safely
-  const getText = (id) => {
-    const el = document.getElementById(id);
-    return el ? el.textContent.trim() : 'N/A';
-  };
-
-  const title = getText('modalReportTitle');
-  const desc = getText('modalReportDesc');
-  const location = getText('modalReportLoc');
-  const status = getText('modalReportStatus');
-  const date = getText('modalReportDate');
-  const name = getText('modalReportName');
-  const email = getText('modalReportEmail');
-
-  const content = `
-    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
-      <img src="/images/santafe.png" alt="Santa Fe Logo" style="height: 90px;">
-      <div>
-        <h1 style="margin: 0; font-size: 26px; color: #0f172a;">Municipality of Santa Fe</h1>
-        <h3 style="margin: 5px 0 0; font-weight: normal; color: #475569;">Incident Report Summary</h3>
-      </div>
-    </div>
-
-    <hr style="margin-bottom: 30px; border-top: 2px solid #94a3b8;">
-
-    <div style="font-size: 16px; color: #1e293b;">
-      <p><strong>👤 Name:</strong> ${name}</p>
-      <p><strong>✉️ Email:</strong> ${email}</p>
-      <p><strong>📌 Title:</strong> ${title}</p>
-      <p><strong>📝 Description:</strong><br><span style="margin-left: 20px;">${desc}</span></p>
-      <p><strong>📍 Location:</strong> ${location}</p>
-      <p><strong>📊 Status:</strong> ${status}</p>
-      <p><strong>📅 Submitted:</strong> ${date}</p>
-    </div>
-  `;
-
-  const printWindow = window.open('', '_blank', 'width=900,height=700');
-
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Santa Fe Incident Report</title>
-      <style>
-        body {
-          font-family: 'Segoe UI', sans-serif;
-          padding: 40px;
-          color: #1f2937;
-          background-color: #fff;
-        }
-        h1, h3 {
-          margin: 0;
-        }
-        p {
-          margin: 12px 0;
-          line-height: 1.6;
-        }
-        hr {
-          border: none;
-          border-top: 1px solid #ccc;
-        }
-        @media print {
-          body {
-            margin: 0;
-            padding: 20px;
-          }
-        }
-      </style>
-    </head>
-    <body>
-      ${content}
-    </body>
-    </html>
-  `);
-
-  printWindow.document.close();
-  printWindow.focus();
-  printWindow.onload = () => {
-    printWindow.print();
-    printWindow.close();
-  };
-}
 
 </script>
 
@@ -675,35 +560,6 @@ function printReport() {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     lucide.createIcons();
-
-    fetch('/reports/chart-data')
-      .then(res => res.json())
-      .then(data => {
-        const ctx = document.getElementById('reportsChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: data.labels,
-            datasets: [{
-              label: 'Report Count',
-              data: data.counts,
-              backgroundColor: ['#facc15', '#f97316', '#22c55e'], // Yellow, Orange, Green
-              borderRadius: 10
-            }]
-          },
-          options: {
-            responsive: true,
-            animation: {
-              duration: 1000
-            },
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            }
-          }
-        });
-      });
   </script>
 </body>
 </html>
