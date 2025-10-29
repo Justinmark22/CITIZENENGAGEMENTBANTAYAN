@@ -192,27 +192,29 @@
 <!-- Report Info -->
 <div class="flex-grow-1 pe-3">
   <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
-    data-bs-toggle="modal"
-    data-bs-target="#reportModal"
-    data-id="{{ $report->id }}"
-    data-user-id="{{ $report->user_id }}"
-    data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
-    data-user-email="{{ $report->user->email ?? 'No Email' }}"
-    data-title="{{ $report->title }}"
-    data-description="{{ $report->description }}"
-    data-location="{{ $report->location }}"
-    data-status="{{ $report->status }}"
-    data-date="{{ $report->created_at->format('M d, Y H:i') }}">
-    
-    @if ($report->photo)
-        <img src="{{ asset('public/storage/reports/'.$report->photo) }}" 
-             alt="{{ $report->title }}" 
-             class="rounded" 
-             style="width: 40px; height: 40px; object-fit: cover;">
-    @endif
+      data-bs-toggle="modal"
+      data-bs-target="#reportModal"
+      data-id="{{ $report->id }}"
+      data-user-id="{{ $report->user_id }}"
+      data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
+      data-user-email="{{ $report->user->email ?? 'No Email' }}"
+      data-title="{{ $report->title }}"
+      data-description="{{ $report->description }}"
+      data-location="{{ $report->location }}"
+      data-status="{{ $report->status }}"
+      data-date="{{ $report->created_at->format('M d, Y H:i') }}">
 
-    {{ $report->title }}
-</h6>
+      @if ($report->photo)
+          <img src="{{ asset('public/storage/reports/'.$report->photo) }}" 
+               alt="{{ $report->title }}" 
+               class="rounded"
+               style="width: 40px; height: 40px; object-fit: cover;">
+      @endif
+
+      {{ $report->title }}
+  </h6>
+</div>
+
 
 
 

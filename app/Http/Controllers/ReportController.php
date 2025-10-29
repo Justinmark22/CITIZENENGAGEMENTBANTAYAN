@@ -8,7 +8,7 @@ use App\Models\Report;
 
 class ReportController extends Controller
 {
-    public function store(Request $request)
+   public function store(Request $request)
 {
     $validated = $request->validate([
         'category' => 'required|string',
@@ -20,23 +20,24 @@ class ReportController extends Controller
     if ($request->hasFile('photo')) {
         $photo = $request->file('photo');
         $photoName = time() . '.' . $photo->getClientOriginalExtension();
-        
-        // Store the file using Laravel's storage system
-        $path = $photo->storeAs('reports', $photoName, 'public');
-        
-        // Update the photo path in the validated data
-        $validated['photo'] = $path;
+
+        // ✅ Save directly to public/storage/reports
+        $photo->move(public_path('storage/reports'), $photoName);
+
+        // Store the relative path to the file (for use with asset())
+        $validated['photo'] = 'storage/reports/' . $photoName;
     }
 
-    // Assign default values
+    // Default fields
     $validated['status'] = 'Pending';
     $validated['location'] = auth()->user()->location ?? 'Unknown';
-    $validated['user_id'] = auth()->id(); // ✅ THIS is what links the report to the user
+    $validated['user_id'] = auth()->id();
 
     Report::create($validated);
 
     return redirect()->back()->with('success', 'Report submitted!');
 }
+
 
 
 
