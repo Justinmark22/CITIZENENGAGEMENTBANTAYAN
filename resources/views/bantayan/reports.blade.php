@@ -189,19 +189,23 @@
  <!-- Reports List -->
 @forelse ($reports as $report)
   @php
-  // Normalize photo URL to handle stored variations
+  // Normalize photo URL to handle stored variations:
+  // - full http(s) URL
+  // - starting with '/storage' or 'storage/'
+  // - just the storage path (announcements/xxx.jpg)
   $photoUrl = '';
   if (!empty($report->photo)) {
-    // Remove any leading slashes and 'storage/' prefix
-    $relativePath = ltrim(str_replace('storage/', '', $report->photo), '/');
-    
-    // Always construct URL using storage_path for consistency
-    $photoUrl = asset('storage/' . $relativePath);
-    
-    // For debugging
-    $realPath = storage_path('app/public/' . $relativePath);
-    $exists = file_exists($realPath);
-    $debug = "Photo path: {$realPath} (Exists: " . ($exists ? 'Yes' : 'No') . ")";
+    if (\Illuminate\Support\Str::startsWith($report->photo, ['http://', 'https://'])) {
+      $photoUrl = $report->photo;
+    } elseif (\Illuminate\Support\Str::startsWith($report->photo, ['/storage', 'storage/'])) {
+      $photoUrl = asset(ltrim($report->photo, '/'));
+    } elseif (\Illuminate\Support\Str::startsWith($report->photo, ['/'])) {
+      // absolute path
+      $photoUrl = asset(ltrim($report->photo, '/'));
+    } else {
+      // assume stored in storage/app/public
+      $photoUrl = asset('storage/' . $report->photo);
+    }
   }
   @endphp
   <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
@@ -220,7 +224,7 @@
       data-location="{{ $report->location }}"
       data-status="{{ $report->status }}"
       data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-  data-photo="{{ $photoUrl ?: '' }}">
+      data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
         {{ $report->title }}
   </h6>
 
@@ -241,28 +245,9 @@
     </div>
 
       <!-- Photo preview (desktop) -->
-      <div class="me-3">
-        @if($photoUrl)
-          <div class="position-relative">
-            <img src="{{ $photoUrl }}" alt="Report photo" class="rounded-3 border" style="width:120px; height:80px; object-fit:cover; cursor:pointer;" 
-                 data-bs-toggle="modal" data-bs-target="#reportModal"
-                 data-id="{{ $report->id }}"
-                 data-user-id="{{ $report->user_id }}"
-                 data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
-                 data-user-email="{{ $report->user->email ?? 'No Email' }}"
-                 data-title="{{ $report->title }}"
-                 data-description="{{ $report->description }}"
-                 data-location="{{ $report->location }}"
-                 data-status="{{ $report->status }}"
-                 data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-                 data-photo="{{ $photoUrl }}"
-                 onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'bg-light rounded-3 d-flex align-items-center justify-content-center border\' style=\'width:120px; height:80px; color:#6b7280;\'>Image Error</div>'">
-            @if(isset($debug))
-              <div class="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-75 text-white p-1" style="font-size: 8px;">
-                {{ $debug }}
-              </div>
-            @endif
-          </div>
+      <div class="d-none d-md-flex align-items-center me-3">
+        @if($report->photo)
+          <img src="{{ asset('storage/'.$report->photo) }}" alt="Report photo" class="rounded-3 border" style="width:120px; height:80px; object-fit:cover;">
         @else
           <div class="bg-light rounded-3 d-flex align-items-center justify-content-center border" style="width:120px; height:80px; color:#6b7280;">
             No Photo
