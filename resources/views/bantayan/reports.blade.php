@@ -195,7 +195,9 @@
       data-bs-toggle="modal"
       data-bs-target="#reportModal"
       data-id="{{ $report->id }}"
-      data-user-id="{{ $report->user_id }}"
+    data-user-id="{{ $report->user_id }}"
+    data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
+    data-user-email="{{ $report->user->email ?? 'No Email' }}"
       data-title="{{ $report->title }}"
       data-description="{{ $report->description }}"
       data-location="{{ $report->location }}"
@@ -511,14 +513,20 @@ function forwardReport(reportId, btn, office) {
       const date = trigger.getAttribute('data-date');
       const photo = trigger.getAttribute('data-photo'); // ✅ Fetch photo URL
 
-      const name = document.getElementById('modalReportName').textContent.trim();
-      const email = document.getElementById('modalReportEmail').textContent.trim();
-
       document.getElementById('modalReportTitle').textContent = title;
       document.getElementById('modalReportDesc').textContent = desc;
       document.getElementById('modalReportLoc').textContent = loc;
       document.getElementById('modalReportStatus').textContent = status;
       document.getElementById('modalReportDate').textContent = date;
+
+  // Populate reporter credentials from the trigger attributes
+  const triggerName = trigger.getAttribute('data-user-name') || 'Anonymous';
+  const triggerEmail = trigger.getAttribute('data-user-email') || 'No Email';
+  const triggerUserId = trigger.getAttribute('data-user-id') || 'N/A';
+
+  document.getElementById('modalReportName').textContent = triggerName;
+  document.getElementById('modalReportEmail').textContent = triggerEmail;
+  document.getElementById('modalReportUserId').textContent = triggerUserId;
 
       // ✅ Handle Photo Display
       const photoElement = document.getElementById('modalReportPhoto');
