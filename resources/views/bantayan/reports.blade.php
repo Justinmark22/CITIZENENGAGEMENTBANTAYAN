@@ -188,26 +188,6 @@
 
  <!-- Reports List -->
 @forelse ($reports as $report)
-  @php
-  // Normalize photo URL to handle stored variations:
-  // - full http(s) URL
-  // - starting with '/storage' or 'storage/'
-  // - just the storage path (announcements/xxx.jpg)
-  $photoUrl = '';
-  if (!empty($report->photo)) {
-    if (\Illuminate\Support\Str::startsWith($report->photo, ['http://', 'https://'])) {
-      $photoUrl = $report->photo;
-    } elseif (\Illuminate\Support\Str::startsWith($report->photo, ['/storage', 'storage/'])) {
-      $photoUrl = asset(ltrim($report->photo, '/'));
-    } elseif (\Illuminate\Support\Str::startsWith($report->photo, ['/'])) {
-      // absolute path
-      $photoUrl = asset(ltrim($report->photo, '/'));
-    } else {
-      // assume stored in storage/app/public
-      $photoUrl = asset('storage/' . $report->photo);
-    }
-  }
-  @endphp
   <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
 <!-- Report Info -->
