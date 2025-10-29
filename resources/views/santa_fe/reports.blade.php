@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>bantayan- Reports</title>
+  <title>santafe Reports</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -109,29 +109,29 @@
   <img src="{{ asset('images/santafe.png') }}" alt="Santa Fe Logo" 
        class="img-fluid rounded-circle shadow-sm border border-white" 
        style="max-height: 80px; width: 80px; object-fit: cover; transition: transform 0.2s;">
-  <h6 class="mt-2 text-white-50 font-weight-bold">Bantayan Admin</h6>
+  <h6 class="mt-2 text-white-50 font-weight-bold">Santafe Admin</h6>
 </div>
 
   <!-- Menu Links -->
-  <a href="{{ route('dashboard.bantayanadmin') }}">
+  <a href="{{ route('dashboard.santafeadmin') }}">
   <i data-lucide="home" class="me-2"></i> Dashboard
 </a>
-  <a href="{{ route('bantayan.users.index') }}">
+  <a href="{{ route('santafe.users.index') }}">
     <i data-lucide="users" class="me-2"></i> Users
   </a>
-  <a href="{{ route('bantayan.reports') }}">
+  <a href="{{ route('santafe.reports') }}">
     <i data-lucide="file-text" class="me-2"></i> Reports
   </a>
-  <a href="{{ route('bantayan.feedback') }}">
+  <a href="{{ route('santafe.feedback') }}">
     <i data-lucide="message-square" class="me-2"></i> Feedback
   </a>
-  <a href="{{ route('bantayan.announcements') }}">
+  <a href="{{ route('santafe.announcements') }}">
     <i data-lucide="megaphone" class="me-2"></i> Announcements
   </a>
-  <a href="{{ route('bantayan.events') }}">
+  <a href="{{ route('santafe.events') }}">
     <i data-lucide="calendar-days" class="me-2"></i> Events
   </a>
- <a href="{{ route('bantayan.updates') }}">
+ <a href="{{ route('santafe.updates') }}">
   <i data-lucide="message-square" class="me-2"></i> Updates
 </a>
  

@@ -108,7 +108,7 @@ public function dashboardSantaFe()
         ->latest()
         ->get();
 
-    return view('dashboard.santa.fe', compact(
+    return view('dashboard.santafe', compact(
         'alerts',
         'reports',
         'announcements',
