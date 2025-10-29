@@ -224,6 +224,17 @@
 
     </div>
 
+      <!-- Photo preview (desktop) -->
+      <div class="d-none d-md-flex align-items-center me-3">
+        @if($report->photo)
+          <img src="{{ asset('storage/'.$report->photo) }}" alt="Report photo" class="rounded-3 border" style="width:120px; height:80px; object-fit:cover;">
+        @else
+          <div class="bg-light rounded-3 d-flex align-items-center justify-content-center border" style="width:120px; height:80px; color:#6b7280;">
+            No Photo
+          </div>
+        @endif
+      </div>
+
       <!-- Report Status & Dropdown -->
       <div class="text-end" style="z-index: 1050;">
         <!-- Status Badge -->
