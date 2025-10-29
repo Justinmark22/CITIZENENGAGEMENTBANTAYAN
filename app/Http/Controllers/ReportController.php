@@ -8,27 +8,27 @@ use App\Models\Report;
 
 class ReportController extends Controller
 {
-  public function store(Request $request)
+   public function store(Request $request)
 {
     $validated = $request->validate([
         'category' => 'required|string',
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'image' => 'nullable|image|max:2048', // changed from 'photo' to 'image'
+        'photo' => 'nullable|image|max:2048',
     ]);
 
-    if ($request->hasFile('image')) {
-        $image = $request->file('image');
-        $imageName = time() . '.' . $image->getClientOriginalExtension();
+    if ($request->hasFile('photo')) {
+        $photo = $request->file('photo');
+        $photoName = time() . '.' . $photo->getClientOriginalExtension();
 
         // ✅ Save directly to public/storage/reports
-        $image->move(public_path('storage/reports'), $imageName);
+        $photo->move(public_path('storage/reports'), $photoName);
 
-        // Store the relative path to the file
-        $validated['image'] = 'storage/reports/' . $imageName;
+        // ✅ Store only 'reports/filename.png' in database
+        $validated['photo'] = 'reports/' . $photoName;
     }
 
-    // Default fields
+    // ✅ Default fields
     $validated['status'] = 'Pending';
     $validated['location'] = auth()->user()->location ?? 'Unknown';
     $validated['user_id'] = auth()->id();
@@ -37,6 +37,7 @@ class ReportController extends Controller
 
     return redirect()->back()->with('success', 'Report submitted!');
 }
+
 
 
 

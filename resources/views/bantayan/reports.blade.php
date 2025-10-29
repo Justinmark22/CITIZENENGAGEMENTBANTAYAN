@@ -191,30 +191,21 @@
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
 <!-- Report Info -->
 <div class="flex-grow-1 pe-3">
-  
   <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
       data-bs-toggle="modal"
       data-bs-target="#reportModal"
       data-id="{{ $report->id }}"
-      data-user-id="{{ $report->user_id }}"
-      data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
-      data-user-email="{{ $report->user->email ?? 'No Email' }}"
+    data-user-id="{{ $report->user_id }}"
+    data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
+    data-user-email="{{ $report->user->email ?? 'No Email' }}"
       data-title="{{ $report->title }}"
       data-description="{{ $report->description }}"
       data-location="{{ $report->location }}"
       data-status="{{ $report->status }}"
-      data-date="{{ $report->created_at->format('M d, Y H:i') }}">
-
-      @if ($report->photo)
-          <img src="{{ asset('public/storage/reports/'.$report->photo) }}" 
-               alt="{{ $report->title }}" 
-               class="rounded"
-               style="width: 40px; height: 40px; object-fit: cover;">
-      @endif
-
-      {{ $report->title }}
+      data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+     data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
+        {{ $report->title }}
   </h6>
-
 
 
 
@@ -509,79 +500,75 @@ function forwardReport(reportId, btn, office) {
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('reportModal');
 
     modal.addEventListener('show.bs.modal', function (event) {
-        const trigger = event.relatedTarget;
+      const trigger = event.relatedTarget;
 
-        const title = trigger.getAttribute('data-title');
-        const desc = trigger.getAttribute('data-description');
-        const loc = trigger.getAttribute('data-location');
-        const status = trigger.getAttribute('data-status');
-        const date = trigger.getAttribute('data-date');
+      const title = trigger.getAttribute('data-title');
+      const desc = trigger.getAttribute('data-description');
+      const loc = trigger.getAttribute('data-location');
+      const status = trigger.getAttribute('data-status');
+      const date = trigger.getAttribute('data-date');
+      const photo = trigger.getAttribute('data-photo'); // ✅ Fetch photo URL
 
-        // ✅ Get photo from data-photo (public/storage/reports)
-        const photo = trigger.getAttribute('data-photo') || '';
+      document.getElementById('modalReportTitle').textContent = title;
+      document.getElementById('modalReportDesc').textContent = desc;
+      document.getElementById('modalReportLoc').textContent = loc;
+      document.getElementById('modalReportStatus').textContent = status;
+      document.getElementById('modalReportDate').textContent = date;
 
-        // Populate modal fields
-        document.getElementById('modalReportTitle').textContent = title;
-        document.getElementById('modalReportDesc').textContent = desc;
-        document.getElementById('modalReportLoc').textContent = loc;
-        document.getElementById('modalReportStatus').textContent = status;
-        document.getElementById('modalReportDate').textContent = date;
+  // Populate reporter credentials from the trigger attributes
+  const triggerName = trigger.getAttribute('data-user-name') || 'Anonymous';
+  const triggerEmail = trigger.getAttribute('data-user-email') || 'No Email';
+  const triggerUserId = trigger.getAttribute('data-user-id') || 'N/A';
 
-        // Reporter info
-        const triggerName = trigger.getAttribute('data-user-name') || 'Anonymous';
-        const triggerEmail = trigger.getAttribute('data-user-email') || 'No Email';
-        const triggerUserId = trigger.getAttribute('data-user-id') || 'N/A';
+  document.getElementById('modalReportName').textContent = triggerName;
+  document.getElementById('modalReportEmail').textContent = triggerEmail;
+  document.getElementById('modalReportUserId').textContent = triggerUserId;
 
-        document.getElementById('modalReportName').textContent = triggerName;
-        document.getElementById('modalReportEmail').textContent = triggerEmail;
-        document.getElementById('modalReportUserId').textContent = triggerUserId;
+      // ✅ Handle Photo Display
+      const photoElement = document.getElementById('modalReportPhoto');
+      const noPhotoText = document.getElementById('noPhotoText');
 
-        // ✅ Handle Photo Display
-        const photoElement = document.getElementById('modalReportPhoto');
-        const noPhotoText = document.getElementById('noPhotoText');
+      if (photo && photo.trim() !== '') {
+        photoElement.src = photo;
+        photoElement.classList.remove('d-none');
+        noPhotoText.classList.add('d-none');
+      } else {
+        photoElement.classList.add('d-none');
+        noPhotoText.classList.remove('d-none');
+      }
 
-        if (photo.trim() !== '') {
-            photoElement.src = photo;
-            photoElement.classList.remove('d-none');
-            noPhotoText.classList.add('d-none');
-        } else {
-            photoElement.classList.add('d-none');
-            noPhotoText.classList.remove('d-none');
-        }
+      // Dynamic color for status badge
+      const badge = document.getElementById('modalReportStatus');
+      badge.classList.remove('text-bg-warning', 'text-bg-success', 'text-bg-danger', 'text-bg-info');
+      if (status === 'Ongoing') badge.classList.add('text-bg-info');
+      else if (status === 'Resolved') badge.classList.add('text-bg-success');
+      else if (status === 'Rejected') badge.classList.add('text-bg-danger');
+      else badge.classList.add('text-bg-warning');
 
-        // Status badge color
-        const badge = document.getElementById('modalReportStatus');
-        badge.classList.remove('text-bg-warning', 'text-bg-success', 'text-bg-danger', 'text-bg-info');
-        if (status === 'Ongoing') badge.classList.add('text-bg-info');
-        else if (status === 'Resolved') badge.classList.add('text-bg-success');
-        else if (status === 'Rejected') badge.classList.add('text-bg-danger');
-        else badge.classList.add('text-bg-warning');
+      // Store current report id on modal for footer actions
+      const currentId = trigger.getAttribute('data-id') || '';
+      modal.dataset.currentReportId = currentId;
 
-        // Store current report ID
-        const currentId = trigger.getAttribute('data-id') || '';
-        modal.dataset.currentReportId = currentId;
+      // Reporter user id (from trigger or fallback to displayed element)
+      const reporterUserId = trigger.getAttribute('data-user-id') || document.getElementById('modalReportUserId').textContent.trim();
 
-        // Reporter user id
-        const reporterUserId = trigger.getAttribute('data-user-id') || document.getElementById('modalReportUserId').textContent.trim();
+      // Populate footer status badge and forward buttons with reporter id
+      const modalFooterBadge = document.getElementById('modalFooterStatusBadge');
+      if (modalFooterBadge) {
+        modalFooterBadge.textContent = status || modalFooterBadge.textContent;
+        modalFooterBadge.classList.remove('bg-secondary', 'bg-success');
+        if ((status || '').toLowerCase().includes('forwarded')) modalFooterBadge.classList.add('bg-success');
+        else modalFooterBadge.classList.add('bg-secondary');
+      }
 
-        // Footer status badge and forward buttons
-        const modalFooterBadge = document.getElementById('modalFooterStatusBadge');
-        if (modalFooterBadge) {
-            modalFooterBadge.textContent = status || modalFooterBadge.textContent;
-            modalFooterBadge.classList.remove('bg-secondary', 'bg-success');
-            if ((status || '').toLowerCase().includes('forwarded')) modalFooterBadge.classList.add('bg-success');
-            else modalFooterBadge.classList.add('bg-secondary');
-        }
-
-        const forwardButtons = document.querySelectorAll('#modalFooterActions .dropdown-item');
-        forwardButtons.forEach(btn => btn.setAttribute('data-user-id', reporterUserId));
+      const forwardButtons = document.querySelectorAll('#modalFooterActions .dropdown-item');
+      forwardButtons.forEach(btn => btn.setAttribute('data-user-id', reporterUserId));
     });
 });
-
 
 </script>
 
