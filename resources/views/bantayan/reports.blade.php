@@ -188,6 +188,26 @@
 
  <!-- Reports List -->
 @forelse ($reports as $report)
+  @php
+  // Normalize photo URL to handle stored variations:
+  // - full http(s) URL
+  // - starting with '/storage' or 'storage/'
+  // - just the storage path (announcements/xxx.jpg)
+  $photoUrl = '';
+  if (!empty($report->photo)) {
+    if (\Illuminate\Support\Str::startsWith($report->photo, ['http://', 'https://'])) {
+      $photoUrl = $report->photo;
+    } elseif (\Illuminate\Support\Str::startsWith($report->photo, ['/storage', 'storage/'])) {
+      $photoUrl = asset(ltrim($report->photo, '/'));
+    } elseif (\Illuminate\Support\Str::startsWith($report->photo, ['/'])) {
+      // absolute path
+      $photoUrl = asset(ltrim($report->photo, '/'));
+    } else {
+      // assume stored in storage/app/public
+      $photoUrl = asset('storage/' . $report->photo);
+    }
+  }
+  @endphp
   <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
 <!-- Report Info -->
@@ -204,7 +224,7 @@
       data-location="{{ $report->location }}"
       data-status="{{ $report->status }}"
       data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-      data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
+  data-photo="{{ $photoUrl ?: '' }}">
         {{ $report->title }}
   </h6>
 
@@ -225,9 +245,20 @@
     </div>
 
       <!-- Photo preview (desktop) -->
-      <div class="d-none d-md-flex align-items-center me-3">
-        @if($report->photo)
-          <img src="{{ asset('storage/'.$report->photo) }}" alt="Report photo" class="rounded-3 border" style="width:120px; height:80px; object-fit:cover;">
+      <div class="me-3">
+        @if($photoUrl)
+          <img src="{{ $photoUrl }}" alt="Report photo" class="rounded-3 border" style="width:120px; height:80px; object-fit:cover; cursor:pointer;" 
+               data-bs-toggle="modal" data-bs-target="#reportModal"
+               data-id="{{ $report->id }}"
+               data-user-id="{{ $report->user_id }}"
+               data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
+               data-user-email="{{ $report->user->email ?? 'No Email' }}"
+               data-title="{{ $report->title }}"
+               data-description="{{ $report->description }}"
+               data-location="{{ $report->location }}"
+               data-status="{{ $report->status }}"
+               data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+               data-photo="{{ $photoUrl }}">
         @else
           <div class="bg-light rounded-3 d-flex align-items-center justify-content-center border" style="width:120px; height:80px; color:#6b7280;">
             No Photo
