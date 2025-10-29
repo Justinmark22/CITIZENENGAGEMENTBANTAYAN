@@ -273,8 +273,76 @@
 
 <!-- Pagination -->
 <div class="d-flex justify-content-center mt-4">
-    {{ $reports->withQueryString()->links() }}
+    @if ($reports->hasPages())
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {{-- Previous Page Link --}}
+                @if ($reports->onFirstPage())
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                @else
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $reports->previousPageUrl() }}" rel="prev">Previous</a>
+                    </li>
+                @endif
+
+                {{-- Pagination Elements --}}
+                @foreach ($reports->getUrlRange(1, $reports->lastPage()) as $page => $url)
+                    @if ($page == $reports->currentPage())
+                        <li class="page-item active">
+                            <span class="page-link">{{ $page }}</span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                        </li>
+                    @endif
+                @endforeach
+
+                {{-- Next Page Link --}}
+                @if ($reports->hasMorePages())
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $reports->nextPageUrl() }}" rel="next">Next</a>
+                    </li>
+                @else
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                @endif
+            </ul>
+        </nav>
+    @endif
 </div>
+
+<style>
+.pagination {
+    gap: 5px;
+}
+.pagination .page-item .page-link {
+    border-radius: 6px;
+    padding: 8px 16px;
+    color: #1d4ed8;
+    border: 1px solid #e2e8f0;
+    background-color: #fff;
+    transition: all 0.2s ease;
+}
+.pagination .page-item.active .page-link {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+    color: white;
+}
+.pagination .page-item.disabled .page-link {
+    background-color: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #94a3b8;
+}
+.pagination .page-item:not(.disabled):not(.active) .page-link:hover {
+    background-color: #f1f5f9;
+    border-color: #1d4ed8;
+    color: #1d4ed8;
+}
+</style>
 
   </div>
 </div>
