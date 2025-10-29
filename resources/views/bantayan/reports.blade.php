@@ -189,23 +189,19 @@
  <!-- Reports List -->
 @forelse ($reports as $report)
   @php
-  // Normalize photo URL to handle stored variations:
-  // - full http(s) URL
-  // - starting with '/storage' or 'storage/'
-  // - just the storage path (announcements/xxx.jpg)
+  // Normalize photo URL to handle stored variations
   $photoUrl = '';
   if (!empty($report->photo)) {
-    if (\Illuminate\Support\Str::startsWith($report->photo, ['http://', 'https://'])) {
-      $photoUrl = $report->photo;
-    } elseif (\Illuminate\Support\Str::startsWith($report->photo, ['/storage', 'storage/'])) {
-      $photoUrl = asset(ltrim($report->photo, '/'));
-    } elseif (\Illuminate\Support\Str::startsWith($report->photo, ['/'])) {
-      // absolute path
-      $photoUrl = asset(ltrim($report->photo, '/'));
-    } else {
-      // assume stored in storage/app/public
-      $photoUrl = asset('storage/' . $report->photo);
-    }
+    // Remove any leading slashes and 'storage/' prefix
+    $relativePath = ltrim(str_replace('storage/', '', $report->photo), '/');
+    
+    // Always construct URL using storage_path for consistency
+    $photoUrl = asset('storage/' . $relativePath);
+    
+    // For debugging
+    $realPath = storage_path('app/public/' . $relativePath);
+    $exists = file_exists($realPath);
+    $debug = "Photo path: {$realPath} (Exists: " . ($exists ? 'Yes' : 'No') . ")";
   }
   @endphp
   <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
@@ -247,18 +243,26 @@
       <!-- Photo preview (desktop) -->
       <div class="me-3">
         @if($photoUrl)
-          <img src="{{ $photoUrl }}" alt="Report photo" class="rounded-3 border" style="width:120px; height:80px; object-fit:cover; cursor:pointer;" 
-               data-bs-toggle="modal" data-bs-target="#reportModal"
-               data-id="{{ $report->id }}"
-               data-user-id="{{ $report->user_id }}"
-               data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
-               data-user-email="{{ $report->user->email ?? 'No Email' }}"
-               data-title="{{ $report->title }}"
-               data-description="{{ $report->description }}"
-               data-location="{{ $report->location }}"
-               data-status="{{ $report->status }}"
-               data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-               data-photo="{{ $photoUrl }}">
+          <div class="position-relative">
+            <img src="{{ $photoUrl }}" alt="Report photo" class="rounded-3 border" style="width:120px; height:80px; object-fit:cover; cursor:pointer;" 
+                 data-bs-toggle="modal" data-bs-target="#reportModal"
+                 data-id="{{ $report->id }}"
+                 data-user-id="{{ $report->user_id }}"
+                 data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
+                 data-user-email="{{ $report->user->email ?? 'No Email' }}"
+                 data-title="{{ $report->title }}"
+                 data-description="{{ $report->description }}"
+                 data-location="{{ $report->location }}"
+                 data-status="{{ $report->status }}"
+                 data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+                 data-photo="{{ $photoUrl }}"
+                 onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'bg-light rounded-3 d-flex align-items-center justify-content-center border\' style=\'width:120px; height:80px; color:#6b7280;\'>Image Error</div>'">
+            @if(isset($debug))
+              <div class="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-75 text-white p-1" style="font-size: 8px;">
+                {{ $debug }}
+              </div>
+            @endif
+          </div>
         @else
           <div class="bg-light rounded-3 d-flex align-items-center justify-content-center border" style="width:120px; height:80px; color:#6b7280;">
             No Photo
@@ -581,42 +585,62 @@ function forwardReport(reportId, btn, office) {
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('reportModal');
+  const modal = document.getElementById('reportModal');
 
-    modal.addEventListener('show.bs.modal', function (event) {
-      const trigger = event.relatedTarget;
+  modal.addEventListener('show.bs.modal', function (event) {
+    const trigger = event.relatedTarget;
 
-      const title = trigger.getAttribute('data-title');
-      const desc = trigger.getAttribute('data-description');
-      const loc = trigger.getAttribute('data-location');
-      const status = trigger.getAttribute('data-status');
-      const date = trigger.getAttribute('data-date');
-      const photo = trigger.getAttribute('data-photo'); // ✅ Fetch photo URL
+    // Get all data attributes
+    const title = trigger.getAttribute('data-title');
+    const desc = trigger.getAttribute('data-description');
+    const loc = trigger.getAttribute('data-location');
+    const status = trigger.getAttribute('data-status');
+    const date = trigger.getAttribute('data-date');
+    const photo = trigger.getAttribute('data-photo');
+    const name = trigger.getAttribute('data-user-name') || 'Anonymous';
+    const email = trigger.getAttribute('data-user-email') || 'No Email';
+    const reportId = trigger.getAttribute('data-id');
+    const reporterUserId = trigger.getAttribute('data-user-id');
 
-  const name = trigger.getAttribute('data-user-name') || document.getElementById('modalReportName').textContent.trim();
-  const email = trigger.getAttribute('data-user-email') || document.getElementById('modalReportEmail').textContent.trim();
-  const reportId = trigger.getAttribute('data-id');
-  const reporterUserId = trigger.getAttribute('data-user-id');
+    // Set values in modal
+    document.getElementById('modalReportTitle').textContent = title || 'No Title';
+    document.getElementById('modalReportDesc').textContent = desc || 'No Description';
+    document.getElementById('modalReportLoc').textContent = loc || 'No Location';
+    document.getElementById('modalReportStatus').textContent = status || 'Unknown';
+    document.getElementById('modalReportDate').textContent = date || 'N/A';
+    document.getElementById('modalReportName').textContent = name;
+    document.getElementById('modalReportEmail').textContent = email;
+    document.getElementById('modalReportUserId').textContent = reporterUserId || 'N/A';
+    
+    // Save the reportId globally for forwarding
+    window.currentModalReportId = reportId;
 
-      document.getElementById('modalReportTitle').textContent = title;
-      document.getElementById('modalReportDesc').textContent = desc;
-      document.getElementById('modalReportLoc').textContent = loc;
-      document.getElementById('modalReportStatus').textContent = status;
-      document.getElementById('modalReportDate').textContent = date;
+    // Show or hide photo
+    const modalPhoto = document.getElementById('modalReportPhoto');
+    const noPhotoText = document.getElementById('noPhotoText');
+    const debugEl = document.getElementById('photoDebug');
 
-      // ✅ Handle Photo Display
-      const photoElement = document.getElementById('modalReportPhoto');
-      const noPhotoText = document.getElementById('noPhotoText');
+    if (photo && photo.trim() !== '') {
+      modalPhoto.src = photo;
+      modalPhoto.classList.remove('d-none');
+      noPhotoText.style.display = 'none';
+      debugEl.textContent = `Loaded photo from: ${photo}`;
+    } else {
+      modalPhoto.classList.add('d-none');
+      noPhotoText.style.display = 'block';
+      debugEl.textContent = 'No photo found for this report.';
+    }
 
-      if (photo && photo.trim() !== '') {
-        photoElement.src = photo;
-        photoElement.classList.remove('d-none');
-        noPhotoText.classList.add('d-none');
-      } else {
-        photoElement.classList.add('d-none');
-        noPhotoText.classList.remove('d-none');
-      }
-
+    // Update status badge in modal footer
+    const badge = document.getElementById('modalStatusBadge');
+    badge.textContent = status || 'Pending';
+    badge.className = 'badge rounded-pill px-3 py-2 shadow-sm';
+    if (status === 'Resolved') badge.classList.add('bg-gradient-success');
+    else if (status === 'Rejected') badge.classList.add('bg-gradient-danger');
+    else if (status === 'Ongoing') badge.classList.add('bg-gradient-info');
+    else badge.classList.add('bg-gradient-warning');
+  });
+});
       // Dynamic color for status badge
       const badge = document.getElementById('modalReportStatus');
       badge.classList.remove('text-bg-warning', 'text-bg-success', 'text-bg-danger', 'text-bg-info');
