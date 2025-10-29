@@ -8,7 +8,7 @@ use App\Models\Report;
 
 class ReportController extends Controller
 {
-   public function store(Request $request)
+  public function store(Request $request)
 {
     $validated = $request->validate([
         'category' => 'required|string',
@@ -21,11 +21,19 @@ class ReportController extends Controller
         $photo = $request->file('photo');
         $photoName = time() . '.' . $photo->getClientOriginalExtension();
 
-        // ✅ Save directly to public/storage/reports
-        $photo->move(public_path('storage/reports'), $photoName);
+        try {
+            // Save directly to public/storage/reports
+            $photo->move(public_path('storage/reports'), $photoName);
 
-        // Store the relative path to the file (for use with asset())
-        $validated['photo'] = 'storage/reports/' . $photoName;
+            // Store the relative path to the file (for use with asset())
+            $validated['photo'] = 'storage/reports/' . $photoName;
+
+            // ✅ Debug: Success message
+            session()->flash('debug', '✅ Image successfully stored at public/storage/reports/' . $photoName);
+        } catch (\Exception $e) {
+            // ⚠ Debug: Warning message
+            session()->flash('debug', '⚠ Failed to store image: ' . $e->getMessage());
+        }
     }
 
     // Default fields
