@@ -145,7 +145,7 @@ Route::post('/login', function (Request $request) {
 
     // ✅ reCAPTCHA v3 verification
     $recaptchaResponse = $request->input('g-recaptcha-response');
-    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // replace with your key
+    $secretKey = '6LfSlPorAAAAABfz0johQXHxc_5oa-1mF7Uj01SY'; // replace with your key
 
     if (!$recaptchaResponse) {
         return back()->withErrors(['captcha' => 'Please complete the reCAPTCHA verification.'])
