@@ -49,11 +49,20 @@
 # ✅ ALLOW Public Storage Access
 # ======================================================
 <Directory "storage">
-    Options +Indexes
-    php_flag engine off
+    Options +FollowSymLinks +Indexes
+    AllowOverride All
+    Require all granted
+    
     <FilesMatch "\.(php|phar|phtml|sh|bat|exe)$">
         Require all denied
     </FilesMatch>
+</Directory>
+
+# Explicitly allow access to storage symlink
+<Directory "public/storage">
+    Options +FollowSymLinks +Indexes
+    AllowOverride All
+    Require all granted
 </Directory>
 
 # ======================================================
