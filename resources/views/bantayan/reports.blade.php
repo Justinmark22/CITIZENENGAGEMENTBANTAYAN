@@ -202,10 +202,18 @@
     data-description="{{ $report->description }}"
     data-location="{{ $report->location }}"
     data-status="{{ $report->status }}"
-    data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-    data-photo="{{ $report->photo ? asset('storage/reports/'.$report->photo) : '' }}">
+    data-date="{{ $report->created_at->format('M d, Y H:i') }}">
+    
+    @if ($report->photo)
+        <img src="{{ asset('storage/reports/'.$report->photo) }}" 
+             alt="{{ $report->title }}" 
+             class="rounded" 
+             style="width: 40px; height: 40px; object-fit: cover;">
+    @endif
+
     {{ $report->title }}
 </h6>
+
 
 
         <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
