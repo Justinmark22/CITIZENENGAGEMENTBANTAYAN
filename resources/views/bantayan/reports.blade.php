@@ -5,9 +5,6 @@
   <title>bantayan- Reports</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap JS (bundle includes Popper) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -298,13 +295,14 @@
 
 
   </div>
-</div><!-- ✅ MODAL (only one instance) -->
+</div>
+<!-- 🌟 Clean & Polished Report Modal -->
 <div class="modal fade custom-fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-animated">
     <div class="modal-content shadow-xl border-0 rounded-4"
          style="backdrop-filter: blur(18px); background: rgba(255,255,255,0.96); transition: all 0.4s ease;">
 
-      <!-- Header -->
+      <!-- 🔹 Header -->
       <div class="modal-header text-white py-3 px-4"
            style="background: linear-gradient(135deg, #3b82f6, #06b6d4); border-bottom: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
         <h4 class="modal-title d-flex align-items-center gap-2 fw-bold" id="reportModalLabel">
@@ -313,29 +311,30 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <!-- Reporter Info -->
+      <!-- 🔹 Reporter Info -->
       <div class="px-5 pt-4 pb-3 border-bottom" style="border-color: rgba(0,0,0,0.08);">
         <div class="d-flex flex-wrap gap-4 text-muted small">
           <div class="d-flex align-items-center gap-2">
             <i data-lucide="user" class="text-primary"></i>
-            <span id="modalReportName" class="fw-semibold text-dark"></span>
+            <span id="modalReportName" class="fw-semibold text-dark">{{ $report->user->name ?? 'Anonymous' }}</span>
           </div>
           <div class="d-flex align-items-center gap-2">
             <i data-lucide="mail" class="text-primary"></i>
-            <span id="modalReportEmail" class="fw-semibold text-dark"></span>
+            <span id="modalReportEmail" class="fw-semibold text-dark">{{ $report->user->email ?? 'No Email' }}</span>
           </div>
           <div class="d-flex align-items-center gap-2">
-            <i data-lucide="hash" class="text-primary"></i>
-            <span id="modalReportUserId" class="fw-semibold text-dark"></span>
-          </div>
+    <i data-lucide="hash" class="text-primary"></i>
+    <span id="modalReportUserId" class="fw-semibold text-dark">{{ $report->user_id ?? 'N/A' }}</span>
+</div>
+
         </div>
       </div>
 
-      <!-- Body -->
+      <!-- 🔹 Body -->
       <div class="modal-body px-5 py-4">
         <div class="row g-4">
 
-          <!-- Left Column -->
+          <!-- 📌 Left Column: Details -->
           <div class="col-md-7">
             <div class="mb-3">
               <label class="text-muted small">Title</label>
@@ -355,7 +354,8 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="text-muted small">Status</label>
-                <div id="modalReportStatus" class="badge rounded-pill px-3 py-2 fs-6 text-bg-warning text-uppercase fw-semibold shadow-sm"></div>
+                <div id="modalReportStatus"
+                     class="badge rounded-pill px-3 py-2 fs-6 text-bg-warning text-uppercase fw-semibold shadow-sm"></div>
               </div>
               <div class="col-md-6 mb-3">
                 <label class="text-muted small">Submitted</label>
@@ -364,7 +364,7 @@
             </div>
           </div>
 
-          <!-- Right Column: Photo -->
+          <!-- 📌 Right Column: Photo -->
           <div class="col-md-5">
             <label class="text-muted small">Photo</label>
             <div class="bg-light p-3 rounded-3 shadow-sm text-center">
@@ -376,40 +376,18 @@
 
         </div>
       </div>
+<!-- 🔹 Footer -->
+<div class="modal-footer bg-light border-top rounded-bottom px-4 py-3 d-flex justify-content-between align-items-center">
+  <small class="text-muted d-flex align-items-center gap-2">
+    <i data-lucide="cpu"></i> Bantayan
+  </small>
 
-      <!-- Footer -->
-      <div class="modal-footer bg-light border-top rounded-bottom px-4 py-3 d-flex justify-content-between align-items-center">
-        <small class="text-muted d-flex align-items-center gap-2">
-          <i data-lucide="cpu"></i> Bantayan
-        </small>
-        <button id="printButton" class="btn btn-primary d-none">Print</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-<!-- ✅ END MODAL -->
-
-
-<!-- ✅ REPORTS LOOP -->
-@foreach ($reports as $report)
+ @foreach ($reports as $report)
   <div id="report-{{ $report->id }}" class="card border-0 shadow-sm mb-4">
     <div class="card-body d-flex justify-content-between align-items-center">
-      <!-- Report Info Button -->
-      <button class="btn btn-outline-secondary"
-              data-bs-toggle="modal"
-              data-bs-target="#reportModal"
-              data-title="{{ $report->title }}"
-              data-description="{{ $report->description }}"
-              data-location="{{ $report->location }}"
-              data-status="{{ $report->status }}"
-              data-date="{{ $report->created_at->format('M d, Y') }}"
-              data-photo="{{ $report->photo ? asset('storage/' . $report->photo) : '' }}">
-        View Report
-      </button>
 
       <!-- Status badge -->
-      <span class="badge {{ $report->status === 'Forwarded' ? 'bg-success' : 'bg-secondary' }}">
+      <span class="badge {{ $report->status === 'Forwarded' ? 'bg-success' : 'bg-secondary' }}" data-role="status-badge">
         {{ $report->status ?? 'Pending' }}
       </span>
 
@@ -421,18 +399,22 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3"
             aria-labelledby="forwardDropdown{{ $report->id }}">
-          <li><button class="dropdown-item" onclick="forwardReport({{ $report->id }}, 'MDRRMO')">MDRRMO</button></li>
-          <li><button class="dropdown-item" onclick="forwardReport({{ $report->id }}, 'Waste Management')">Waste Management</button></li>
-          <li><button class="dropdown-item" onclick="forwardReport({{ $report->id }}, 'Water Management')">Water Management</button></li>
-          <li><button class="dropdown-item" onclick="forwardReport({{ $report->id }}, 'Fire Department')">Fire Department</button></li>
+         <button type="button" 
+        class="btn btn-outline-primary dropdown-item" 
+        data-user-id="{{ $report->user_id }}" 
+        onclick="forwardReport({{ $report->id }}, this, 'MDRRMO')">
+  MDRRMO
+</button>
+
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Waste Management')">WASTEMANAGEMENT</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Water Management')">WATERMANAGEMENT</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Fire Department')">Fire Department</a></li>
         </ul>
       </div>
 
     </div>
   </div>
 @endforeach
-
-
 <script>
 function forwardReport(reportId, btn, office) {
   const userId = btn.getAttribute('data-user-id'); // fetch reporter's user ID
