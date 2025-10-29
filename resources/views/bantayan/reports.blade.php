@@ -214,7 +214,7 @@
 
       {{ $report->title }}
   </h6>
-</div>
+
 
 
 
