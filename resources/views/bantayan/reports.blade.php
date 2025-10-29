@@ -106,7 +106,10 @@
   
 <!-- Logo Section -->
  <div class="text-center mb-4">
-  <img src="{{ asset('images/santafe.png') }}" alt="Santa Fe Logo" class="img-fluid rounded-circle" style="max-height: 80px; width: 80px; object-fit: cover;">
+  <img src="{{ asset('images/santafe.png') }}" alt="Santa Fe Logo" 
+       class="img-fluid rounded-circle shadow-sm border border-white" 
+       style="max-height: 80px; width: 80px; object-fit: cover; transition: transform 0.2s;">
+  <h6 class="mt-2 text-white-50 font-weight-bold">Bantayan Admin</h6>
 </div>
 
   <!-- Menu Links -->
@@ -135,7 +138,7 @@
 </div>
   <!-- Navbar -->
 <div class="navbar d-flex justify-content-between align-items-center">
-  <h5 class="mb-0">📣 Announcements Panel</h5>
+  <h5 class="mb-0">� Reports Management</h5>
     <div class="dropdown">
   <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 px-3 py-2 border rounded-pill shadow-sm"
           type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -170,20 +173,23 @@
     <h5 class="mb-4">Report Management</h5>
 
     <!-- Filters -->
-   <form method="GET" action="{{ route('bantayan.reports') }}" class="row g-2 mb-4">
-  <div class="col-md-3">
-    <select name="status" class="form-select">
-      <option value="">All Status</option>
-      <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
-      <option value="Ongoing" {{ request('status') == 'Ongoing' ? 'selected' : '' }}>Ongoing</option>
-      <option value="Resolved" {{ request('status') == 'Resolved' ? 'selected' : '' }}>Resolved</option>
-      <option value="Rejected" {{ request('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-    </select>
-  </div>
-  <div class="col-md-2">
-    <button class="btn btn-primary w-100"><i data-lucide="filter" class="me-1"></i> Filter</button>
-  </div>
-</form>
+   <form method="GET" action="{{ route('bantayan.reports') }}" class="row g-3 align-items-end mb-4 bg-white p-3 rounded-3 shadow-sm">
+    <div class="col-md-3">
+      <label class="form-label small text-muted">Filter by Status</label>
+      <select name="status" class="form-select shadow-sm">
+        <option value="">All Status</option>
+        <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+        <option value="Ongoing" {{ request('status') == 'Ongoing' ? 'selected' : '' }}>Ongoing</option>
+        <option value="Resolved" {{ request('status') == 'Resolved' ? 'selected' : '' }}>Resolved</option>
+        <option value="Rejected" {{ request('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+        <i data-lucide="filter" class="me-1"></i> Filter Reports
+      </button>
+    </div>
+  </form>
 
  <!-- Reports List -->
 @forelse ($reports as $report)
@@ -222,10 +228,6 @@
 </div>
 
       </div>
-
-<div class="mt-4">
-    {{ $reports->withQueryString()->links() }}
-</div>
 
       <!-- Report Status & Dropdown -->
       <div class="text-end" style="z-index: 1050;">
@@ -269,7 +271,10 @@
   <div class="alert alert-info">No reports found.</div>
 @endforelse
 
-
+<!-- Pagination -->
+<div class="d-flex justify-content-center mt-4">
+    {{ $reports->withQueryString()->links() }}
+</div>
 
   </div>
 </div>
