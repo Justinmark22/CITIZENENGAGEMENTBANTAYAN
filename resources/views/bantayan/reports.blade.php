@@ -192,21 +192,20 @@
 <!-- Report Info -->
 <div class="flex-grow-1 pe-3">
   <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
-      data-bs-toggle="modal"
-      data-bs-target="#reportModal"
-      data-id="{{ $report->id }}"
+    data-bs-toggle="modal"
+    data-bs-target="#reportModal"
+    data-id="{{ $report->id }}"
     data-user-id="{{ $report->user_id }}"
     data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
     data-user-email="{{ $report->user->email ?? 'No Email' }}"
-      data-title="{{ $report->title }}"
-      data-description="{{ $report->description }}"
-      data-location="{{ $report->location }}"
-      data-status="{{ $report->status }}"
-      data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-     data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
-        {{ $report->title }}
-  </h6>
-
+    data-title="{{ $report->title }}"
+    data-description="{{ $report->description }}"
+    data-location="{{ $report->location }}"
+    data-status="{{ $report->status }}"
+    data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+    data-photo="{{ $report->photo ? asset('storage/reports/'.$report->photo) : '' }}">
+    {{ $report->title }}
+</h6>
 
 
         <p class="text-muted small mb-2">{{ Str::limit($report->description, 120) }}</p>
