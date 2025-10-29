@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Santa Fe - Reports</title>
+  <title>bantayan- Reports</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <meta name="csrf-token" content="{{ csrf_token() }}">
-
 
   <style>
     body {
@@ -107,36 +106,39 @@
   
 <!-- Logo Section -->
  <div class="text-center mb-4">
-  <img src="{{ asset('images/santafe.png') }}" alt="Santa Fe Logo" class="img-fluid rounded-circle" style="max-height: 80px; width: 80px; object-fit: cover;">
+  <img src="{{ asset('images/santafe.png') }}" alt="Santa Fe Logo" 
+       class="img-fluid rounded-circle shadow-sm border border-white" 
+       style="max-height: 80px; width: 80px; object-fit: cover; transition: transform 0.2s;">
+  <h6 class="mt-2 text-white-50 font-weight-bold">Bantayan Admin</h6>
 </div>
 
   <!-- Menu Links -->
-  <a href="{{ route('dashboard.santafeadmin') }}">
+  <a href="{{ route('dashboard.bantayanadmin') }}">
   <i data-lucide="home" class="me-2"></i> Dashboard
 </a>
-  <a href="{{ route('santafe.users.index') }}">
+  <a href="{{ route('bantayan.users.index') }}">
     <i data-lucide="users" class="me-2"></i> Users
   </a>
-  <a href="{{ route('santafe.reports') }}">
+  <a href="{{ route('bantayan.reports') }}">
     <i data-lucide="file-text" class="me-2"></i> Reports
   </a>
-  <a href="{{ route('santafe.feedback') }}">
+  <a href="{{ route('bantayan.feedback') }}">
     <i data-lucide="message-square" class="me-2"></i> Feedback
   </a>
-  <a href="{{ route('santafe.announcements') }}">
+  <a href="{{ route('bantayan.announcements') }}">
     <i data-lucide="megaphone" class="me-2"></i> Announcements
   </a>
-  <a href="{{ route('santa_fe.events') }}">
+  <a href="{{ route('bantayan.events') }}">
     <i data-lucide="calendar-days" class="me-2"></i> Events
   </a>
- <a href="{{ route('santafe.updates') }}">
+ <a href="{{ route('bantayan.updates') }}">
   <i data-lucide="message-square" class="me-2"></i> Updates
 </a>
  
 </div>
   <!-- Navbar -->
 <div class="navbar d-flex justify-content-between align-items-center">
-  <h5 class="mb-0">📣 Announcements Panel</h5>
+  <h5 class="mb-0">� Reports Management</h5>
     <div class="dropdown">
   <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 px-3 py-2 border rounded-pill shadow-sm"
           type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -148,18 +150,7 @@
 
   <ul class="dropdown-menu dropdown-menu-end shadow-lg p-4 rounded-4" style="width: 280px;" aria-labelledby="adminDropdown">
     
-    <!-- Dark Mode Toggle -->
-    <li class="mb-3 d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center gap-2">
-        <i data-lucide="moon" class="text-secondary"></i>
-        <span class="text-muted">Dark Mode</span>
-      </div>
-      <div class="form-check form-switch m-0">
-        <input class="form-check-input" type="checkbox" id="darkModeToggle"
-               title="Toggle dark theme">
-      </div>
-    </li>
-
+  
     <li><hr class="dropdown-divider"></li>
 
     <!-- Logout -->
@@ -182,30 +173,37 @@
     <h5 class="mb-4">Report Management</h5>
 
     <!-- Filters -->
-   <form method="GET" action="{{ route('santafe.reports') }}" class="row g-2 mb-4">
-  <div class="col-md-3">
-    <select name="status" class="form-select">
-      <option value="">All Status</option>
-      <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
-      <option value="Ongoing" {{ request('status') == 'Ongoing' ? 'selected' : '' }}>Ongoing</option>
-      <option value="Resolved" {{ request('status') == 'Resolved' ? 'selected' : '' }}>Resolved</option>
-      <option value="Rejected" {{ request('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-    </select>
-  </div>
-  <div class="col-md-2">
-    <button class="btn btn-primary w-100"><i data-lucide="filter" class="me-1"></i> Filter</button>
-  </div>
-</form>
+   <form method="GET" action="{{ route('bantayan.reports') }}" class="row g-3 align-items-end mb-4 bg-white p-3 rounded-3 shadow-sm">
+    <div class="col-md-3">
+      <label class="form-label small text-muted">Filter by Status</label>
+      <select name="status" class="form-select shadow-sm">
+        <option value="">All Status</option>
+        <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+        <option value="Ongoing" {{ request('status') == 'Ongoing' ? 'selected' : '' }}>Ongoing</option>
+        <option value="Resolved" {{ request('status') == 'Resolved' ? 'selected' : '' }}>Resolved</option>
+        <option value="Rejected" {{ request('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+        <i data-lucide="filter" class="me-1"></i> Filter Reports
+      </button>
+    </div>
+  </form>
 
  <!-- Reports List -->
 @forelse ($reports as $report)
-  <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
+  <div id="report-{{ $report->id }}" class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
 <!-- Report Info -->
 <div class="flex-grow-1 pe-3">
   <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
       data-bs-toggle="modal"
       data-bs-target="#reportModal"
+      data-id="{{ $report->id }}"
+    data-user-id="{{ $report->user_id }}"
+    data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
+    data-user-email="{{ $report->user->email ?? 'No Email' }}"
       data-title="{{ $report->title }}"
       data-description="{{ $report->description }}"
       data-location="{{ $report->location }}"
@@ -231,14 +229,10 @@
 
       </div>
 
-<div class="mt-4">
-    {{ $reports->withQueryString()->links() }}
-</div>
-
       <!-- Report Status & Dropdown -->
       <div class="text-end" style="z-index: 1050;">
         <!-- Status Badge -->
-        <span class="badge rounded-pill px-3 py-2 fw-semibold text-uppercase shadow-sm mb-2 d-inline-block
+        <span data-role="status-badge" class="badge rounded-pill px-3 py-2 fw-semibold text-uppercase shadow-sm mb-2 d-inline-block
           @if($report->status === 'Resolved') bg-gradient-success 
           @elseif($report->status === 'Rejected') bg-gradient-danger 
           @elseif($report->status === 'Ongoing') bg-gradient-info 
@@ -261,38 +255,12 @@
           <ul class="dropdown-menu dropdown-menu-end shadow rounded-3" style="z-index: 2000;">
             @if($report->status === 'Resolved')
               <li>
-                <a href="{{ route('santafe.export', $report->id) }}" class="dropdown-item d-flex align-items-center gap-2 text-primary">
+                <a href="{{ route('bantayan.export', $report->id) }}" class="dropdown-item d-flex align-items-center gap-2 text-primary">
                   <i data-lucide="download"></i> Export PDF
                 </a>
               </li>
             @else
-              <li>
-                <form method="POST" action="{{ route('santafe.reports.update', $report->id) }}">
-                  @csrf @method('PUT')
-                  <input type="hidden" name="status" value="Ongoing">
-                  <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-info">
-                    <i data-lucide="loader"></i> Mark as Ongoing
-                  </button>
-                </form>
-              </li>
-              <li>
-                <form method="POST" action="{{ route('santafe.reports.update', $report->id) }}">
-                  @csrf @method('PUT')
-                  <input type="hidden" name="status" value="Resolved">
-                  <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-success">
-                    <i data-lucide="check-circle"></i> Mark as Resolved
-                  </button>
-                </form>
-              </li>
-              <li>
-                <form method="POST" action="{{ route('santafe.reports.update', $report->id) }}">
-                  @csrf @method('PUT')
-                  <input type="hidden" name="status" value="Rejected">
-                  <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger">
-                    <i data-lucide="x-circle"></i> Mark as Rejected
-                  </button>
-                </form>
-              </li>
+              <li class="dropdown-item text-muted small">No actions available</li>
             @endif
           </ul>
         </div>
@@ -303,7 +271,78 @@
   <div class="alert alert-info">No reports found.</div>
 @endforelse
 
+<!-- Pagination -->
+<div class="d-flex justify-content-center mt-4">
+    @if ($reports->hasPages())
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {{-- Previous Page Link --}}
+                @if ($reports->onFirstPage())
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                @else
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $reports->previousPageUrl() }}" rel="prev">Previous</a>
+                    </li>
+                @endif
 
+                {{-- Pagination Elements --}}
+                @foreach ($reports->getUrlRange(1, $reports->lastPage()) as $page => $url)
+                    @if ($page == $reports->currentPage())
+                        <li class="page-item active">
+                            <span class="page-link">{{ $page }}</span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                        </li>
+                    @endif
+                @endforeach
+
+                {{-- Next Page Link --}}
+                @if ($reports->hasMorePages())
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $reports->nextPageUrl() }}" rel="next">Next</a>
+                    </li>
+                @else
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                @endif
+            </ul>
+        </nav>
+    @endif
+</div>
+
+<style>
+.pagination {
+    gap: 5px;
+}
+.pagination .page-item .page-link {
+    border-radius: 6px;
+    padding: 8px 16px;
+    color: #1d4ed8;
+    border: 1px solid #e2e8f0;
+    background-color: #fff;
+    transition: all 0.2s ease;
+}
+.pagination .page-item.active .page-link {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+    color: white;
+}
+.pagination .page-item.disabled .page-link {
+    background-color: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #94a3b8;
+}
+.pagination .page-item:not(.disabled):not(.active) .page-link:hover {
+    background-color: #f1f5f9;
+    border-color: #1d4ed8;
+    color: #1d4ed8;
+}
+</style>
 
   </div>
 </div>
@@ -325,14 +364,19 @@
       <!-- 🔹 Reporter Info -->
       <div class="px-5 pt-4 pb-3 border-bottom" style="border-color: rgba(0,0,0,0.08);">
         <div class="d-flex flex-wrap gap-4 text-muted small">
-          <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2">
             <i data-lucide="user" class="text-primary"></i>
-            <span id="modalReportName" class="fw-semibold text-dark">{{ $report->user->name ?? 'Anonymous' }}</span>
+            <span id="modalReportName" class="fw-semibold text-dark">Anonymous</span>
           </div>
           <div class="d-flex align-items-center gap-2">
             <i data-lucide="mail" class="text-primary"></i>
-            <span id="modalReportEmail" class="fw-semibold text-dark">{{ $report->user->email ?? 'No Email' }}</span>
+            <span id="modalReportEmail" class="fw-semibold text-dark">No Email</span>
           </div>
+          <div class="d-flex align-items-center gap-2">
+    <i data-lucide="hash" class="text-primary"></i>
+    <span id="modalReportUserId" class="fw-semibold text-dark">N/A</span>
+</div>
+
         </div>
       </div>
 
@@ -370,56 +414,62 @@
             </div>
           </div>
 
-          <!-- 📌 Right Column: Photo -->
-          <div class="col-md-5">
-            <label class="text-muted small">Photo</label>
-            <div class="bg-light p-3 rounded-3 shadow-sm text-center">
-              <img id="modalReportPhoto" src="" alt="Report Photo"
-                   class="img-fluid rounded-3 shadow-sm d-none" style="max-height: 280px; object-fit: cover;">
-              <p id="noPhotoText" class="text-muted m-0">No photo available</p>
-            </div>
-          </div>
+        <!-- 📌 Right Column: Photo -->
+<div class="col-md-5">
+  <label class="text-muted small">Photo</label>
+  <div class="bg-light p-3 rounded-3 shadow-sm text-center position-relative">
+    <img id="modalReportPhoto" src="" alt="Report Photo"
+         class="img-fluid rounded-3 shadow-sm d-none border"
+         style="max-height: 280px; object-fit: cover; border-color: #ccc;">
+    <p id="noPhotoText" class="text-muted m-0">No photo available</p>
+
+    <!-- Debug output -->
+    <div id="photoDebug" class="text-start small text-muted mt-2" style="font-size: 0.75rem;"></div>
+  </div>
+</div>
 
         </div>
       </div>
 <!-- 🔹 Footer -->
 <div class="modal-footer bg-light border-top rounded-bottom px-4 py-3 d-flex justify-content-between align-items-center">
   <small class="text-muted d-flex align-items-center gap-2">
-    <i data-lucide="cpu"></i> Santa Fe
+    <i data-lucide="cpu"></i> Bantayan
   </small>
 
- @foreach ($reports as $report)
-  <div id="report-{{ $report->id }}" class="card border-0 shadow-sm mb-4">
-    <div class="card-body d-flex justify-content-between align-items-center">
+  <!-- Modal footer actions (single instance) -->
+  <div id="modalFooterActions" class="d-flex align-items-center gap-3">
+    <span id="modalFooterStatusBadge" class="badge bg-secondary" data-role="status-badge">Pending</span>
 
-      <!-- Status badge -->
-      <span class="badge {{ $report->status === 'Forwarded' ? 'bg-success' : 'bg-secondary' }}" data-role="status-badge">
-        {{ $report->status ?? 'Pending' }}
-      </span>
-
-      <!-- Forward Dropdown -->
-      <div class="dropdown">
-        <button class="btn btn-outline-primary dropdown-toggle" type="button"
-                id="forwardDropdown{{ $report->id }}" data-bs-toggle="dropdown" aria-expanded="false">
-          <i data-lucide="send" class="me-1"></i> Forward To
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3"
-            aria-labelledby="forwardDropdown{{ $report->id }}">
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'MDRRMO')">MDRRMO</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'WASTEMANAGEMENT')">WASTEMANAGEMENT</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'WATERMANAGEMENT')">WATERMANAGEMENT</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Health Office')">Health Office</a></li>
-        </ul>
-      </div>
-
+    <div class="dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" id="modalForwardDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i data-lucide="send" class="me-1"></i> Forward To
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3" aria-labelledby="modalForwardDropdown">
+        <li>
+          <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'MDRRMO')">MDRRMO</button>
+        </li>
+        <li>
+          <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'Waste Management')">WASTEMANAGEMENT</button>
+        </li>
+        <li>
+          <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'Water Management')">WATERMANAGEMENT</button>
+        </li>
+        <li>
+          <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'Fire Department')">Fire Department</button>
+        </li>
+      </ul>
     </div>
   </div>
-@endforeach
 <script>
-function forwardReport(reportId, office) {
+function forwardReport(reportId, btn, office) {
+  const userId = btn.getAttribute('data-user-id'); // fetch reporter's user ID
+  console.log("DEBUG: reportId =", reportId);
+  console.log("DEBUG: reporterUserId =", userId);
+  console.log("DEBUG: forwarding to office =", office);
+
   Swal.fire({
     title: "Forward Report?",
-    text: `Do you want to forward report #${reportId} to ${office}?`,
+    text: `Do you want to forward report #${reportId} submitted by user #${userId} to ${office}?`,
     icon: "question",
     showCancelButton: true,
     confirmButtonText: "Yes, forward",
@@ -442,12 +492,15 @@ function forwardReport(reportId, office) {
       },
       body: JSON.stringify({
         report_id: reportId,
+        reporter_user_id: userId,
         forwarded_to: office
       })
     })
     .then(async res => {
       let data = await res.json();
+      console.log("DEBUG: API response", data); // log response
       Swal.close();
+
       if (res.ok && data.success) {
         Swal.fire({
           icon: "success",
@@ -464,6 +517,7 @@ function forwardReport(reportId, office) {
           badge.classList.add("bg-success");
         }
       } else {
+        console.error("DEBUG: Error forwarding report", data);
         Swal.fire({
           icon: "error",
           title: "Error",
@@ -472,6 +526,7 @@ function forwardReport(reportId, office) {
       }
     })
     .catch(err => {
+      console.error("DEBUG: Fetch error", err);
       Swal.close();
       Swal.fire({
         icon: "error",
@@ -481,14 +536,12 @@ function forwardReport(reportId, office) {
     });
   });
 }
+
 </script>
 
     <!-- Existing Buttons -->
     <button type="button" class="btn btn-outline-secondary hover-scale" data-bs-dismiss="modal">
       <i data-lucide="x" class="me-1"></i> Close
-    </button>
-    <button type="button" id="printButton" class="btn btn-primary hover-scale d-none" onclick="printReport()">
-      <i data-lucide="printer" class="me-1"></i> Print
     </button>
   </div>
 </div>
@@ -533,14 +586,20 @@ function forwardReport(reportId, office) {
       const date = trigger.getAttribute('data-date');
       const photo = trigger.getAttribute('data-photo'); // ✅ Fetch photo URL
 
-      const name = document.getElementById('modalReportName').textContent.trim();
-      const email = document.getElementById('modalReportEmail').textContent.trim();
-
       document.getElementById('modalReportTitle').textContent = title;
       document.getElementById('modalReportDesc').textContent = desc;
       document.getElementById('modalReportLoc').textContent = loc;
       document.getElementById('modalReportStatus').textContent = status;
       document.getElementById('modalReportDate').textContent = date;
+
+  // Populate reporter credentials from the trigger attributes
+  const triggerName = trigger.getAttribute('data-user-name') || 'Anonymous';
+  const triggerEmail = trigger.getAttribute('data-user-email') || 'No Email';
+  const triggerUserId = trigger.getAttribute('data-user-id') || 'N/A';
+
+  document.getElementById('modalReportName').textContent = triggerName;
+  document.getElementById('modalReportEmail').textContent = triggerEmail;
+  document.getElementById('modalReportUserId').textContent = triggerUserId;
 
       // ✅ Handle Photo Display
       const photoElement = document.getElementById('modalReportPhoto');
@@ -563,94 +622,26 @@ function forwardReport(reportId, office) {
       else if (status === 'Rejected') badge.classList.add('text-bg-danger');
       else badge.classList.add('text-bg-warning');
 
-      // Show print button only if status is Ongoing
-      document.getElementById('printButton').classList.toggle('d-none', status !== 'Ongoing');
+      // Store current report id on modal for footer actions
+      const currentId = trigger.getAttribute('data-id') || '';
+      modal.dataset.currentReportId = currentId;
+
+      // Reporter user id (from trigger or fallback to displayed element)
+      const reporterUserId = trigger.getAttribute('data-user-id') || document.getElementById('modalReportUserId').textContent.trim();
+
+      // Populate footer status badge and forward buttons with reporter id
+      const modalFooterBadge = document.getElementById('modalFooterStatusBadge');
+      if (modalFooterBadge) {
+        modalFooterBadge.textContent = status || modalFooterBadge.textContent;
+        modalFooterBadge.classList.remove('bg-secondary', 'bg-success');
+        if ((status || '').toLowerCase().includes('forwarded')) modalFooterBadge.classList.add('bg-success');
+        else modalFooterBadge.classList.add('bg-secondary');
+      }
+
+      const forwardButtons = document.querySelectorAll('#modalFooterActions .dropdown-item');
+      forwardButtons.forEach(btn => btn.setAttribute('data-user-id', reporterUserId));
     });
 });
-
-function printReport() {
-  // Get modal content safely
-  const getText = (id) => {
-    const el = document.getElementById(id);
-    return el ? el.textContent.trim() : 'N/A';
-  };
-
-  const title = getText('modalReportTitle');
-  const desc = getText('modalReportDesc');
-  const location = getText('modalReportLoc');
-  const status = getText('modalReportStatus');
-  const date = getText('modalReportDate');
-  const name = getText('modalReportName');
-  const email = getText('modalReportEmail');
-
-  const content = `
-    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
-      <img src="/images/santafe.png" alt="Santa Fe Logo" style="height: 90px;">
-      <div>
-        <h1 style="margin: 0; font-size: 26px; color: #0f172a;">Municipality of Santa Fe</h1>
-        <h3 style="margin: 5px 0 0; font-weight: normal; color: #475569;">Incident Report Summary</h3>
-      </div>
-    </div>
-
-    <hr style="margin-bottom: 30px; border-top: 2px solid #94a3b8;">
-
-    <div style="font-size: 16px; color: #1e293b;">
-      <p><strong>👤 Name:</strong> ${name}</p>
-      <p><strong>✉️ Email:</strong> ${email}</p>
-      <p><strong>📌 Title:</strong> ${title}</p>
-      <p><strong>📝 Description:</strong><br><span style="margin-left: 20px;">${desc}</span></p>
-      <p><strong>📍 Location:</strong> ${location}</p>
-      <p><strong>📊 Status:</strong> ${status}</p>
-      <p><strong>📅 Submitted:</strong> ${date}</p>
-    </div>
-  `;
-
-  const printWindow = window.open('', '_blank', 'width=900,height=700');
-
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Santa Fe Incident Report</title>
-      <style>
-        body {
-          font-family: 'Segoe UI', sans-serif;
-          padding: 40px;
-          color: #1f2937;
-          background-color: #fff;
-        }
-        h1, h3 {
-          margin: 0;
-        }
-        p {
-          margin: 12px 0;
-          line-height: 1.6;
-        }
-        hr {
-          border: none;
-          border-top: 1px solid #ccc;
-        }
-        @media print {
-          body {
-            margin: 0;
-            padding: 20px;
-          }
-        }
-      </style>
-    </head>
-    <body>
-      ${content}
-    </body>
-    </html>
-  `);
-
-  printWindow.document.close();
-  printWindow.focus();
-  printWindow.onload = () => {
-    printWindow.print();
-    printWindow.close();
-  };
-}
 
 </script>
 
@@ -660,35 +651,6 @@ function printReport() {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     lucide.createIcons();
-
-    fetch('/reports/chart-data')
-      .then(res => res.json())
-      .then(data => {
-        const ctx = document.getElementById('reportsChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: data.labels,
-            datasets: [{
-              label: 'Report Count',
-              data: data.counts,
-              backgroundColor: ['#facc15', '#f97316', '#22c55e'], // Yellow, Orange, Green
-              borderRadius: 10
-            }]
-          },
-          options: {
-            responsive: true,
-            animation: {
-              duration: 1000
-            },
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            }
-          }
-        });
-      });
   </script>
 </body>
 </html>
