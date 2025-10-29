@@ -116,22 +116,22 @@
   <a href="{{ route('dashboard.santafeadmin') }}">
   <i data-lucide="home" class="me-2"></i> Dashboard
 </a>
-  <a href="{{ route('santafe.users.index') }}">
+  <a href="{{ route('santa_fe.users.index') }}">
     <i data-lucide="users" class="me-2"></i> Users
   </a>
-  <a href="{{ route('santafe.reports') }}">
+  <a href="{{ route('santa_fe.reports') }}">
     <i data-lucide="file-text" class="me-2"></i> Reports
   </a>
-  <a href="{{ route('santafe.feedback') }}">
+  <a href="{{ route('santa_fe.feedback') }}">
     <i data-lucide="message-square" class="me-2"></i> Feedback
   </a>
-  <a href="{{ route('santafe.announcements') }}">
+  <a href="{{ route('santa_fe.announcements') }}">
     <i data-lucide="megaphone" class="me-2"></i> Announcements
   </a>
-  <a href="{{ route('santafe.events') }}">
+  <a href="{{ route('santa_fe.events') }}">
     <i data-lucide="calendar-days" class="me-2"></i> Events
   </a>
- <a href="{{ route('santafe.updates') }}">
+ <a href="{{ route('santa_fe.updates') }}">
   <i data-lucide="message-square" class="me-2"></i> Updates
 </a>
  
