@@ -189,7 +189,7 @@
       <h1 class="text-3xl md:text-5xl font-extrabold mb-3 md:mb-4 leading-tight text-gray-900">
         Welcome, <span class="text-green-700">{{ Auth::user()->name ?? 'Guest' }}</span>
       </h1>
-      <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-700">Citizen Engagement Platform</h2>
+      <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-700">Bantayan 911</h2>
       <p class="text-gray-600 text-base md:text-lg mb-6 leading-relaxed">
         Empowering citizen participation through transparent and accessible platforms,  
         fostering evidence-based decision-making for the community.
@@ -353,7 +353,7 @@
           <option>Road Issue</option>
           <option>Water Management</option>
           <option>Waste Management</option>
-          <option>Noise Complaint</option>
+          <option>Fire Management</option>
         </select>
       </div>
 

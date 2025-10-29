@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MADRIDEJOS Dashboard</title>
+  <title>Madridejos Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
@@ -15,130 +17,166 @@
   <!-- Left: Logo + Title -->
   <a href="#" class="flex items-center gap-3">
     <img src="{{ asset('images/citizen.png') }}" alt="Logo" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-gray-200 shadow-sm">
-    <span class="text-lg md:text-xl font-bold text-gray-900 tracking-tight">MADRIDEJOS Dashboard</span>
+    <span class="text-lg md:text-xl font-bold text-gray-900 tracking-tight">Madrdejos Dashboard</span>
   </a>
 
-  <!-- Mobile menu toggle -->
-  <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition">
+  <!-- 📱 Mobile Menu Toggle -->
+  <button 
+    id="mobileMenuBtn"
+    type="button"
+    class="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+    aria-controls="navbarLinks"
+    aria-expanded="false"
+  >
     <i data-lucide="menu" class="w-6 h-6"></i>
   </button>
 
-  <!-- Right side items -->
-  <div id="navbarLinks" class="hidden md:flex items-center gap-4 md:gap-5 flex-wrap text-sm absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none rounded-b-2xl md:rounded-none p-4 md:p-0">
-    
-<!-- 🔔 Alerts Dropdown -->
+  <!-- 🌐 Navbar Links -->
+ <div 
+  id="navbarLinks"
+  class="hidden flex-col md:flex md:flex-row items-start md:items-center gap-3 md:gap-5 text-sm 
+         absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent 
+         shadow-lg md:shadow-none rounded-b-2xl md:rounded-none p-4 md:p-0 z-50 transition-all duration-300"
+>
+
+    <!-- 🔔 Alerts Dropdown -->
+ 
 <div class="relative w-full md:w-auto">
-  <button onclick="toggleDropdown('alertsDropdown'); clearBadge();" 
-          class="flex items-center justify-center md:justify-start w-10 h-10 md:w-auto md:px-4 rounded-full hover:bg-gray-100 transition relative text-gray-700">
-    <i data-lucide="bell" class="w-5 h-5"></i>Notifications
-    @php 
-      $totalAlerts = $alerts->count() 
-                    + $mddrmoAcceptedReports->count() + $wasteAcceptedReports->count()
-                    + $mddrmoOngoingReports->count() + $wasteOngoingReports->count()
-                    + $mddrmoResolvedReports->count() + $wasteResolvedReports->count(); 
-    @endphp
-    @if($totalAlerts > 0)
-      <span id="alertsBadge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full shadow">{{ $totalAlerts }}</span>
-    @endif
-  </button>
+<button onclick="toggleDropdown('alertsDropdown'); clearBadge();" 
+        class="flex items-center justify-center md:justify-start w-15 h-10 md:w-auto md:px-4 rounded-full hover:bg-gray-100 transition relative text-gray-700">
+  <i data-lucide="bell" class="w-5 h-5"></i>
+  <span class="ml-2 hidden md:inline">Notifications</span>
 
-  <!-- Dropdown -->
-  <div id="alertsDropdown" class="hidden absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50">
-    <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
-      <h6 class="font-semibold text-gray-800 text-sm uppercase tracking-wide">Notifications</h6>
-      <button onclick="hideNotifications()" class="text-gray-400 hover:text-gray-600 text-sm">Clear All</button>
-    </div>
+  {{-- 🔴 Notification Badge --}}
+  @if($mddrmoAcceptedReports->isNotEmpty() || $mddrmoOngoingReports->isNotEmpty() || $mddrmoResolvedReports->isNotEmpty())
+    <span id="alertsBadge" 
+          class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow inline-flex items-center justify-center">
+      {{ $mddrmoAcceptedReports->count() + $mddrmoOngoingReports->count() + $mddrmoResolvedReports->count() }}
+    </span>
+  @endif
+</button>
 
-    <div class="max-h-96 overflow-y-auto">
-      {{-- System Alerts --}}
-      @forelse ($alerts as $alert)
-        <div onclick="showAlertModal({{ $alert->id }}, '{{ $alert->title }}', '{{ $alert->message }}')" 
-             class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
-          <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-            <i class="text-blue-600" data-lucide="alert-triangle"></i>
-          </div>
-          <div class="flex-1">
-            <p class="text-gray-800 text-sm font-medium">{{ $alert->title }}</p>
-            <p class="text-gray-500 text-xs mt-1">{{ $alert->message }}</p>
-          </div>
-        </div>
-      @empty
-        <p class="text-gray-400 text-sm text-center py-4">No alerts available.</p>
-      @endforelse
 
-      {{-- Reports Notifications --}}
-      @foreach(['Resolved Reports' => ['color'=>'purple','data'=>[$mddrmoResolvedReports,$wasteResolvedReports]],
-                'Ongoing Reports' => ['color'=>'blue','data'=>[$mddrmoOngoingReports,$wasteOngoingReports]],
-                'Accepted Reports' => ['color'=>'green','data'=>[$mddrmoAcceptedReports,$wasteAcceptedReports]]] as $group => $groupData)
-        @foreach($groupData['data'] as $reports)
-          @foreach($reports as $report)
-            <div onclick="openReportModal({{ $report->id }}, '{{ $report->title }}', '{{ $report->status }}', '{{ $report->forwarded_to }}')" 
-                 class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition bg-{{ $groupData['color'] }}-50 rounded-md m-2">
-              <div class="flex-shrink-0 w-8 h-8 bg-{{ $groupData['color'] }}-400 text-white rounded-full flex items-center justify-center">
-                <i data-lucide="check-circle" class="w-4 h-4"></i>
-              </div>
-              <div class="flex-1">
-                <p class="text-{{ $groupData['color'] }}-700 text-sm font-medium">
-                  {{ $report->status }} {{ strpos($group,'Waste') !== false ? '♻' : '' }}
-                </p>
-                <p class="text-gray-600 text-xs mt-1">
-                  Your report "<span class="font-medium">{{ $report->title }}</span>" 
-                  {{ $group == 'Resolved Reports' ? 'was resolved by' : ($group == 'Ongoing Reports' ? 'is being handled by' : 'was forwarded to') }}
-                  <span class="font-semibold">{{ $report->forwarded_to }}</span>.
-                </p>
-              </div>
-            </div>
-          @endforeach
-        @endforeach
-      @endforeach
-
-    </div>
-  </div>
-</div>
-
-    <a href="{{ route('feedback.page') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
-      <i data-lucide="message-square" class="w-4 h-4"></i> Feedback
-    </a>
-
-    <a href="{{ route('contact.support.page') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
-      <i data-lucide="life-buoy" class="w-4 h-4"></i> Support
-    </a>
-
-    <button onclick="openModal('reportModal')" 
-            class="w-full md:w-auto bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-full font-semibold text-gray-800 shadow-sm transition">
-      + Concern
-    </button>
-
-    <!-- User Dropdown -->
-    <div class="relative w-full md:w-auto">
-      <button onclick="toggleDropdown('userDropdown')" class="flex items-center justify-between md:justify-start w-full md:w-auto gap-2 text-gray-700 hover:text-green-700 transition">
-        <div class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center shadow-inner">
-          <i data-lucide="user" class="w-4 h-4"></i>
-        </div>
-        <span class="md:inline hidden font-medium">{{ Auth::user()->name ?? 'Guest' }}</span>
-        <i data-lucide="chevron-down" class="w-4 h-4"></i>
-      </button>
 
       <!-- Dropdown -->
-      <div id="userDropdown" class="hidden absolute right-0 mt-2 bg-white shadow-xl rounded-xl w-64 overflow-hidden border border-gray-100 z-50">
-        <div class="px-5 py-4 bg-gray-50">
-          <p class="font-semibold">{{ Auth::user()->name ?? 'Guest' }}</p>
-          <p class="text-gray-500 text-sm">{{ Auth::user()->email ?? 'No Email' }}</p>
-          <p class="text-gray-400 text-sm">{{ Auth::user()->location ?? 'No Location' }}</p>
+      <div id="alertsDropdown" class="hidden absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50">
+        <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
+          <h6 class="font-semibold text-gray-800 text-sm uppercase tracking-wide">Notifications</h6>
+          <button onclick="hideNotifications()" class="text-gray-400 hover:text-gray-600 text-sm">Clear All</button>
         </div>
-        <div class="border-t">
-          <a href="#" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
-            <i data-lucide="settings" class="w-4 h-4"></i> Settings
-          </a>
-          <button onclick="confirmLogout(event)" class="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left transition">
-            <i data-lucide="log-out" class="w-4 h-4"></i> Logout
-          </button>
-          <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
+
+        <div class="max-h-96 overflow-y-auto">
+          {{-- System Alerts --}}
+          @forelse ($alerts as $alert)
+            <div onclick="showAlertModal({{ $alert->id }}, '{{ $alert->title }}', '{{ $alert->message }}')" 
+                 class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-blue-600"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-gray-800 text-sm font-medium">{{ $alert->title }}</p>
+                <p class="text-gray-500 text-xs mt-1">{{ $alert->message }}</p>
+              </div>
+            </div>
+          @empty
+            <p class="text-gray-400 text-sm text-center py-4">No alerts available.</p>
+          @endforelse
+
+          {{-- Reports Notifications --}}
+          @foreach(['Resolved Reports' => ['color'=>'purple','data'=>[$mddrmoResolvedReports,$wasteResolvedReports]],
+                    'Ongoing Reports' => ['color'=>'blue','data'=>[$mddrmoOngoingReports,$wasteOngoingReports]],
+                    'Accepted Reports' => ['color'=>'green','data'=>[$mddrmoAcceptedReports,$wasteAcceptedReports]]] as $group => $groupData)
+            @foreach($groupData['data'] as $reports)
+              @foreach($reports as $report)
+                <div onclick="openReportModal({{ $report->id }}, '{{ $report->title }}', '{{ $report->status }}', '{{ $report->forwarded_to }}')" 
+                     class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition bg-{{ $groupData['color'] }}-50 rounded-md m-2">
+                  <div class="flex-shrink-0 w-8 h-8 bg-{{ $groupData['color'] }}-400 text-white rounded-full flex items-center justify-center">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-{{ $groupData['color'] }}-700 text-sm font-medium">{{ $report->status }}</p>
+                    <p class="text-gray-600 text-xs mt-1">
+                      Your report "<span class="font-medium">{{ $report->title }}</span>" 
+                      {{ $group == 'Resolved Reports' ? 'was resolved by' : ($group == 'Ongoing Reports' ? 'is being handled by' : 'was forwarded to') }}
+                      <span class="font-semibold">{{ $report->forwarded_to }}</span>.
+                    </p>
+                  </div>
+                </div>
+              @endforeach
+            @endforeach
+          @endforeach
         </div>
       </div>
     </div>
+
+    <!-- 📩 Feedback -->
+    <a href="{{ route('feedback.page') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
+      <i data-lucide="message-square" class="w-4 h-4"></i>
+    <span class="ml-2 block md:inline">Feedback</span>
+     
+    </a>
+
+    <!-- 💬 Support -->
+    <a href="{{ route('contact.support.page') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
+      <i data-lucide="life-buoy" class="w-4 h-4"></i>
+      <span class="ml-2 block md:inline">Support</span>
+    </a>
+<button 
+  onclick="openModal('reportModal')" 
+  class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition font-medium"
+>
+  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+  <span class="ml-2 block">Concern</span>
+</button>
+<!-- 👤 User Dropdown -->
+<div class="relative">
+  <button 
+    onclick="toggleDropdown('userDropdown')" 
+    class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition font-medium"
+  >
+    <!-- Profile Icon -->
+    <div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center shadow-inner">
+      <i data-lucide="user" class="w-4 h-4 text-gray-700"></i>
+    </div>
+
+    <!-- Username -->
+    <span class="ml-2 block text-sm sm:text-base">
+      {{ Auth::user()->name ?? 'Guest' }}
+    </span>
+
+    <!-- Dropdown Arrow -->
+    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-600 ml-1"></i>
+  </button>
+
+  <!-- Dropdown Menu -->
+  <div 
+    id="userDropdown" 
+    class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-3 
+           bg-white shadow-xl rounded-xl w-[90vw] sm:w-64 max-w-sm 
+           overflow-hidden border border-gray-100 z-50 transform transition-all duration-200"
+  >
+
+    <!-- ✅ Desktop Info Section -->
+    <div class="hidden sm:block px-3 py-2 bg-gray-50 text-xs sm:text-sm text-center leading-tight">
+      <p class="font-semibold truncate">{{ Auth::user()->name ?? 'Guest' }}</p>
+      <p class="text-gray-500 truncate">{{ Auth::user()->email ?? 'No Email' }}</p>
+      <p class="text-gray-400 truncate">{{ Auth::user()->location ?? 'No Location' }}</p>
+    </div>
+
+    <!-- 🚀 Logout (Visible on All Devices, but main item on Mobile) -->
+    <button 
+      onclick="confirmLogout(event)" 
+      class="flex items-center justify-center gap-2 px-4 py-2 text-sm 
+             text-red-600 hover:bg-red-50 w-full text-center transition"
+    >
+      <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+    </button>
+
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
   </div>
-</nav>
+</div>
+</div>   
+</nav>         
 <!-- 🌟 Hero Section -->
 <section class="relative overflow-hidden py-12 md:py-16 bg-gradient-to-r from-green-50 to-lime-50">
   <!-- Background blobs -->
@@ -151,160 +189,144 @@
       <h1 class="text-3xl md:text-5xl font-extrabold mb-3 md:mb-4 leading-tight text-gray-900">
         Welcome, <span class="text-green-700">{{ Auth::user()->name ?? 'Guest' }}</span>
       </h1>
-      <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-700">Citizen Engagement Platform</h2>
+      <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-700">Madridejos 911</h2>
       <p class="text-gray-600 text-base md:text-lg mb-6 leading-relaxed">
         Empowering citizen participation through transparent and accessible platforms,  
         fostering evidence-based decision-making for the community.
       </p>
-      <button class="px-6 py-3 bg-green-600 text-white rounded-xl font-semibold shadow-md hover:bg-green-700 transition transform hover:scale-105">
-        Learn More
-      </button>
+      
+    </div>
+<!-- Right Column: Resolved MDRRMO Reports Grid -->
+<section class="grid lg:grid-cols-2 gap-6 lg:w-1/2">
+@forelse ($mddrmoResolvedReports as $report)
+  @php $isNew = \Carbon\Carbon::parse($report->updated_at)->gt(now()->subDay()); @endphp
+  <div class="relative group bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-600 rounded-2xl p-5 shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-500 overflow-hidden animate-fadeIn">
+    <div class="absolute inset-0 bg-green-200/10 rounded-2xl -z-10"></div>
+
+    @if($isNew)
+      <span class="absolute top-3 right-3 bg-green-600 text-white text-xs px-2 py-1 rounded-full animate-pulse">NEW</span>
+    @endif
+
+    <div class="flex justify-between items-start gap-3">
+      <div class="flex flex-col gap-2">
+        <strong class="text-gray-800 text-md animate-pulse">
+          Hello {{ $report->user ? $report->user->name : 'Citizen' }} (ID: {{ $report->user_id }})
+        </strong>
+
+        <p class="text-gray-700 text-sm">
+          Your report titled <em>"{{ $report->title }}"</em> in the category 
+          <span class="font-semibold text-green-600">{{ $report->category }}</span> 
+          has been successfully resolved.
+        </p>
+
+        <div class="text-xs text-gray-500 mt-2 space-y-1 flex flex-col">
+          <div class="flex items-center gap-1">
+            <i data-lucide="calendar" class="w-4 h-4 text-green-600"></i> Submitted: {{ $report->created_at->format('M d, Y h:i A') }}
+          </div>
+          <div class="flex items-center gap-1">
+            <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i> Resolved: {{ $report->updated_at->format('M d, Y h:i A') }}
+          </div>
+          <div class="flex items-center gap-1">
+            <i data-lucide="hash" class="w-4 h-4 text-gray-400"></i> Report ID: <span class="font-mono">{{ $report->id }}</span>
+            <button onclick="navigator.clipboard.writeText('{{ $report->id }}')" class="ml-2 text-xs text-green-600 hover:text-green-700" title="Copy ID">
+              <i data-lucide="clipboard" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-end gap-2">
+        <i data-lucide="check-circle" class="text-green-600 w-8 h-8 animate-ping"></i>
+        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-600 flex items-center gap-1">
+          <i data-lucide="tag" class="w-3 h-3"></i> {{ $report->category }}
+        </span>
+      </div>
     </div>
 
-    <!-- Right Column: Reports Grid -->
-    <section class="grid lg:grid-cols-2 gap-6 lg:w-1/2">
+    <div class="mt-4 flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+      <button class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs hover:bg-green-700 flex items-center gap-1 animate-bounce">
+        <i data-lucide="eye" class="w-4 h-4"></i> View Details
+      </button>
+<button onclick="window.location='{{ route('feedback.page', ['report' => $report->id]) }}'" 
+        class="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs hover:bg-green-200 flex items-center gap-1 animate-pulse">
+    <i data-lucide="message-circle" class="w-4 h-4"></i> Send Feedback
+</button>
 
-      <!-- MDRRMO Resolved Reports -->
-      <div class="bg-white rounded-3xl shadow-xl p-6 h-full flex flex-col">
-        <h5 class="text-success font-bold mb-6 flex items-center gap-3 text-xl animate-pulse">
-          <i class="bi bi-megaphone-fill text-success"></i> MDRRMO Resolved Reports
-        </h5>
-
-        <div class="overflow-auto space-y-5 flex-1" style="max-height: 480px;">
-          @php
-            use Carbon\Carbon;
-            $reports = \App\Models\ForwardedReport::with('user')
-                        ->where('location', 'Madridejos')
-                        ->where('status', 'Resolved')
-                        ->latest()
-                        ->get(['id', 'title', 'description', 'category', 'user_id', 'created_at', 'updated_at']);
-          @endphp
-
-          @forelse ($reports as $report)
-            @php $isNew = Carbon::parse($report->updated_at)->gt(now()->subDay()); @endphp
-            <div class="relative group bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-success rounded-2xl p-5 shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-500 overflow-hidden animate-fadeIn">
-              <div class="absolute inset-0 bg-green-200/10 rounded-2xl -z-10"></div>
-
-              @if($isNew)
-                <span class="absolute top-3 right-3 bg-success text-white text-xs px-2 py-1 rounded-full animate-pulse">NEW</span>
-              @endif
-
-              <div class="flex justify-between items-start gap-3">
-                <div class="flex flex-col gap-2">
-                  <strong class="text-gray-800 text-md animate-pulse">
-                    Hello {{ $report->user ? $report->user->name : 'Citizen' }},
-                  </strong>
-                  <p class="text-gray-700 text-sm">
-                    Your report titled <em>"{{ $report->title }}"</em> in the category 
-                    <span class="font-semibold text-success">{{ $report->category }}</span> 
-                    has been successfully resolved by <strong>MDRRMO</strong>.
-                  </p>
-                  <div class="text-xs text-gray-500 mt-2 space-y-1 flex flex-col">
-                    <div class="flex items-center gap-1"><i class="bi bi-calendar-event-fill text-green-600"></i> Submitted: {{ $report->created_at->format('M d, Y h:i A') }}</div>
-                    <div class="flex items-center gap-1"><i class="bi bi-check2-circle text-success"></i> Resolved: {{ $report->updated_at->format('M d, Y h:i A') }}</div>
-                    <div class="flex items-center gap-1">
-                      <i class="bi bi-hash text-gray-400"></i> Report ID: <span class="font-mono">{{ $report->id }}</span>
-                      <button onclick="navigator.clipboard.writeText('{{ $report->id }}')" class="ml-2 text-xs text-success hover:text-success/70" title="Copy ID">
-                        <i class="bi bi-clipboard-fill"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex flex-col items-end gap-2">
-                  <i class="bi bi-check-circle-fill text-success text-3xl animate-ping"></i>
-                  <span class="px-3 py-1 rounded-full text-xs font-semibold bg-success/30 text-success flex items-center gap-1">
-                    <i class="bi bi-tag-fill"></i> {{ $report->category }}
-                  </span>
-                </div>
-              </div>
-
-              <div class="mt-4 flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <button class="bg-success text-white px-3 py-1 rounded-lg text-xs hover:bg-success/80 flex items-center gap-1 animate-bounce">
-                  <i class="bi bi-eye-fill"></i> View Details
-                </button>
-                <button class="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs hover:bg-green-200 flex items-center gap-1 animate-pulse">
-                  <i class="bi bi-chat-left-text-fill"></i> Send Feedback
-                </button>
-              </div>
-            </div>
-          @empty
-            <p class="text-gray-500 text-sm text-center py-10">No resolved reports available.</p>
-          @endforelse
-        </div>
-      </div>
-
-      <!-- Waste Management Resolved Reports -->
-      <div class="bg-white rounded-3xl shadow-xl p-6 h-full flex flex-col">
-        <h5 class="text-yellow-600 font-bold mb-6 flex items-center gap-3 text-xl animate-pulse">
-          <i class="bi bi-recycle text-yellow-600"></i> Waste Management Resolved Reports
-        </h5>
-
-        <div class="overflow-auto space-y-5 flex-1" style="max-height: 480px;">
-          @php
-            $reports = \App\Models\ReroutedReport::with('user')
-                              ->where('location', 'Madridejos')
-                              ->where('status', 'Resolved')
-                              ->where('category', 'Waste Management') // fetch only waste reports
-                              ->latest()
-                              ->get(['id', 'title', 'description', 'category', 'user_id', 'created_at', 'updated_at']);
-          @endphp
-
-          @forelse ($wasteResolvedReports as $report)
-            @php $isNew = Carbon::parse($report->updated_at)->gt(now()->subDay()); @endphp
-            <div class="relative group bg-gradient-to-r from-yellow-50 to-yellow-100 border-l-4 border-yellow-500 rounded-2xl p-5 shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-500 overflow-hidden animate-fadeIn">
-              <div class="absolute inset-0 bg-yellow-200/10 rounded-2xl -z-10"></div>
-
-              @if($isNew)
-                <span class="absolute top-3 right-3 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">NEW</span>
-              @endif
-
-              <div class="flex justify-between items-start gap-3">
-                <div class="flex flex-col gap-2">
-                  <strong class="text-gray-800 text-md animate-pulse">
-                    Hello {{ $report->user ? $report->user->name : 'Citizen' }},
-                  </strong>
-                  <p class="text-gray-700 text-sm">
-                    Your report titled <em>"{{ $report->title }}"</em> in the category 
-                    <span class="font-semibold text-yellow-600">{{ $report->category }}</span> 
-                    has been successfully resolved by <strong>Waste Management</strong>.
-                  </p>
-                  <div class="text-xs text-gray-500 mt-2 space-y-1 flex flex-col">
-                    <div class="flex items-center gap-1"><i class="bi bi-calendar-event-fill text-yellow-600"></i> Submitted: {{ $report->created_at->format('M d, Y h:i A') }}</div>
-                    <div class="flex items-center gap-1"><i class="bi bi-check2-circle text-yellow-500"></i> Resolved: {{ $report->updated_at->format('M d, Y h:i A') }}</div>
-                    <div class="flex items-center gap-1">
-                      <i class="bi bi-hash text-gray-400"></i> Report ID: <span class="font-mono">{{ $report->id }}</span>
-                      <button onclick="navigator.clipboard.writeText('{{ $report->id }}')" class="ml-2 text-xs text-yellow-500 hover:text-yellow-700" title="Copy ID">
-                        <i class="bi bi-clipboard-fill"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex flex-col items-end gap-2">
-                  <i class="bi bi-check-circle-fill text-yellow-500 text-3xl animate-ping"></i>
-                  <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-600 flex items-center gap-1">
-                    <i class="bi bi-tag-fill"></i> {{ $report->category }}
-                  </span>
-                </div>
-              </div>
-
-              <div class="mt-4 flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <button class="bg-yellow-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-yellow-600 flex items-center gap-1 animate-bounce">
-                  <i class="bi bi-eye-fill"></i> View Details
-                </button>
-                <button class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-lg text-xs hover:bg-yellow-200 flex items-center gap-1 animate-pulse">
-                  <i class="bi bi-chat-left-text-fill"></i> Send Feedback
-                </button>
-              </div>
-            </div>
-          @empty
-            <p class="text-gray-500 text-sm text-center py-10">No resolved waste reports available.</p>
-          @endforelse
-        </div>
-      </div>
-
-    </section>
+    </div>
   </div>
+@empty
+  <p class="text-gray-500 text-sm text-center py-10">No resolved reports available.</p>
+@endforelse
+
+
+<!-- Waste Management Resolved Reports -->
+<div class="bg-white rounded-3xl shadow-xl p-6 h-full flex flex-col">
+  <h5 class="text-yellow-600 font-bold mb-6 flex items-center gap-3 text-xl animate-pulse">
+    <i data-lucide="refresh-cw" class="w-5 h-5 text-yellow-600"></i> Waste Management Resolved Reports
+  </h5>
+
+  <div class="overflow-auto space-y-5 flex-1" style="max-height: 480px;">
+
+    @forelse ($wasteResolvedReports as $report)
+      @php $isNew = \Carbon\Carbon::parse($report->updated_at)->gt(now()->subDay()); @endphp
+      <div class="relative group bg-gradient-to-r from-yellow-50 to-yellow-100 border-l-4 border-yellow-500 rounded-2xl p-5 shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-500 overflow-hidden animate-fadeIn">
+        <div class="absolute inset-0 bg-yellow-200/10 rounded-2xl -z-10"></div>
+
+        @if($isNew)
+          <span class="absolute top-3 right-3 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">NEW</span>
+        @endif
+
+        <div class="flex justify-between items-start gap-3">
+          <div class="flex flex-col gap-2">
+            <strong class="text-gray-800 text-md animate-pulse">
+              Hello {{ $report->user ? $report->user->name : 'Citizen' }},
+            </strong>
+            <p class="text-gray-700 text-sm">
+              Your report titled <em>"{{ $report->title }}"</em> in the category 
+              <span class="font-semibold text-yellow-600">{{ $report->category }}</span> 
+              has been successfully resolved by <strong>Waste Management</strong>.
+            </p>
+            <div class="text-xs text-gray-500 mt-2 space-y-1 flex flex-col">
+              <div class="flex items-center gap-1">
+                <i data-lucide="calendar" class="w-4 h-4 text-yellow-600"></i> Submitted: {{ $report->created_at->format('M d, Y h:i A') }}
+              </div>
+              <div class="flex items-center gap-1">
+                <i data-lucide="check-circle" class="w-4 h-4 text-yellow-500"></i> Resolved: {{ $report->updated_at->format('M d, Y h:i A') }}
+              </div>
+              <div class="flex items-center gap-1">
+                <i data-lucide="hash" class="w-4 h-4 text-gray-400"></i> Report ID: <span class="font-mono">{{ $report->id }}</span>
+                <button onclick="navigator.clipboard.writeText('{{ $report->id }}')" class="ml-2 text-xs text-yellow-500 hover:text-yellow-700" title="Copy ID">
+                  <i data-lucide="clipboard" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-end gap-2">
+            <i data-lucide="check-circle" class="text-yellow-500 w-8 h-8 animate-ping"></i>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-600 flex items-center gap-1">
+              <i data-lucide="tag" class="w-3 h-3"></i> {{ $report->category }}
+            </span>
+          </div>
+        </div>
+
+        <div class="mt-4 flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <button class="bg-yellow-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-yellow-600 flex items-center gap-1 animate-bounce">
+            <i data-lucide="eye" class="w-4 h-4"></i> View Details
+          </button>
+          <button class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-lg text-xs hover:bg-yellow-200 flex items-center gap-1 animate-pulse">
+            <i data-lucide="message-circle" class="w-4 h-4"></i> Send Feedback
+          </button>
+        </div>
+      </div>
+    @empty
+      <p class="text-gray-500 text-sm text-center py-10">No resolved waste reports available.</p>
+    @endforelse
+
+  </div>
+</div>
 </section>
+  </div>  
 
 <!-- Tailwind animation -->
 <style>
@@ -314,21 +336,17 @@
 }
 .animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
 </style>
-
-<!-- Add SweetAlert2 CDN (put this in your layout <head> or before closing </body>) -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <!-- 📌 Submit Concern Modal -->
 <div id="reportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn">
     <div class="flex justify-between items-center border-b pb-3 mb-4">
       <h3 class="text-lg font-semibold text-gray-800">Submit Concern</h3>
-      <button type="button" onclick="closeModal('reportModal')" class="text-gray-400 hover:text-gray-700">&times;</button>
+      <button onclick="closeModal('reportModal')" class="text-gray-400 hover:text-gray-700 text-2xl leading-none">&times;</button>
     </div>
 
-    <form id="reportForm" method="POST" action="{{ route('reports.store') }}" enctype="multipart/form-data" class="space-y-4">
+    <form id="submitConcernForm" action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data">
       @csrf
-      <div>
+      <div class="mb-3">
         <label class="block text-sm font-medium text-gray-700">Category</label>
         <select name="category" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" required>
           <option value="" disabled selected>Select category</option>
@@ -339,223 +357,147 @@
         </select>
       </div>
 
-      <div>
+      <div class="mb-3">
         <label class="block text-sm font-medium text-gray-700">Title</label>
         <input type="text" name="title" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="E.g. Broken streetlight" required>
       </div>
 
-      <div>
+      <div class="mb-3">
         <label class="block text-sm font-medium text-gray-700">Description</label>
         <textarea name="description" rows="4" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="Describe your concern..." required></textarea>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Upload Photo (optional)</label>
-        <input type="file" name="photo" accept="image/*" class="w-full border rounded-lg px-3 py-2">
+      <div class="mb-3">
+        <label class="block text-sm font-medium text-gray-700">Upload Photo (Optional)</label>
+        <input type="file" name="photo" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500">
       </div>
 
       <div class="flex justify-end gap-3 pt-4 border-t">
-        <button type="button" id="cancelReportBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
-        <button type="submit" id="submitReportBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">Submit</button>
+        <button type="button" onclick="closeModal('reportModal')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">Submit</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- SweetAlert + modal JS (place near page bottom) -->
+<!-- ✅ SweetAlert2 Script -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-  // Simple modal helper if you don't already have one
+  const form = document.getElementById('submitConcernForm');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); // Stop default submission first
+
+    Swal.fire({
+      title: 'Submit Concern?',
+      text: "Are you sure all details are correct?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#16a34a',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Submit'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Submit the form to backend
+        form.submit();
+
+        // Optional: show success message
+        Swal.fire({
+          title: 'Submitted!',
+          text: 'Your concern has been sent successfully.',
+          icon: 'success',
+          confirmButtonColor: '#16a34a'
+        });
+      }
+    });
+  });
+
   function closeModal(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.add('hidden');
+    document.getElementById(id).classList.add('hidden');
   }
-  function openModal(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.remove('hidden');
-  }
-
-  // Ask for confirmation before submitting the form
-  document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('reportForm');
-    const cancelBtn = document.getElementById('cancelReportBtn');
-
-    if (cancelBtn) {
-      cancelBtn.addEventListener('click', (e) => {
-        // ask if user really wants to cancel
-        Swal.fire({
-          title: 'Discard changes?',
-          text: "Your input will be lost.",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, discard',
-          cancelButtonText: 'Keep editing'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            closeModal('reportModal');
-            // optional: reset form fields
-            form.reset();
-          }
-        });
-      });
-    }
-
-    if (form) {
-      form.addEventListener('submit', function (e) {
-        e.preventDefault(); // stop normal submit until user confirms
-
-        // Optional: quick client-side validation before confirm (you can expand this)
-        const title = form.querySelector('input[name="title"]').value.trim();
-        const description = form.querySelector('textarea[name="description"]').value.trim();
-        const category = form.querySelector('select[name="category"]').value;
-
-        if (!category || !title || !description) {
-          Swal.fire({
-            title: 'Missing fields',
-            text: 'Please fill in category, title and description.',
-            icon: 'error'
-          });
-          return;
-        }
-
-        Swal.fire({
-          title: 'Submit concern?',
-          text: "Make sure the information is correct before sending.",
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, submit',
-          cancelButtonText: 'Cancel'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            // show a small loading state then submit
-            Swal.fire({
-              title: 'Submitting...',
-              allowOutsideClick: false,
-              didOpen: () => {
-                Swal.showLoading();
-                // submit the form (this will reload the page)
-                form.submit();
-              }
-            });
-          } else {
-            // do nothing; user canceled
-          }
-        });
-      });
-    }
-  });
-
-  // Laravel flash alerts: show success/error messages after redirect
-  document.addEventListener('DOMContentLoaded', () => {
-    @if (session('success'))
-      Swal.fire({
-        title: 'Success',
-        text: {!! json_encode(session('success')) !!},
-        icon: 'success',
-        timer: 3000,
-        showConfirmButton: false
-      });
-    @endif
-
-    @if (session('error'))
-      Swal.fire({
-        title: 'Error',
-        text: {!! json_encode(session('error')) !!},
-        icon: 'error'
-      });
-    @endif
-
-    @if ($errors->any())
-      // show the first validation error (or iterate to show all)
-      Swal.fire({
-        title: 'Validation error',
-        text: {!! json_encode($errors->first()) !!},
-        icon: 'error'
-      });
-    @endif
-  });
 </script>
-
-<!-- TikTok-Style Dark Report Progress Modal (Tailwind) -->
-<div id="reportProgressModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
-  <div class="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-6 relative text-gray-100 overflow-hidden">
+<!-- 📱 Mobile-Optimized Report Progress Modal -->
+<div id="reportProgressModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50 p-2 sm:p-4">
+  <div class="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg sm:max-w-xl p-4 sm:p-6 relative text-gray-100 overflow-y-auto max-h-[90vh] sm:max-h-[85vh]">
 
     <!-- Close button -->
     <button onclick="closeReportModal()" 
-      class="absolute top-4 right-4 text-gray-400 hover:text-white transition">✖</button>
+      class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg sm:text-xl">✖</button>
 
     <!-- Header -->
-    <h2 id="modalTitle" class="text-xl font-bold text-white mb-2">Report Progress</h2>
-    <p class="text-sm text-gray-400 mb-6">
+    <h2 id="modalTitle" class="text-lg sm:text-xl font-bold text-white mb-2 text-center sm:text-left">
+      Report Progress
+    </h2>
+    <p class="text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6 text-center sm:text-left">
       Track your report in real-time with animated progress updates
     </p>
 
     <!-- Report Info -->
-    <div class="bg-gray-800 rounded-lg p-4 mb-6 border border-gray-700">
-      <p class="text-sm text-gray-400">Report Title:</p>
-      <h3 id="modalReportTitle" class="text-base font-semibold text-white"></h3>
-      <p class="text-sm text-gray-400 mt-2">Forwarded to: 
+    <div class="bg-gray-800 rounded-lg p-3 sm:p-4 mb-5 border border-gray-700 text-sm sm:text-base">
+      <p class="text-gray-400 text-xs sm:text-sm">Report Title:</p>
+      <h3 id="modalReportTitle" class="text-sm sm:text-base font-semibold text-white break-words"></h3>
+      <p class="text-gray-400 text-xs sm:text-sm mt-2">Forwarded to: 
         <span id="modalDepartment" class="font-medium text-white"></span>
       </p>
     </div>
 
     <!-- Timeline Container -->
-    <div class="relative pl-12">
+    <div class="relative pl-10 sm:pl-12">
       <!-- Timeline line -->
-      <div id="timelineLine" class="absolute left-6 top-3 w-1 bg-gray-700 h-full rounded"></div>
-      <div id="timelineFill" class="absolute left-6 top-3 w-1 bg-gradient-to-b from-green-400 via-blue-400 via-yellow-400 to-purple-400 h-0 rounded transition-all duration-1000"></div>
+      <div id="timelineLine" class="absolute left-4 sm:left-6 top-3 w-1 bg-gray-700 h-full rounded"></div>
+      <div id="timelineFill" class="absolute left-4 sm:left-6 top-3 w-1 bg-gradient-to-b from-green-400 via-blue-400 via-yellow-400 to-purple-400 h-0 rounded transition-all duration-1000"></div>
 
       <!-- Timeline Steps -->
-      <div class="timeline-step-block relative flex items-start mb-10" data-step="Forwarded">
-        <div class="absolute -left-6 flex flex-col items-center">
-          <div id="stepForwarded" class="timeline-step w-6 h-6 rounded-full border-2 border-gray-500 bg-gray-900 flex items-center justify-center shadow-md transition-all duration-500">
-            <i class="text-gray-500 text-xs">→</i>
+      <div class="timeline-step-block relative flex items-start mb-8 sm:mb-10" data-step="Forwarded">
+        <div class="absolute -left-6 sm:-left-6 flex flex-col items-center">
+          <div id="stepForwarded" class="timeline-step w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-500 bg-gray-900 flex items-center justify-center shadow-md transition-all duration-500">
+            <i class="text-gray-500 text-[10px] sm:text-xs">→</i>
           </div>
         </div>
-        <div>
-          <p class="font-semibold text-green-400 text-lg">Report Forwarded</p>
-          <p class="text-gray-400 text-sm mt-1">Your report has been forwarded to the responsible department for review.</p>
-          <p id="forwardedTime" class="text-xs text-gray-500 mt-1">--</p>
+        <div class="ml-4 sm:ml-6">
+          <p class="font-semibold text-green-400 text-base sm:text-lg">Report Forwarded</p>
+          <p class="text-gray-400 text-xs sm:text-sm mt-1">Your report has been forwarded to the responsible department for review.</p>
+          <p id="forwardedTime" class="text-[10px] sm:text-xs text-gray-500 mt-1">--</p>
         </div>
       </div>
 
-      <div class="timeline-step-block relative flex items-start mb-10" data-step="Accepted">
-        <div class="absolute -left-6 flex flex-col items-center">
-          <div id="stepAccepted" class="timeline-step w-6 h-6 rounded-full border-2 border-gray-500 bg-gray-900 flex items-center justify-center shadow-md transition-all duration-500">
-            <i class="text-gray-500 text-xs">✓</i>
+      <div class="timeline-step-block relative flex items-start mb-8 sm:mb-10" data-step="Accepted">
+        <div class="absolute -left-6 sm:-left-6 flex flex-col items-center">
+          <div id="stepAccepted" class="timeline-step w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-500 bg-gray-900 flex items-center justify-center shadow-md transition-all duration-500">
+            <i class="text-gray-500 text-[10px] sm:text-xs">✓</i>
           </div>
         </div>
-        <div>
-          <p class="font-semibold text-blue-400 text-lg">Report Accepted</p>
-          <p class="text-gray-400 text-sm mt-1">The department has reviewed and accepted your report for action.</p>
-          <p id="acceptedTime" class="text-xs text-gray-500 mt-1">--</p>
+        <div class="ml-4 sm:ml-6">
+          <p class="font-semibold text-blue-400 text-base sm:text-lg">Report Accepted</p>
+          <p class="text-gray-400 text-xs sm:text-sm mt-1">The department has reviewed and accepted your report for action.</p>
+          <p id="acceptedTime" class="text-[10px] sm:text-xs text-gray-500 mt-1">--</p>
         </div>
       </div>
 
-      <div class="timeline-step-block relative flex items-start mb-10" data-step="Ongoing">
-        <div class="absolute -left-6 flex flex-col items-center">
-          <div id="stepOngoing" class="timeline-step w-6 h-6 rounded-full border-2 border-gray-500 bg-gray-900 flex items-center justify-center shadow-md transition-all duration-500">
-            <i class="text-gray-500 text-xs">⏳</i>
+      <div class="timeline-step-block relative flex items-start mb-8 sm:mb-10" data-step="Ongoing">
+        <div class="absolute -left-6 sm:-left-6 flex flex-col items-center">
+          <div id="stepOngoing" class="timeline-step w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-500 bg-gray-900 flex items-center justify-center shadow-md transition-all duration-500">
+            <i class="text-gray-500 text-[10px] sm:text-xs">⏳</i>
           </div>
         </div>
-        <div>
-          <p class="font-semibold text-yellow-400 text-lg">Action Ongoing</p>
-          <p class="text-gray-400 text-sm mt-1">The department is actively working on resolving your reported issue.</p>
-          <p id="ongoingTime" class="text-xs text-gray-500 mt-1">--</p>
+        <div class="ml-4 sm:ml-6">
+          <p class="font-semibold text-yellow-400 text-base sm:text-lg">Action Ongoing</p>
+          <p class="text-gray-400 text-xs sm:text-sm mt-1">The department is actively working on resolving your reported issue.</p>
+          <p id="ongoingTime" class="text-[10px] sm:text-xs text-gray-500 mt-1">--</p>
         </div>
       </div>
 
       <div class="timeline-step-block relative flex items-start" data-step="Resolved">
-        <div class="absolute -left-6 flex flex-col items-center">
-          <div id="stepResolved" class="timeline-step w-6 h-6 rounded-full border-2 border-gray-500 bg-gray-900 flex items-center justify-center shadow-md transition-all duration-500">
-            <i class="text-gray-500 text-xs">✔</i>
+        <div class="absolute -left-6 sm:-left-6 flex flex-col items-center">
+          <div id="stepResolved" class="timeline-step w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-500 bg-gray-900 flex items-center justify-center shadow-md transition-all duration-500">
+            <i class="text-gray-500 text-[10px] sm:text-xs">✔</i>
           </div>
         </div>
-        <div>
-          <p class="font-semibold text-purple-400 text-lg">Report Resolved</p>
-          <p class="text-gray-400 text-sm mt-1">The issue has been successfully resolved and verified by the department.</p>
-          <p id="resolvedTime" class="text-xs text-gray-500 mt-1">--</p>
+        <div class="ml-4 sm:ml-6">
+          <p class="font-semibold text-purple-400 text-base sm:text-lg">Report Resolved</p>
+          <p class="text-gray-400 text-xs sm:text-sm mt-1">The issue has been successfully resolved and verified by the department.</p>
+          <p id="resolvedTime" class="text-[10px] sm:text-xs text-gray-500 mt-1">--</p>
         </div>
       </div>
 
@@ -620,84 +562,102 @@ function closeReportModal() {
   modal.classList.remove("flex");
 }
 </script>
-
 <script>
-  
+document.addEventListener("DOMContentLoaded", () => {
+  if (window.lucide) lucide.createIcons();
 
-  // Mobile menu toggle
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
   const navbarLinks = document.getElementById("navbarLinks");
-  mobileMenuBtn.addEventListener("click", () => {
+  const alertsBadge = document.getElementById("alertsBadge");
+
+  // ✅ Toggle mobile menu
+  mobileMenuBtn.addEventListener("click", (event) => {
+    event.stopPropagation(); // Prevent document click
     navbarLinks.classList.toggle("hidden");
     navbarLinks.classList.toggle("flex");
-    navbarLinks.classList.toggle("flex-col");
   });
 
-  // Dropdown toggle
-  function toggleDropdown(id) {
-    const dropdown = document.getElementById(id);
-    const isOpen = !dropdown.classList.contains("hidden");
-    document.querySelectorAll("[id$='Dropdown']").forEach(el => el.classList.add("hidden"));
-    if (!isOpen) dropdown.classList.remove("hidden");
-  }
-
-  // Close dropdowns when clicking outside
+  // ✅ Close mobile menu when clicking outside
   document.addEventListener("click", (event) => {
-    document.querySelectorAll("[id$='Dropdown']").forEach(drop => {
-      if (!drop.contains(event.target) && !drop.previousElementSibling.contains(event.target)) {
-        drop.classList.add("hidden");
+    const isClickInsideMenu = navbarLinks.contains(event.target);
+    const isClickOnButton = mobileMenuBtn.contains(event.target);
+    if (!isClickInsideMenu && !isClickOnButton) {
+      navbarLinks.classList.add("hidden");
+      navbarLinks.classList.remove("flex");
+    }
+  });
+// Show badge if alerts not cleared
+if (alertsBadge) {
+  if (localStorage.getItem("alertsCleared") === "true") {
+    alertsBadge.style.display = "none";
+  } else {
+    alertsBadge.style.display = "inline-flex"; // ensures badge is visible
+  }
+}
+
+  // ✅ Close dropdowns when clicking outside
+  document.addEventListener("click", (e) => {
+    document.querySelectorAll("[id$='Dropdown']").forEach((dropdown) => {
+      const trigger = dropdown.previousElementSibling;
+      if (!dropdown.contains(e.target) && !trigger.contains(e.target)) {
+        dropdown.classList.add("hidden");
       }
     });
   });
+});
 
-  // Modals
-  function openModal(id) {
-    const modal = document.getElementById(id);
+// ✅ Toggle dropdown function
+function toggleDropdown(id) {
+  const dropdown = document.getElementById(id);
+  if (!dropdown) return;
+  const isOpen = !dropdown.classList.contains("hidden");
+  document.querySelectorAll("[id$='Dropdown']").forEach(el => el.classList.add("hidden"));
+  if (!isOpen) dropdown.classList.remove("hidden");
+}
+
+// ✅ Open / Close modal
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
     modal.classList.remove("hidden");
     modal.classList.add("flex");
     lucide.createIcons();
   }
-
-  function closeModal(id) {
-    const modal = document.getElementById(id);
+}
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
     modal.classList.add("hidden");
     modal.classList.remove("flex");
   }
+}
 
-  // Clear alerts badge & remember state
-  function clearBadge() {
-    let badge = document.getElementById('alertsBadge');
-    if (badge) {
-      badge.style.display = 'none';
-      localStorage.setItem('alertsCleared', 'true');
-    }
+// ✅ Clear notification badge
+function clearBadge() {
+  const badge = document.getElementById("alertsBadge");
+  if (badge) {
+    badge.style.display = "none";
+    localStorage.setItem("alertsCleared", "true");
   }
+}
 
-  window.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem('alertsCleared') === 'true') {
-      let badge = document.getElementById('alertsBadge');
-      if (badge) badge.style.display = 'none';
+// ✅ Logout confirmation
+function confirmLogout(event) {
+  event.preventDefault();
+  Swal.fire({
+    title: "Logout Confirmation",
+    text: "Do you really want to logout?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#16a34a",
+    cancelButtonColor: "#9ca3af",
+    confirmButtonText: "Logout",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById("logout-form")?.submit();
     }
-    lucide.createIcons();
   });
-
-  // Logout confirmation
-  function confirmLogout(event) {
-    event.preventDefault();
-    Swal.fire({
-      title: 'Logout Confirmation',
-      text: "Do you really want to logout?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#16a34a',
-      cancelButtonColor: '#9ca3af',
-      confirmButtonText: 'Logout'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        document.getElementById('logout-form').submit();
-      }
-    });
-  }
+}
 </script>
 
 </body>
