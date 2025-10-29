@@ -195,16 +195,12 @@
   <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
       data-bs-toggle="modal"
       data-bs-target="#reportModal"
-  data-id="{{ $report->id }}"
-  data-user-id="{{ $report->user_id }}"
-  data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
-  data-user-email="{{ $report->user->email ?? 'No Email' }}"
       data-title="{{ $report->title }}"
       data-description="{{ $report->description }}"
       data-location="{{ $report->location }}"
       data-status="{{ $report->status }}"
       data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-      data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
+     data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
         {{ $report->title }}
   </h6>
 
@@ -222,18 +218,11 @@
   <span><i data-lucide="mail" class="me-1"></i> {{ $report->user->email ?? 'No Email' }}</span>
 </div>
 
-    </div>
-
-      <!-- Photo preview (desktop) -->
-      <div class="d-none d-md-flex align-items-center me-3">
-        @if($report->photo)
-          <img src="{{ asset('storage/'.$report->photo) }}" alt="Report photo" class="rounded-3 border" style="width:120px; height:80px; object-fit:cover;">
-        @else
-          <div class="bg-light rounded-3 d-flex align-items-center justify-content-center border" style="width:120px; height:80px; color:#6b7280;">
-            No Photo
-          </div>
-        @endif
       </div>
+
+<div class="mt-4">
+    {{ $reports->withQueryString()->links() }}
+</div>
 
       <!-- Report Status & Dropdown -->
       <div class="text-end" style="z-index: 1050;">
@@ -268,8 +257,7 @@
             @else
               <li>
                 <form method="POST" action="{{ route('bantayan.reports.update', $report->id) }}">
-                  @csrf
-                  @method('PUT')
+                  @csrf @method('PUT')
                   <input type="hidden" name="status" value="Ongoing">
                   <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-info">
                     <i data-lucide="loader"></i> Mark as Ongoing
@@ -278,8 +266,7 @@
               </li>
               <li>
                 <form method="POST" action="{{ route('bantayan.reports.update', $report->id) }}">
-                  @csrf
-                  @method('PUT')
+                  @csrf @method('PUT')
                   <input type="hidden" name="status" value="Resolved">
                   <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-success">
                     <i data-lucide="check-circle"></i> Mark as Resolved
@@ -288,8 +275,7 @@
               </li>
               <li>
                 <form method="POST" action="{{ route('bantayan.reports.update', $report->id) }}">
-                  @csrf
-                  @method('PUT')
+                  @csrf @method('PUT')
                   <input type="hidden" name="status" value="Rejected">
                   <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger">
                     <i data-lucide="x-circle"></i> Mark as Rejected
@@ -306,10 +292,7 @@
   <div class="alert alert-info">No reports found.</div>
 @endforelse
 
-<!-- Pagination -->
-<div class="mt-4 d-flex justify-content-center">
-  {{ $reports->withQueryString()->links() }}
-</div>
+
 
   </div>
 </div>
@@ -328,20 +311,20 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <!-- 🔹 Reporter Info (populated by JS) -->
+      <!-- 🔹 Reporter Info -->
       <div class="px-5 pt-4 pb-3 border-bottom" style="border-color: rgba(0,0,0,0.08);">
         <div class="d-flex flex-wrap gap-4 text-muted small">
           <div class="d-flex align-items-center gap-2">
             <i data-lucide="user" class="text-primary"></i>
-            <span id="modalReportName" class="fw-semibold text-dark">Anonymous</span>
+            <span id="modalReportName" class="fw-semibold text-dark">{{ $report->user->name ?? 'Anonymous' }}</span>
           </div>
           <div class="d-flex align-items-center gap-2">
             <i data-lucide="mail" class="text-primary"></i>
-            <span id="modalReportEmail" class="fw-semibold text-dark">No Email</span>
+            <span id="modalReportEmail" class="fw-semibold text-dark">{{ $report->user->email ?? 'No Email' }}</span>
           </div>
           <div class="d-flex align-items-center gap-2">
     <i data-lucide="hash" class="text-primary"></i>
-    <span id="modalReportUserId" class="fw-semibold text-dark">N/A</span>
+    <span id="modalReportUserId" class="fw-semibold text-dark">{{ $report->user_id ?? 'N/A' }}</span>
 </div>
 
         </div>
@@ -403,36 +386,39 @@
     <i data-lucide="cpu"></i> Bantayan
   </small>
 
-  <div id="modalActions" class="card border-0 shadow-sm mb-4">
+ @foreach ($reports as $report)
+  <div id="report-{{ $report->id }}" class="card border-0 shadow-sm mb-4">
     <div class="card-body d-flex justify-content-between align-items-center">
 
-      <!-- Status badge (populated by JS) -->
-      <span id="modalStatusBadge" class="badge bg-secondary" data-role="status-badge">Pending</span>
+      <!-- Status badge -->
+      <span class="badge {{ $report->status === 'Forwarded' ? 'bg-success' : 'bg-secondary' }}" data-role="status-badge">
+        {{ $report->status ?? 'Pending' }}
+      </span>
 
       <!-- Forward Dropdown -->
       <div class="dropdown">
         <button class="btn btn-outline-primary dropdown-toggle" type="button"
-                id="forwardDropdownModal" data-bs-toggle="dropdown" aria-expanded="false">
+                id="forwardDropdown{{ $report->id }}" data-bs-toggle="dropdown" aria-expanded="false">
           <i data-lucide="send" class="me-1"></i> Forward To
         </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3" aria-labelledby="forwardDropdownModal">
-          <li>
-            <button type="button" class="btn btn-outline-primary dropdown-item" id="forwardMDRRMOBtn" data-user-id="" onclick="forwardReport(window.currentModalReportId, this, 'MDRRMO')">MDRRMO</button>
-          </li>
-          <li>
-            <button type="button" class="dropdown-item" id="forwardWasteBtn" onclick="forwardReport(window.currentModalReportId, this, 'Waste Management')">WASTE MANAGEMENT</button>
-          </li>
-          <li>
-            <button type="button" class="dropdown-item" id="forwardWaterBtn" onclick="forwardReport(window.currentModalReportId, this, 'Water Management')">WATER MANAGEMENT</button>
-          </li>
-          <li>
-            <button type="button" class="dropdown-item" id="forwardFireBtn" onclick="forwardReport(window.currentModalReportId, this, 'Fire Department')">Fire Department</button>
-          </li>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3"
+            aria-labelledby="forwardDropdown{{ $report->id }}">
+         <button type="button" 
+        class="btn btn-outline-primary dropdown-item" 
+        data-user-id="{{ $report->user_id }}" 
+        onclick="forwardReport({{ $report->id }}, this, 'MDRRMO')">
+  MDRRMO
+</button>
+
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Waste Management')">WASTEMANAGEMENT</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Water Management')">WATERMANAGEMENT</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Fire Department')">Fire Department</a></li>
         </ul>
       </div>
 
     </div>
   </div>
+@endforeach
 <script>
 function forwardReport(reportId, btn, office) {
   const userId = btn.getAttribute('data-user-id'); // fetch reporter's user ID
@@ -562,10 +548,8 @@ function forwardReport(reportId, btn, office) {
       const date = trigger.getAttribute('data-date');
       const photo = trigger.getAttribute('data-photo'); // ✅ Fetch photo URL
 
-  const name = trigger.getAttribute('data-user-name') || document.getElementById('modalReportName').textContent.trim();
-  const email = trigger.getAttribute('data-user-email') || document.getElementById('modalReportEmail').textContent.trim();
-  const reportId = trigger.getAttribute('data-id');
-  const reporterUserId = trigger.getAttribute('data-user-id');
+      const name = document.getElementById('modalReportName').textContent.trim();
+      const email = document.getElementById('modalReportEmail').textContent.trim();
 
       document.getElementById('modalReportTitle').textContent = title;
       document.getElementById('modalReportDesc').textContent = desc;
@@ -596,24 +580,6 @@ function forwardReport(reportId, btn, office) {
 
       // Show print button only if status is Ongoing
       document.getElementById('printButton').classList.toggle('d-none', status !== 'Ongoing');
-
-      // Expose current report id for modal actions
-      window.currentModalReportId = reportId;
-      // Populate modal reporter info from trigger attributes
-      document.getElementById('modalReportName').textContent = name || 'Anonymous';
-      document.getElementById('modalReportEmail').textContent = email || 'No Email';
-      document.getElementById('modalReportUserId').textContent = reporterUserId || 'N/A';
-
-      // Populate status badge in modal actions area
-      const modalStatusBadge = document.getElementById('modalStatusBadge');
-      if (modalStatusBadge) {
-        modalStatusBadge.textContent = status || 'Pending';
-        modalStatusBadge.className = 'badge px-3 py-2 rounded-pill ' + (status === 'Resolved' ? 'bg-success' : (status === 'Rejected' ? 'bg-danger' : (status === 'Ongoing' ? 'bg-info' : 'bg-secondary')));
-      }
-
-      // Set reporter user id on MDRRMO forward button
-      const forwardMdrBtn = document.getElementById('forwardMDRRMOBtn');
-      if (forwardMdrBtn) forwardMdrBtn.setAttribute('data-user-id', reporterUserId || '');
     });
 });
 
