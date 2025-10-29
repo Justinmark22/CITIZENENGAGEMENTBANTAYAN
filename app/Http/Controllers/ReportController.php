@@ -14,26 +14,18 @@ class ReportController extends Controller
         'category' => 'required|string',
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'photo' => 'nullable|image|max:2048',
+        'image' => 'nullable|image|max:2048', // changed from 'photo' to 'image'
     ]);
 
-    if ($request->hasFile('photo')) {
-        $photo = $request->file('photo');
-        $photoName = time() . '.' . $photo->getClientOriginalExtension();
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
 
-        try {
-            // Save directly to public/storage/reports
-            $photo->move(public_path('storage/reports'), $photoName);
+        // ✅ Save directly to public/storage/reports
+        $image->move(public_path('storage/reports'), $imageName);
 
-            // Store the relative path to the file (for use with asset())
-            $validated['photo'] = 'storage/reports/' . $photoName;
-
-            // ✅ Debug: Success message
-            session()->flash('debug', '✅ Image successfully stored at public/storage/reports/' . $photoName);
-        } catch (\Exception $e) {
-            // ⚠ Debug: Warning message
-            session()->flash('debug', '⚠ Failed to store image: ' . $e->getMessage());
-        }
+        // Store the relative path to the file
+        $validated['image'] = 'storage/reports/' . $imageName;
     }
 
     // Default fields
