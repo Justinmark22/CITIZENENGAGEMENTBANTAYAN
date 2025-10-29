@@ -1,14 +1,12 @@
 # ======================================================
-# 🚀 Laravel Public Directory .htaccess (Secure + Public Storage Access)
+# 🚀 Laravel Public Directory .htaccess
 # ======================================================
 <IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        # Disable MultiViews & Directory Listing
-        Options -MultiViews -Indexes
-    </IfModule>
-
     RewriteEngine On
-    RewriteBase /
+    
+    # Allow direct access to storage files
+    RewriteCond %{REQUEST_URI} !^/storage
+    RewriteCond %{REQUEST_URI} !^/public/storage
 
     # ==================================================
     # 🔁 Redirect Trailing Slashes (except folders)

@@ -93,8 +93,36 @@
     cursor: pointer;
   }
   .dropdown-menu {
-  z-index: 2000; /* Force it above modal/content */
-}
+    z-index: 2000; /* Force it above modal/content */
+  }
+  
+  /* Image handling styles */
+  .photo-container img {
+    transition: transform 0.3s ease;
+  }
+  
+  .photo-container img:hover {
+    transform: scale(1.05);
+    cursor: zoom-in;
+  }
+  
+  #photoActions {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .photo-container:hover + #photoActions,
+  #photoActions:hover {
+    opacity: 1;
+  }
+  
+  .report-thumbnail {
+    transition: transform 0.2s ease;
+  }
+  
+  .report-thumbnail:hover {
+    transform: scale(1.1);
+  }
 
   </style>
 </head>
@@ -190,22 +218,33 @@
   <div id="report-{{ $report->id }}" class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
 <!-- Report Info -->
-<div class="flex-grow-1 pe-3">
-  <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
-      data-bs-toggle="modal"
-      data-bs-target="#reportModal"
-      data-id="{{ $report->id }}"
-    data-user-id="{{ $report->user_id }}"
-    data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
-    data-user-email="{{ $report->user->email ?? 'No Email' }}"
-      data-title="{{ $report->title }}"
-      data-description="{{ $report->description }}"
-      data-location="{{ $report->location }}"
-      data-status="{{ $report->status }}"
-      data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-     data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
-        {{ $report->title }}
-  </h6>
+<div class="flex-grow-1 pe-3 d-flex gap-3">
+  @if($report->photo)
+    <div class="flex-shrink-0" style="width: 80px;">
+      <img src="{{ Storage::disk('public')->url($report->photo) }}" 
+           alt="Report thumbnail" 
+           class="img-fluid rounded shadow-sm cursor-pointer"
+           style="width: 80px; height: 80px; object-fit: cover;"
+           onclick="window.open('{{ Storage::disk('public')->url($report->photo) }}', '_blank')"
+           onerror="this.style.display='none'">
+    </div>
+  @endif
+  <div class="flex-grow-1">
+    <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
+        data-bs-toggle="modal"
+        data-bs-target="#reportModal"
+        data-id="{{ $report->id }}"
+        data-user-id="{{ $report->user_id }}"
+        data-user-name="{{ $report->user->name ?? 'Anonymous' }}"
+        data-user-email="{{ $report->user->email ?? 'No Email' }}"
+        data-title="{{ $report->title }}"
+        data-description="{{ $report->description }}"
+        data-location="{{ $report->location }}"
+        data-status="{{ $report->status }}"
+        data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+        data-photo="{{ $report->photo ? Storage::disk('public')->url($report->photo) : '' }}">
+          {{ $report->title }}
+    </h6>
 
 
 
@@ -345,13 +384,23 @@
 <div class="col-md-5">
   <label class="text-muted small">Photo</label>
   <div class="bg-light p-3 rounded-3 shadow-sm text-center position-relative">
-    <img id="modalReportPhoto" src="" alt="Report Photo"
-         class="img-fluid rounded-3 shadow-sm d-none border"
-         style="max-height: 280px; object-fit: cover; border-color: #ccc;">
-    <p id="noPhotoText" class="text-muted m-0">No photo available</p>
-
-    <!-- Debug output -->
-    <div id="photoDebug" class="text-start small text-muted mt-2" style="font-size: 0.75rem;"></div>
+    <div class="photo-container" style="max-height: 280px; overflow: hidden;">
+      <img id="modalReportPhoto" src="" alt="Report Photo"
+           class="img-fluid rounded-3 shadow-sm d-none border"
+           style="width: 100%; height: 280px; object-fit: contain; border-color: #ccc;"
+           onerror="this.onerror=null; this.classList.add('d-none'); document.getElementById('noPhotoText').classList.remove('d-none');">
+      <p id="noPhotoText" class="text-muted m-0 py-5">No photo available</p>
+    </div>
+    
+    <!-- Photo Actions -->
+    <div class="mt-2 d-flex justify-content-center gap-2" id="photoActions" style="display: none;">
+      <a href="#" id="viewFullImage" class="btn btn-sm btn-outline-primary" target="_blank">
+        <i data-lucide="maximize-2" class="me-1"></i> View Full Size
+      </a>
+      <a href="#" id="downloadImage" class="btn btn-sm btn-outline-secondary" download>
+        <i data-lucide="download" class="me-1"></i> Download
+      </a>
+    </div>
   </div>
 </div>
 
@@ -531,15 +580,34 @@ function forwardReport(reportId, btn, office) {
       // ✅ Handle Photo Display
       const photoElement = document.getElementById('modalReportPhoto');
       const noPhotoText = document.getElementById('noPhotoText');
+      const photoActions = document.getElementById('photoActions');
+      const viewFullImage = document.getElementById('viewFullImage');
+      const downloadImage = document.getElementById('downloadImage');
 
       if (photo && photo.trim() !== '') {
+        // Set photo src and show it
         photoElement.src = photo;
         photoElement.classList.remove('d-none');
         noPhotoText.classList.add('d-none');
+        
+        // Show and configure photo actions
+        photoActions.style.display = 'flex';
+        viewFullImage.href = photo;
+        downloadImage.href = photo;
+        downloadImage.download = `report-${currentId}-photo.${photo.split('.').pop()}`;
       } else {
+        // Hide photo and actions if no photo
         photoElement.classList.add('d-none');
         noPhotoText.classList.remove('d-none');
+        photoActions.style.display = 'none';
       }
+      
+      // Add click handler for photo preview
+      photoElement.onclick = function() {
+        if (photo) {
+          window.open(photo, '_blank');
+        }
+      };
 
       // Dynamic color for status badge
       const badge = document.getElementById('modalReportStatus');

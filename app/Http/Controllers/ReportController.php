@@ -21,20 +21,11 @@ class ReportController extends Controller
         $photo = $request->file('photo');
         $photoName = time() . '.' . $photo->getClientOriginalExtension();
         
-        // Store the file in the public disk (which points to storage/app/public)
+        // Store the file using Laravel's storage system
         $path = $photo->storeAs('reports', $photoName, 'public');
         
         // Update the photo path in the validated data
         $validated['photo'] = $path;
-
-        // Ensure the storage directory exists and is writable
-        $storage_path = storage_path('app/public/reports');
-        if (!file_exists($storage_path)) {
-            mkdir($storage_path, 0755, true);
-        }
-
-        // Move the uploaded file to the storage location
-        $photo->move($storage_path, $photoName);
     }
 
     // Assign default values
