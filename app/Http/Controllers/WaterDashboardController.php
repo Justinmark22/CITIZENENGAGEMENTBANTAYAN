@@ -357,5 +357,30 @@ public function reportsSantafe()
         ], 500);
     }
 }
+public function santafeAnnouncements()
+{
+    $announcements = \App\Models\Announcement::where('location', 'Santa.Fe')
+        ->latest()
+        ->get();
+
+    return view('water.announcement-santafe', compact('announcements'));
+}
+ public function getResolvedReports()
+{
+    $reports = ForwardedReport::where('location', 'Santa.Fe')
+        ->where('status', 'Resolved')
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
+
+    // Map photo to a full URL
+    $reports->transform(function ($report) {
+        $report->photo = $report->photo 
+            ? asset('storage/' . $report->photo)   // ✅ full URL
+            : null;
+        return $report;
+    });
+
+    return response()->json($reports);
+}
 
 }
