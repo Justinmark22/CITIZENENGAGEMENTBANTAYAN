@@ -364,15 +364,19 @@
             </div>
           </div>
 
-          <!-- 📌 Right Column: Photo -->
-          <div class="col-md-5">
-            <label class="text-muted small">Photo</label>
-            <div class="bg-light p-3 rounded-3 shadow-sm text-center">
-              <img id="modalReportPhoto" src="" alt="Report Photo"
-                   class="img-fluid rounded-3 shadow-sm d-none" style="max-height: 280px; object-fit: cover;">
-              <p id="noPhotoText" class="text-muted m-0">No photo available</p>
-            </div>
-          </div>
+        <!-- 📌 Right Column: Photo -->
+<div class="col-md-5">
+  <label class="text-muted small">Photo</label>
+  <div class="bg-light p-3 rounded-3 shadow-sm text-center position-relative">
+    <img id="modalReportPhoto" src="" alt="Report Photo"
+         class="img-fluid rounded-3 shadow-sm d-none border"
+         style="max-height: 280px; object-fit: cover; border-color: #ccc;">
+    <p id="noPhotoText" class="text-muted m-0">No photo available</p>
+
+    <!-- Debug output -->
+    <div id="photoDebug" class="text-start small text-muted mt-2" style="font-size: 0.75rem;"></div>
+  </div>
+</div>
 
         </div>
       </div>
