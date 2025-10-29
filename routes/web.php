@@ -935,3 +935,6 @@ Route::middleware(['auth'])->group(function () {
 //water announcemnets
 Route::get('/water/announcement-bantayan', [WaterDashboardController::class, 'announcementBantayan'])
     ->name('water.announcement-bantayan');
+    //water announcemnets
+Route::get('/water/announcement-santafe', [WaterDashboardController::class, 'announcementSantafe'])
+    ->name('water.announcement-santafe');
