@@ -189,22 +189,20 @@
  <!-- Reports List -->
 @forelse ($reports as $report)
   <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
- <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
-  <!-- Report Info -->
-  <div class="flex-grow-1 pe-3">
-    <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
-        data-bs-toggle="modal"
-        data-bs-target="#reportModal"
-        data-title="{{ e($report->title) }}"
-        data-description="{{ e($report->description) }}"
-        data-location="{{ e($report->location) }}"
-        data-status="{{ e($report->status) }}"
-        data-date="{{ $report->created_at->format('M d, Y H:i') }}"
-        data-photo="{{ $report->photo ? asset('storage/' . $report->photo) : '' }}">
-      {{ $report->title }}
-    </h6>
-  </div>
-</div>
+    <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
+<!-- Report Info -->
+<div class="flex-grow-1 pe-3">
+  <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
+      data-bs-toggle="modal"
+      data-bs-target="#reportModal"
+      data-title="{{ $report->title }}"
+      data-description="{{ $report->description }}"
+      data-location="{{ $report->location }}"
+      data-status="{{ $report->status }}"
+      data-date="{{ $report->created_at->format('M d, Y H:i') }}"
+     data-photo="{{ $report->photo ? asset('storage/'.$report->photo) : '' }}">
+        {{ $report->title }}
+  </h6>
 
 
 
@@ -533,43 +531,40 @@ function forwardReport(reportId, btn, office) {
 </style>
 
 <script>
- document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('reportModal');
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('reportModal');
 
-  modal.addEventListener('show.bs.modal', function (event) {
-    const trigger = event.relatedTarget;
+    modal.addEventListener('show.bs.modal', function (event) {
+      const trigger = event.relatedTarget;
 
-    const title = trigger.getAttribute('data-title');
-    const desc = trigger.getAttribute('data-description');
-    const loc = trigger.getAttribute('data-location');
-    const status = trigger.getAttribute('data-status');
-    const date = trigger.getAttribute('data-date');
-    const photo = trigger.getAttribute('data-photo'); // ✅ Fetch photo URL
+      const title = trigger.getAttribute('data-title');
+      const desc = trigger.getAttribute('data-description');
+      const loc = trigger.getAttribute('data-location');
+      const status = trigger.getAttribute('data-status');
+      const date = trigger.getAttribute('data-date');
+      const photo = trigger.getAttribute('data-photo'); // ✅ Fetch photo URL
 
-    // ✅ Update modal content
-    document.getElementById('modalReportTitle').textContent = title || 'No title';
-    document.getElementById('modalReportDesc').textContent = desc || 'No description';
-    document.getElementById('modalReportLoc').textContent = loc || 'No location';
-    document.getElementById('modalReportStatus').textContent = status || 'No status';
-    document.getElementById('modalReportDate').textContent = date || 'No date';
+      const name = document.getElementById('modalReportName').textContent.trim();
+      const email = document.getElementById('modalReportEmail').textContent.trim();
 
-    // ✅ Handle Photo Display
-    const photoElement = document.getElementById('modalReportPhoto');
-    const noPhotoText = document.getElementById('noPhotoText');
+      document.getElementById('modalReportTitle').textContent = title;
+      document.getElementById('modalReportDesc').textContent = desc;
+      document.getElementById('modalReportLoc').textContent = loc;
+      document.getElementById('modalReportStatus').textContent = status;
+      document.getElementById('modalReportDate').textContent = date;
 
-    if (photo && photo.trim() !== '') {
-      // 👇 Ensure Laravel storage path works
-      let photoUrl = photo.startsWith('http') ? photo : `/storage/reports/${photo}`;
+      // ✅ Handle Photo Display
+      const photoElement = document.getElementById('modalReportPhoto');
+      const noPhotoText = document.getElementById('noPhotoText');
 
-      photoElement.src = photoUrl;
-      photoElement.classList.remove('d-none');
-      noPhotoText.classList.add('d-none');
-    } else {
-      photoElement.classList.add('d-none');
-      noPhotoText.classList.remove('d-none');
-    }
-
-
+      if (photo && photo.trim() !== '') {
+        photoElement.src = photo;
+        photoElement.classList.remove('d-none');
+        noPhotoText.classList.add('d-none');
+      } else {
+        photoElement.classList.add('d-none');
+        noPhotoText.classList.remove('d-none');
+      }
 
       // Dynamic color for status badge
       const badge = document.getElementById('modalReportStatus');
