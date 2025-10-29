@@ -46,24 +46,45 @@
 </FilesMatch>
 
 # ======================================================
-# ✅ ALLOW Public Storage Access
+# ✅ Storage Access Configuration
 # ======================================================
+<IfModule mod_alias.c>
+    Options +FollowSymLinks
+</IfModule>
+
+# Configure storage directory
 <Directory "storage">
-    Options +FollowSymLinks +Indexes
-    AllowOverride All
+    Options +FollowSymLinks
+    AllowOverride None
     Require all granted
     
-    <FilesMatch "\.(php|phar|phtml|sh|bat|exe)$">
+    # Disable PHP execution in storage
+    <FilesMatch "\.php$">
         Require all denied
+    </FilesMatch>
+    
+    # Allow common image formats
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg)$">
+        Require all granted
+        Header set Cache-Control "max-age=31536000"
     </FilesMatch>
 </Directory>
 
 # Explicitly allow access to storage symlink
 <Directory "public/storage">
-    Options +FollowSymLinks +Indexes
-    AllowOverride All
+    Options +FollowSymLinks
+    AllowOverride None
     Require all granted
+
+    # Allow common image formats with caching
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg)$">
+        Require all granted
+        Header set Cache-Control "max-age=31536000"
+    </FilesMatch>
 </Directory>
+
+# Special rule for storage access
+RewriteRule ^storage/(.*)\.(jpg|jpeg|png|gif|webp|svg)$ storage/$1.$2 [L]
 
 # ======================================================
 # 🧰 Add Strong Security Headers

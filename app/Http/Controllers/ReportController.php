@@ -20,7 +20,21 @@ class ReportController extends Controller
     if ($request->hasFile('photo')) {
         $photo = $request->file('photo');
         $photoName = time() . '.' . $photo->getClientOriginalExtension();
-        $validated['photo'] = $photo->storeAs('reports', $photoName, 'public');
+        
+        // Store the file in the public disk (which points to storage/app/public)
+        $path = $photo->storeAs('reports', $photoName, 'public');
+        
+        // Update the photo path in the validated data
+        $validated['photo'] = $path;
+
+        // Ensure the storage directory exists and is writable
+        $storage_path = storage_path('app/public/reports');
+        if (!file_exists($storage_path)) {
+            mkdir($storage_path, 0755, true);
+        }
+
+        // Move the uploaded file to the storage location
+        $photo->move($storage_path, $photoName);
     }
 
     // Assign default values
