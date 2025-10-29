@@ -205,7 +205,7 @@
     data-date="{{ $report->created_at->format('M d, Y H:i') }}">
     
     @if ($report->photo)
-        <img src="{{ asset('storage/reports/'.$report->photo) }}" 
+        <img src="{{ asset('public/storage/reports/'.$report->photo) }}" 
              alt="{{ $report->title }}" 
              class="rounded" 
              style="width: 40px; height: 40px; object-fit: cover;">
