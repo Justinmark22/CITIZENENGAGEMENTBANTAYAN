@@ -585,62 +585,42 @@ function forwardReport(reportId, btn, office) {
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('reportModal');
+    const modal = document.getElementById('reportModal');
 
-  modal.addEventListener('show.bs.modal', function (event) {
-    const trigger = event.relatedTarget;
+    modal.addEventListener('show.bs.modal', function (event) {
+      const trigger = event.relatedTarget;
 
-    // Get all data attributes
-    const title = trigger.getAttribute('data-title');
-    const desc = trigger.getAttribute('data-description');
-    const loc = trigger.getAttribute('data-location');
-    const status = trigger.getAttribute('data-status');
-    const date = trigger.getAttribute('data-date');
-    const photo = trigger.getAttribute('data-photo');
-    const name = trigger.getAttribute('data-user-name') || 'Anonymous';
-    const email = trigger.getAttribute('data-user-email') || 'No Email';
-    const reportId = trigger.getAttribute('data-id');
-    const reporterUserId = trigger.getAttribute('data-user-id');
+      const title = trigger.getAttribute('data-title');
+      const desc = trigger.getAttribute('data-description');
+      const loc = trigger.getAttribute('data-location');
+      const status = trigger.getAttribute('data-status');
+      const date = trigger.getAttribute('data-date');
+      const photo = trigger.getAttribute('data-photo'); // ✅ Fetch photo URL
 
-    // Set values in modal
-    document.getElementById('modalReportTitle').textContent = title || 'No Title';
-    document.getElementById('modalReportDesc').textContent = desc || 'No Description';
-    document.getElementById('modalReportLoc').textContent = loc || 'No Location';
-    document.getElementById('modalReportStatus').textContent = status || 'Unknown';
-    document.getElementById('modalReportDate').textContent = date || 'N/A';
-    document.getElementById('modalReportName').textContent = name;
-    document.getElementById('modalReportEmail').textContent = email;
-    document.getElementById('modalReportUserId').textContent = reporterUserId || 'N/A';
-    
-    // Save the reportId globally for forwarding
-    window.currentModalReportId = reportId;
+  const name = trigger.getAttribute('data-user-name') || document.getElementById('modalReportName').textContent.trim();
+  const email = trigger.getAttribute('data-user-email') || document.getElementById('modalReportEmail').textContent.trim();
+  const reportId = trigger.getAttribute('data-id');
+  const reporterUserId = trigger.getAttribute('data-user-id');
 
-    // Show or hide photo
-    const modalPhoto = document.getElementById('modalReportPhoto');
-    const noPhotoText = document.getElementById('noPhotoText');
-    const debugEl = document.getElementById('photoDebug');
+      document.getElementById('modalReportTitle').textContent = title;
+      document.getElementById('modalReportDesc').textContent = desc;
+      document.getElementById('modalReportLoc').textContent = loc;
+      document.getElementById('modalReportStatus').textContent = status;
+      document.getElementById('modalReportDate').textContent = date;
 
-    if (photo && photo.trim() !== '') {
-      modalPhoto.src = photo;
-      modalPhoto.classList.remove('d-none');
-      noPhotoText.style.display = 'none';
-      debugEl.textContent = `Loaded photo from: ${photo}`;
-    } else {
-      modalPhoto.classList.add('d-none');
-      noPhotoText.style.display = 'block';
-      debugEl.textContent = 'No photo found for this report.';
-    }
+      // ✅ Handle Photo Display
+      const photoElement = document.getElementById('modalReportPhoto');
+      const noPhotoText = document.getElementById('noPhotoText');
 
-    // Update status badge in modal footer
-    const badge = document.getElementById('modalStatusBadge');
-    badge.textContent = status || 'Pending';
-    badge.className = 'badge rounded-pill px-3 py-2 shadow-sm';
-    if (status === 'Resolved') badge.classList.add('bg-gradient-success');
-    else if (status === 'Rejected') badge.classList.add('bg-gradient-danger');
-    else if (status === 'Ongoing') badge.classList.add('bg-gradient-info');
-    else badge.classList.add('bg-gradient-warning');
-  });
-});
+      if (photo && photo.trim() !== '') {
+        photoElement.src = photo;
+        photoElement.classList.remove('d-none');
+        noPhotoText.classList.add('d-none');
+      } else {
+        photoElement.classList.add('d-none');
+        noPhotoText.classList.remove('d-none');
+      }
+
       // Dynamic color for status badge
       const badge = document.getElementById('modalReportStatus');
       badge.classList.remove('text-bg-warning', 'text-bg-success', 'text-bg-danger', 'text-bg-info');
