@@ -126,20 +126,59 @@ public function reportsBantayan()
 
     return view('water.reports-bantayan', compact('reports'));
 }
-    public function reportsSantafe()
-    {
-        $reports = ForwardedReport::where('location', 'Santa Fe')
-            ->where(function ($q) {
-                $q->where('category', 'Water Management')
-                    ->orWhere('forwarded_to', 'Water Management')
-                    ->orWhere('status', 'Rerouted to Water Management');
-            })
-            ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Water Management'])
-            ->latest()
-            ->paginate(10);
+     
+public function reportsSantafe()
+{
+    // 🔹 Forwarded Reports for Santa Fe
+    $forwarded = ForwardedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'forwarded' as type") // mark type
+    )
+    ->where('location', 'Santa.Fe')
+    ->where(function ($q) {
+        $q->where('category', 'Water Management')
+          ->orWhere('forwarded_to', 'Water Management')
+          ->orWhere('status', 'Rerouted to Water Management');
+    })
+    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Water Management']);
 
-        return view('water.reports-santafe', compact('reports'));
-    }
+    // 🔹 Rerouted Reports for Santa Fe
+    $rerouted = ReroutedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'rerouted' as type") // mark type
+    )
+    ->where('location', 'Santa.Fe')
+    ->where('status', 'like', 'Rerouted%');
+
+    // 🔹 Combine both using union
+    $combinedQuery = $forwarded->unionAll($rerouted);
+
+    // 🔹 Wrap in query builder for ordering and pagination
+    $reports = DB::table(DB::raw("({$combinedQuery->toSql()}) as reports"))
+        ->mergeBindings($combinedQuery->getQuery())
+        ->orderByDesc('created_at')
+        ->paginate(10);
+
+    return view('water.reports-santafe', compact('reports'));
+}
 
     public function reportsMadridejos()
     {
