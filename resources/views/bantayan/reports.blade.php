@@ -191,6 +191,7 @@
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
 <!-- Report Info -->
 <div class="flex-grow-1 pe-3">
+  
   <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
       data-bs-toggle="modal"
       data-bs-target="#reportModal"
@@ -214,7 +215,6 @@
       {{ $report->title }}
   </h6>
 </div>
-
 
 
 
