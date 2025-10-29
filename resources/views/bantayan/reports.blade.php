@@ -187,13 +187,15 @@
 
  <!-- Reports List -->
 @forelse ($reports as $report)
-  <div class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
+  <div id="report-{{ $report->id }}" class="card border-0 shadow-sm mb-4 report-card position-relative hover-glow">
     <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
 <!-- Report Info -->
 <div class="flex-grow-1 pe-3">
   <h6 class="fw-bold text-dark mb-1 cursor-pointer d-flex align-items-center gap-2"
       data-bs-toggle="modal"
       data-bs-target="#reportModal"
+      data-id="{{ $report->id }}"
+      data-user-id="{{ $report->user_id }}"
       data-title="{{ $report->title }}"
       data-description="{{ $report->description }}"
       data-location="{{ $report->location }}"
@@ -226,7 +228,7 @@
       <!-- Report Status & Dropdown -->
       <div class="text-end" style="z-index: 1050;">
         <!-- Status Badge -->
-        <span class="badge rounded-pill px-3 py-2 fw-semibold text-uppercase shadow-sm mb-2 d-inline-block
+        <span data-role="status-badge" class="badge rounded-pill px-3 py-2 fw-semibold text-uppercase shadow-sm mb-2 d-inline-block
           @if($report->status === 'Resolved') bg-gradient-success 
           @elseif($report->status === 'Rejected') bg-gradient-danger 
           @elseif($report->status === 'Ongoing') bg-gradient-info 
@@ -287,17 +289,17 @@
       <!-- 🔹 Reporter Info -->
       <div class="px-5 pt-4 pb-3 border-bottom" style="border-color: rgba(0,0,0,0.08);">
         <div class="d-flex flex-wrap gap-4 text-muted small">
-          <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2">
             <i data-lucide="user" class="text-primary"></i>
-            <span id="modalReportName" class="fw-semibold text-dark">{{ $report->user->name ?? 'Anonymous' }}</span>
+            <span id="modalReportName" class="fw-semibold text-dark">Anonymous</span>
           </div>
           <div class="d-flex align-items-center gap-2">
             <i data-lucide="mail" class="text-primary"></i>
-            <span id="modalReportEmail" class="fw-semibold text-dark">{{ $report->user->email ?? 'No Email' }}</span>
+            <span id="modalReportEmail" class="fw-semibold text-dark">No Email</span>
           </div>
           <div class="d-flex align-items-center gap-2">
     <i data-lucide="hash" class="text-primary"></i>
-    <span id="modalReportUserId" class="fw-semibold text-dark">{{ $report->user_id ?? 'N/A' }}</span>
+    <span id="modalReportUserId" class="fw-semibold text-dark">N/A</span>
 </div>
 
         </div>
@@ -359,39 +361,30 @@
     <i data-lucide="cpu"></i> Bantayan
   </small>
 
- @foreach ($reports as $report)
-  <div id="report-{{ $report->id }}" class="card border-0 shadow-sm mb-4">
-    <div class="card-body d-flex justify-content-between align-items-center">
+  <!-- Modal footer actions (single instance) -->
+  <div id="modalFooterActions" class="d-flex align-items-center gap-3">
+    <span id="modalFooterStatusBadge" class="badge bg-secondary" data-role="status-badge">Pending</span>
 
-      <!-- Status badge -->
-      <span class="badge {{ $report->status === 'Forwarded' ? 'bg-success' : 'bg-secondary' }}" data-role="status-badge">
-        {{ $report->status ?? 'Pending' }}
-      </span>
-
-      <!-- Forward Dropdown -->
-      <div class="dropdown">
-        <button class="btn btn-outline-primary dropdown-toggle" type="button"
-                id="forwardDropdown{{ $report->id }}" data-bs-toggle="dropdown" aria-expanded="false">
-          <i data-lucide="send" class="me-1"></i> Forward To
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3"
-            aria-labelledby="forwardDropdown{{ $report->id }}">
-         <button type="button" 
-        class="btn btn-outline-primary dropdown-item" 
-        data-user-id="{{ $report->user_id }}" 
-        onclick="forwardReport({{ $report->id }}, this, 'MDRRMO')">
-  MDRRMO
-</button>
-
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Waste Management')">WASTEMANAGEMENT</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Water Management')">WATERMANAGEMENT</a></li>
-          <li><a class="dropdown-item" href="javascript:void(0)" onclick="forwardReport({{ $report->id }}, 'Fire Department')">Fire Department</a></li>
-        </ul>
-      </div>
-
+    <div class="dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" id="modalForwardDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i data-lucide="send" class="me-1"></i> Forward To
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3" aria-labelledby="modalForwardDropdown">
+        <li>
+          <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'MDRRMO')">MDRRMO</button>
+        </li>
+        <li>
+          <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'Waste Management')">WASTEMANAGEMENT</button>
+        </li>
+        <li>
+          <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'Water Management')">WATERMANAGEMENT</button>
+        </li>
+        <li>
+          <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'Fire Department')">Fire Department</button>
+        </li>
+      </ul>
     </div>
   </div>
-@endforeach
 <script>
 function forwardReport(reportId, btn, office) {
   const userId = btn.getAttribute('data-user-id'); // fetch reporter's user ID
@@ -548,7 +541,24 @@ function forwardReport(reportId, btn, office) {
       else if (status === 'Rejected') badge.classList.add('text-bg-danger');
       else badge.classList.add('text-bg-warning');
 
-      // (print button removed)
+      // Store current report id on modal for footer actions
+      const currentId = trigger.getAttribute('data-id') || '';
+      modal.dataset.currentReportId = currentId;
+
+      // Reporter user id (from trigger or fallback to displayed element)
+      const reporterUserId = trigger.getAttribute('data-user-id') || document.getElementById('modalReportUserId').textContent.trim();
+
+      // Populate footer status badge and forward buttons with reporter id
+      const modalFooterBadge = document.getElementById('modalFooterStatusBadge');
+      if (modalFooterBadge) {
+        modalFooterBadge.textContent = status || modalFooterBadge.textContent;
+        modalFooterBadge.classList.remove('bg-secondary', 'bg-success');
+        if ((status || '').toLowerCase().includes('forwarded')) modalFooterBadge.classList.add('bg-success');
+        else modalFooterBadge.classList.add('bg-secondary');
+      }
+
+      const forwardButtons = document.querySelectorAll('#modalFooterActions .dropdown-item');
+      forwardButtons.forEach(btn => btn.setAttribute('data-user-id', reporterUserId));
     });
 });
 
