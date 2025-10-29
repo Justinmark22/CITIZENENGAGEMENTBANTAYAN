@@ -521,12 +521,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const status = trigger.getAttribute('data-status');
         const date = trigger.getAttribute('data-date');
 
-        // ✅ Get photo from <img> inside the clicked <h6>
-        let photo = '';
-        const img = trigger.querySelector('img');
-        if (img) {
-            photo = img.getAttribute('src') || '';
-        }
+        // ✅ Get photo from data-photo (public/storage/reports)
+        const photo = trigger.getAttribute('data-photo') || '';
 
         // Populate modal fields
         document.getElementById('modalReportTitle').textContent = title;
@@ -548,7 +544,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const photoElement = document.getElementById('modalReportPhoto');
         const noPhotoText = document.getElementById('noPhotoText');
 
-        if (photo && photo.trim() !== '') {
+        if (photo.trim() !== '') {
             photoElement.src = photo;
             photoElement.classList.remove('d-none');
             noPhotoText.classList.add('d-none');
