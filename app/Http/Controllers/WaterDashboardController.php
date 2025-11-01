@@ -442,7 +442,7 @@ public function getResolvedReportsBantayan()
 
 public function getResolvedReportsMadridejos()
 {
-    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['madridejos'])
+    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['Madridejos'])
         ->whereRaw('LOWER(status) = ?', ['resolved'])
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
@@ -469,7 +469,7 @@ public function bantayanAnnouncements()
 
 public function madridejosAnnouncements()
 {
-    $announcements = \App\Models\Announcement::where('location', 'Bantayan')
+    $announcements = \App\Models\Announcement::where('location', 'Madridejos')
         ->latest()
         ->get();
 
