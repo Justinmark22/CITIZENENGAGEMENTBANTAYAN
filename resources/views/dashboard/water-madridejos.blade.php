@@ -70,7 +70,7 @@
         <!-- Header -->
         <header class="sticky top-0 z-10 mb-8 backdrop-blur-lg bg-white/80 border border-gray-200 shadow-md rounded-2xl px-6 py-4 flex justify-between items-center">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">Bantayan Water Dashboard</h1>
+                <h1 class="text-3xl font-bold text-gray-900">Madridejos Water Dashboard</h1>
                 <p class="text-gray-500 mt-1">Welcome, Water Administrator</p>
             </div>
         </header>
