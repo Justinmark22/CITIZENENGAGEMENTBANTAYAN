@@ -10,6 +10,8 @@
 
 <body class="bg-gray-100 font-sans antialiased">
 
+<div class="flex min-h-screen">
+
 <body class="bg-gray-100 font-sans flex min-h-screen" x-data="reportApp()" x-init="fetchReports()">
 
   <!-- Sidebar -->
@@ -61,6 +63,7 @@
       </form>
     </nav>
   </aside>
+
 
     <!-- Main Content -->
     <main class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 p-10 overflow-y-auto">
