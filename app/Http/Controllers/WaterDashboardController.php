@@ -365,21 +365,18 @@ public function santafeAnnouncements()
 
     return view('water.announcement-santafe', compact('announcements'));
 }
- public function getResolvedReports($location)
+ public function getResolvedReports()
 {
-    $validLocations = ['Santa.Fe', 'Bantayan', 'Madridejos'];
-
-    if (!in_array($location, $validLocations)) {
-        return response()->json(['error' => 'Invalid location'], 400);
-    }
-
-    $reports = ForwardedReport::where('location', $location)
+    $reports = ForwardedReport::where('location', 'Santa.Fe')
         ->where('status', 'Resolved')
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
+    // Map photo to a full URL
     $reports->transform(function ($report) {
-        $report->photo = $report->photo ? asset('storage/' . $report->photo) : null;
+        $report->photo = $report->photo 
+            ? asset('storage/' . $report->photo)   // ✅ full URL
+            : null;
         return $report;
     });
 
