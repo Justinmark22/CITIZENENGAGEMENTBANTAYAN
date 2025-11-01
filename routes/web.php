@@ -938,7 +938,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('reports.reroute');
 });
 //water announcemnets
-Route::get('/water/announcement-bantayan', [WaterDashboardController::class, 'announcementBantayan'])
+Route::get('/water/announcement-bantayan', [WaterDashboardController::class, 'bantayanAnnouncements'])
     ->name('water.announcement-bantayan');
     Route::get('/water/announcement-santafe', [WaterDashboardController::class, 'santafeAnnouncements'])
     ->name('water.announcement-santafe');
