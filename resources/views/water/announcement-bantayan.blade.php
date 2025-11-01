@@ -179,122 +179,22 @@ function reportApp() {
     stats: { announcements: 0, pending: 0 },
     filters: { search: '', category: '', date: '' },
 
-    // ✅ Fetch resolved reports for Bantayan
     async fetchReports() {
       try {
-        const response = await fetch('/resolved-reports/Bantayan');
-        if (!response.ok) throw new Error('Failed to fetch Bantayan resolved reports');
+        const response = await fetch('/resolved-reports');
+        if (!response.ok) throw new Error('Failed to fetch reports');
         this.reports = await response.json();
         this.filteredReports = this.reports;
+        this.stats.pending = this.reports.filter(r => r.status === 'pending').length;
       } catch (error) {
         Swal.fire({
-          icon: 'error',
-          title: 'Failed to Load Reports',
-          text: 'Unable to fetch resolved reports for Bantayan.',
-          confirmButtonColor: '#e3342f',
-          background: '#1f2937',
-          color: '#fff',
-          iconColor: '#f87171'
-        });
-      }
-    },
-
-    applyFilters() {
-      this.filteredReports = this.reports.filter(r => {
-        let match = true;
-        if (this.filters.search && !r.title.toLowerCase().includes(this.filters.search.toLowerCase())) {
-          match = false;
-        }
-        if (this.filters.category && r.category !== this.filters.category) {
-          match = false;
-        }
-        if (this.filters.date && new Date(r.updated_at).toLocaleDateString() !== new Date(this.filters.date).toLocaleDateString()) {
-          match = false;
-        }
-        return match;
-      });
-    },
-
-    // ✅ Updated: post announcements under Bantayan
-    async postAnnouncement(report, index) {
-      try {
-        const { value: formValues } = await Swal.fire({
-          title: 'Post Announcement',
-          html: `
-            <p class="text-sm text-gray-600 mb-2">
-              Please add details for this announcement:
-            </p>
-            <input id="swal-extra-title" class="swal2-input" placeholder="Additional Title/Info">
-            <textarea id="swal-extra-desc" class="swal2-textarea" placeholder="Additional Description"></textarea>
-            <input id="swal-extra-photo" type="file" accept="image/*" class="swal2-file">
-          `,
-          focusConfirm: false,
-          showCancelButton: true,
-          confirmButtonText: 'Post Announcement',
-          cancelButtonText: 'Cancel',
-          preConfirm: () => {
-            return {
-              extraTitle: document.getElementById('swal-extra-title').value,
-              extraDesc: document.getElementById('swal-extra-desc').value,
-              extraPhoto: document.getElementById('swal-extra-photo').files[0] || null
-            }
-          }
-        });
-
-        if (!formValues) return;
-
-        const formData = new FormData();
-        formData.append(
-          'title',
-          report.title + (formValues.extraTitle ? ` - ${formValues.extraTitle}` : '')
-        );
-        formData.append(
-          'description',
-          report.description + (formValues.extraDesc ? `\n\nUpdate: ${formValues.extraDesc}` : '')
-        );
-        formData.append('category', report.category);
-        formData.append('location', 'Bantayan'); // ✅ Corrected location
-        formData.append('report_id', report.id);
-        if (formValues.extraPhoto) {
-          formData.append('photo', formValues.extraPhoto);
-        }
-
-        const response = await fetch('/post-announcement', {
-          method: 'POST',
-          headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json'
-          },
-          body: formData
-        });
-
-        const result = await response.json();
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || 'Failed to post announcement');
-        }
-
-        Swal.fire({
-          title: 'Success!',
-          text: 'Announcement posted successfully 🎉',
-          icon: 'success',
-          confirmButtonColor: '#2563eb'
-        });
-
-        this.reports[index].announced = true;
-        this.stats.announcements++;
-        this.applyFilters();
-
-      } catch (error) {
-        Swal.fire({
-          icon: 'error',
           title: 'Error!',
-          text: error.message || 'Something went wrong while posting the announcement.',
+          text: 'Failed to fetch reports.',
+          icon: 'error',
           confirmButtonColor: '#d33'
         });
       }
-    }
-  }
-}
+    },
 
     applyFilters() {
       this.filteredReports = this.reports.filter(r => {
@@ -391,8 +291,8 @@ function reportApp() {
         });
       }
     }
-  
-
+  }
+}
 </script>
 
 </body>

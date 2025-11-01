@@ -356,8 +356,7 @@ public function reportsSantafe()
             'message' => "Server error while rerouting report. Check storage/logs/laravel.log.",
         ], 500);
     }
-}
-public function santafeAnnouncements()
+}public function santafeAnnouncements()
 {
     $announcements = \App\Models\Announcement::where('location', 'Santa.Fe')
         ->latest()
@@ -365,17 +364,18 @@ public function santafeAnnouncements()
 
     return view('water.announcement-santafe', compact('announcements'));
 }
- public function getResolvedReports()
+
+public function getResolvedReports()
 {
-    $reports = ForwardedReport::where('location', 'Santa.Fe')
-        ->where('status', 'Resolved')
+    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['santa.fe'])
+        ->whereRaw('LOWER(status) = ?', ['resolved'])
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
-    // Map photo to a full URL
+    // ✅ Map photo to full URL
     $reports->transform(function ($report) {
-        $report->photo = $report->photo 
-            ? asset('storage/' . $report->photo)   // ✅ full URL
+        $report->photo = $report->photo
+            ? asset('storage/' . ltrim($report->photo, '/'))
             : null;
         return $report;
     });
@@ -391,22 +391,22 @@ public function bantayanAnnouncements()
 
     return view('water.announcement-bantayan', compact('announcements'));
 }
+
 public function getResolvedReportsBantayan()
 {
-    $reports = ForwardedReport::where('location', 'Bantayan')
-        ->where('status', 'Resolved')
+    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['bantayan'])
+        ->whereRaw('LOWER(status) = ?', ['resolved'])
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
-    // Map photo to a full URL
+    // ✅ Fix photo path
     $reports->transform(function ($report) {
         $report->photo = $report->photo
-            ? asset('storage/' . $report->photo) // ✅ Convert to full URL
+            ? asset('storage/' . ltrim($report->photo, '/'))
             : null;
         return $report;
     });
 
     return response()->json($reports);
 }
-
 }
