@@ -200,22 +200,37 @@
       return pass.split('').sort(() => 0.5 - Math.random()).join('');
     }
 
-    // Show Terms popup
-    function showTerms() {
-      Swal.fire({
-        title: 'Terms & Conditions',
-        html: `
-          <div class="text-left text-sm text-gray-300">
-            <p><strong>1.</strong> You agree to provide accurate and truthful information.</p>
-            <p><strong>2.</strong> You must not use this platform for malicious or illegal activities.</p>
-            <p><strong>3.</strong> Your data will be securely processed in accordance with privacy laws.</p>
-            <p><strong>4.</strong> Bantayan 911 may contact you for updates or verification when needed.</p>
-            <p><strong>5.</strong> Continued use implies your acceptance of these terms.</p>
-          </div>`,
-        confirmButtonText: 'I Understand',
-        confirmButtonColor: '#6366F1'
-      });
-    }
+   // Show Terms popup (modern and optimized)
+function showTerms() {
+  Swal.fire({
+    title: '<span class="text-indigo-400 text-2xl font-semibold">Terms & Conditions</span>',
+    html: `
+      <div class="text-left text-gray-200 text-sm leading-relaxed space-y-3 max-h-60 overflow-y-auto px-2">
+        <p><strong class="text-indigo-400">1.</strong> You agree to provide <span class="font-medium">accurate and truthful information</span> when creating and managing your account.</p>
+        <p><strong class="text-indigo-400">2.</strong> You must not use this platform for <span class="font-medium">unauthorized, harmful, or illegal</span> activities.</p>
+        <p><strong class="text-indigo-400">3.</strong> All personal data is handled in accordance with our <span class="font-medium">Privacy Policy</span> and applicable data protection laws.</p>
+        <p><strong class="text-indigo-400">4.</strong> Bantayan 911 may contact you for <span class="font-medium">emergency alerts, verification, or updates</span> regarding your account.</p>
+        <p><strong class="text-indigo-400">5.</strong> Continued use of this platform constitutes <span class="font-medium">acceptance</span> of these terms and future updates.</p>
+        <p class="border-t border-gray-700 pt-2 text-gray-400 text-xs italic">
+          Updated as of <span class="text-indigo-400 font-semibold">${new Date().toLocaleDateString()}</span>
+        </p>
+      </div>
+    `,
+    width: 550,
+    padding: '1.5rem',
+    background: '#1f2937', // Tailwind's gray-800
+    color: '#E5E7EB', // gray-200
+    confirmButtonText: 'I Understand & Agree',
+    confirmButtonColor: '#6366F1', // indigo-500
+    showClass: {
+      popup: 'animate__animated animate__fadeInDown animate__faster'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__fadeOutUp animate__faster'
+    },
+  });
+}
+
 
     // Prevent submit if terms not checked
     function checkTermsAgreement() {
