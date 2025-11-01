@@ -364,18 +364,24 @@ public function santafeAnnouncements()
         ->get();
 
     return view('water.announcement-santafe', compact('announcements'));
-}
- public function getResolvedReports()
+}public function getResolvedReports($location)
 {
-    $reports = ForwardedReport::where('location', 'Santa.Fe')
+    $validLocations = ['Santa.Fe', 'Bantayan', 'Madridejos'];
+
+    // 🛑 Validate location parameter to prevent invalid queries
+    if (!in_array($location, $validLocations)) {
+        return response()->json(['error' => 'Invalid location'], 400);
+    }
+
+    $reports = ForwardedReport::where('location', $location)
         ->where('status', 'Resolved')
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
-    // Map photo to a full URL
+    // ✅ Convert photo path to full URL
     $reports->transform(function ($report) {
-        $report->photo = $report->photo 
-            ? asset('storage/' . $report->photo)   // ✅ full URL
+        $report->photo = $report->photo
+            ? asset('storage/' . $report->photo)
             : null;
         return $report;
     });

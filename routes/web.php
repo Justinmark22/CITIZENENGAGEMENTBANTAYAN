@@ -945,4 +945,4 @@ Route::get('/water/announcement-bantayan', [WaterDashboardController::class, 'ba
     //resolved reports water 
     Route::get('/resolved-reports/bantayan', [WaterDashboardController::class, 'getResolvedReportsBantayan']);
 Route::get('/resolved-reports/santafe', [WaterDashboardController::class, 'getResolvedReportsSantaFe']);
-    
+    Route::get('/resolved-reports/{location}', [WaterDashboardController::class, 'getResolvedReports']);
