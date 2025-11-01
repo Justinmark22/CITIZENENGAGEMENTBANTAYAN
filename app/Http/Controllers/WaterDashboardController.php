@@ -386,7 +386,7 @@ public function getResolvedReportsSantafe()
 
 public function getResolvedReportsBantayan()
 {
-    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['bantayan'])
+    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['Bantayan'])
         ->whereRaw('LOWER(status) = ?', ['resolved'])
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
