@@ -46,12 +46,12 @@
             </div>
 
             <div>
-                <h3 class="text-xs uppercase tracking-widest text-white/60 font-semibold px-3 mb-3">Settings</h3>
+                <h3 class="text-xs uppercase tracking-widest text-white/60 font-semibold px-3 mb-3">Announce</h3>
                 <a href="{{ route('water.announcement-bantayan') }}" class="flex items-center px-4 py-3 rounded-lg text-sky-50 hover:bg-white/10 hover:shadow-sm transition">
                     <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/>
                     </svg>
-                    Configuration
+                    Announcements
                 </a>
             </div>
         </nav>
