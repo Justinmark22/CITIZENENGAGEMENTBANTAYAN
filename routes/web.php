@@ -942,3 +942,4 @@ Route::get('/water/announcement-bantayan', [WaterDashboardController::class, 'an
     ->name('water.announcement-bantayan');
     Route::get('/water/announcement-santafe', [WaterDashboardController::class, 'santafeAnnouncements'])
     ->name('water.announcement-santafe');
+    

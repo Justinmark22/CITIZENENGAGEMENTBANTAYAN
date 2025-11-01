@@ -383,4 +383,12 @@ public function santafeAnnouncements()
     return response()->json($reports);
 }
 
+public function bantayanAnnouncements()
+{
+    $announcements = \App\Models\Announcement::where('location', 'Bantayan')
+        ->latest()
+        ->get();
+
+    return view('water.announcement-bantayan', compact('announcements'));
+}
 }
