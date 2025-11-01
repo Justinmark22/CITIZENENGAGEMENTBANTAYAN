@@ -473,6 +473,6 @@ public function madridejosAnnouncements()
         ->latest()
         ->get();
 
-    return view('water.announcement-bantayan', compact('announcements'));
+    return view('water.announcement-madridejos', compact('announcements'));
 }
 }
