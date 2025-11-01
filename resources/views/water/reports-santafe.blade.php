@@ -88,12 +88,13 @@
            class="bg-white/60 backdrop-blur-md border border-gray-200 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
 
         <!-- Header -->
-        <div @click="open = !open" class="cursor-pointer px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition">
+        <div @click="open = !open; $nextTick(() => window.fetchAdminName({{ $report->id }}))" class="cursor-pointer px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition">
           <div>
             <h2 class="text-lg font-semibold text-gray-800">{{ $report->title }}</h2>
             <p class="text-sm text-gray-500 mt-1">
               {{ $report->category }} • ID: {{ $report->id }}
               <span class="ml-2">By: {{ $report->user?->name ?? 'N/A' }}</span>
+              <span id="adminName-{{ $report->id }}" class="ml-2 text-sm text-gray-500 hidden">Admin: <span id="adminNameInner-{{ $report->id }}" class="font-semibold"></span></span>
             </p>
           </div>
           <div class="flex items-center gap-3">
@@ -282,6 +283,31 @@
           console.error(err);
           Swal.fire("Error", "Network error while rerouting.", "error");
         }
+      }
+    }
+
+    // Fetch current authenticated admin/staff name and display it next to the report
+    window.fetchAdminName = async function(reportId) {
+      try {
+        const res = await fetch('/current-admin', {
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': CSRF,
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!res.ok) return;
+        const data = await res.json();
+        const name = data.name || null;
+        const inner = document.getElementById('adminNameInner-' + reportId);
+        const wrapper = document.getElementById('adminName-' + reportId);
+        if (inner && wrapper && name) {
+          inner.textContent = name;
+          wrapper.classList.remove('hidden');
+        }
+      } catch (err) {
+        console.error('fetchAdminName error', err);
       }
     }
   </script>

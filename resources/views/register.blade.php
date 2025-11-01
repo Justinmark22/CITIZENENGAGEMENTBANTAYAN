@@ -27,7 +27,7 @@
           </div>
         @endif
 
-        <form method="POST" action="{{ route('register.submit') }}" class="space-y-4">
+        <form method="POST" action="{{ route('register.submit') }}" class="space-y-4" onsubmit="return checkTermsAgreement()">
           @csrf
 
           <!-- Name -->
@@ -59,15 +59,12 @@
             </select>
           </div>
 
-          <!-- Password with show/hide -->
+          <!-- Password -->
           <div>
             <label for="password" class="block text-sm mb-1">Password</label>
             <div class="relative">
-              <input type="password" id="password" name="password" required
-                minlength="12"
+              <input type="password" id="password" name="password" required minlength="12"
                 class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              
-              <!-- Toggle visibility inside input -->
               <button type="button" id="togglePassword"
                 class="absolute right-2 top-2.5 text-gray-400 hover:text-indigo-500">👁️</button>
             </div>
@@ -76,7 +73,7 @@
             </p>
           </div>
 
-          <!-- Confirm Password with toggle -->
+          <!-- Confirm Password -->
           <div>
             <label for="password_confirmation" class="block text-sm mb-1">Confirm Password</label>
             <div class="relative">
@@ -87,8 +84,21 @@
             </div>
           </div>
 
+          <!-- Terms & Conditions -->
+          <div class="flex items-start space-x-2">
+            <input type="checkbox" id="terms" name="terms"
+              class="mt-1 text-indigo-500 border-gray-600 focus:ring-indigo-500">
+            <label for="terms" class="text-sm text-gray-300">
+              I agree to the
+              <button type="button" onclick="showTerms()" class="text-indigo-400 hover:text-indigo-300 underline">
+                Terms & Conditions
+              </button>.
+            </label>
+          </div>
+
           <!-- Submit -->
-          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-semibold transition transform hover:scale-105">
+          <button type="submit"
+            class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-semibold transition transform hover:scale-105">
             Register
           </button>
 
@@ -101,26 +111,23 @@
 
       <!-- Right Info Section -->
       <div class="hidden md:flex flex-col items-center justify-center bg-gray-900 p-8 text-center">
-        <img src="{{ asset('images/citizen.png') }}" alt="Logo" class="w-32 h-32 rounded-full mb-4 border border-gray-700 shadow-lg">
+        <img src="{{ asset('images/citizen.png') }}" alt="Logo"
+          class="w-32 h-32 rounded-full mb-4 border border-gray-700 shadow-lg">
         <h3 class="text-2xl font-bold mb-2">Welcome to Bantayan 911</h3>
         <p class="text-gray-400 text-sm max-w-xs">
           Join our platform to stay updated, report emergencies, and help make Bantayan safer together.
         </p>
       </div>
-
     </div>
   </div>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     const passwordInput = document.getElementById('password');
     const confirmInput = document.getElementById('password_confirmation');
     const passwordHelp = document.getElementById('passwordHelp');
     const togglePassword = document.getElementById('togglePassword');
     const toggleConfirm = document.getElementById('toggleConfirm');
-
-    // Flag to ensure popup shows only once
     let popupShown = false;
 
     // Show/hide password
@@ -135,7 +142,7 @@
     passwordInput.addEventListener('input', () => {
       const val = passwordInput.value;
       const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/;
-      if(strongPassword.test(val)) {
+      if (strongPassword.test(val)) {
         passwordHelp.textContent = "Strong password ✅";
         passwordHelp.classList.replace("text-gray-400", "text-green-500");
         passwordHelp.classList.remove("text-red-500");
@@ -146,9 +153,9 @@
       }
     });
 
-    // Suggested password popup on password input focus (only once)
+    // Suggested password popup
     passwordInput.addEventListener('focus', () => {
-      if(popupShown) return; // already shown, do nothing
+      if (popupShown) return;
       popupShown = true;
 
       const suggested = generateStrongPassword(16);
@@ -158,15 +165,12 @@
         showCancelButton: true,
         confirmButtonText: 'Use & Copy Password',
         cancelButtonText: 'Cancel',
-        didOpen: () => {
-          const input = document.getElementById('suggestedPassword');
-          input.select();
-        },
+        didOpen: () => document.getElementById('suggestedPassword').select(),
         preConfirm: () => document.getElementById('suggestedPassword').value
       }).then(result => {
-        if(result.isConfirmed){
+        if (result.isConfirmed) {
           passwordInput.value = result.value;
-          passwordInput.dispatchEvent(new Event('input')); // trigger strength check
+          passwordInput.dispatchEvent(new Event('input'));
           navigator.clipboard.writeText(result.value).then(() => {
             Swal.fire({
               icon: 'success',
@@ -187,18 +191,46 @@
       const numbers = "0123456789";
       const symbols = "!@#$%^&*()_+[]{}|;:,.<>?";
       let pass = "";
-      // Ensure at least one of each
-      pass += upper.charAt(Math.floor(Math.random()*upper.length));
-      pass += lower.charAt(Math.floor(Math.random()*lower.length));
-      pass += numbers.charAt(Math.floor(Math.random()*numbers.length));
-      pass += symbols.charAt(Math.floor(Math.random()*symbols.length));
+      pass += upper[Math.floor(Math.random() * upper.length)];
+      pass += lower[Math.floor(Math.random() * lower.length)];
+      pass += numbers[Math.floor(Math.random() * numbers.length)];
+      pass += symbols[Math.floor(Math.random() * symbols.length)];
       const all = upper + lower + numbers + symbols;
-      for(let i = 4; i < length; i++){
-        pass += all.charAt(Math.floor(Math.random()*all.length));
+      for (let i = 4; i < length; i++) pass += all[Math.floor(Math.random() * all.length)];
+      return pass.split('').sort(() => 0.5 - Math.random()).join('');
+    }
+
+    // Show Terms popup
+    function showTerms() {
+      Swal.fire({
+        title: 'Terms & Conditions',
+        html: `
+          <div class="text-left text-sm text-gray-300">
+            <p><strong>1.</strong> You agree to provide accurate and truthful information.</p>
+            <p><strong>2.</strong> You must not use this platform for malicious or illegal activities.</p>
+            <p><strong>3.</strong> Your data will be securely processed in accordance with privacy laws.</p>
+            <p><strong>4.</strong> Bantayan 911 may contact you for updates or verification when needed.</p>
+            <p><strong>5.</strong> Continued use implies your acceptance of these terms.</p>
+          </div>`,
+        confirmButtonText: 'I Understand',
+        confirmButtonColor: '#6366F1'
+      });
+    }
+
+    // Prevent submit if terms not checked
+    function checkTermsAgreement() {
+      const checkbox = document.getElementById('terms');
+      if (!checkbox.checked) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Agreement Required',
+          text: 'You must agree to the Terms & Conditions before registering.',
+          confirmButtonColor: '#6366F1'
+        });
+        return false;
       }
-      return pass.split('').sort(() => 0.5 - Math.random()).join(''); // shuffle
+      return true;
     }
   </script>
-
 </body>
 </html>

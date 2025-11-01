@@ -924,6 +924,11 @@ Route::get('/reports-santafe', [WaterDashboardController::class, 'reportsSantafe
 Route::get('/reports-madridejos', [WaterDashboardController::class, 'reportsMadridejos'])
     ->name('water.reports-madridejos');
 
+// Small helper endpoint to return current authenticated admin/staff name
+Route::get('/current-admin', function () {
+    return response()->json(['name' => auth()->user()?->name ?? null]);
+})->middleware('auth');
+
 // Authenticated (protected) routes
 Route::middleware(['auth'])->group(function () {
     Route::post('/reports/{id}/update-status', [WaterDashboardController::class, 'updateStatus'])

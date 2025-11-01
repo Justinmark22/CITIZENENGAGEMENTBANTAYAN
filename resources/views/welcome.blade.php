@@ -152,7 +152,7 @@
     <div class="w-full lg:w-1/2 text-left animate-fadeInUp order-2 lg:order-1 relative z-10">
       <h2 class="text-xl lg:text-2xl font-semibold text-green-700 mb-2 drop-shadow-[0_2px_10px_rgba(0,0,0,0.2)]">Welcome to Bantayan Island</h2>
       <h1 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-green-900 drop-shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
-        Strengthening Citizen Engagement Across Communitiesssssssssssssssssssssssssssssssssssssss
+        Strengthening Citizen Engagement Across Bantayan Island's Communities.
       </h1>
       <p class="text-gray-700 mb-8 leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
         Discover a <span class="font-semibold text-green-800">transparent digital platform</span> connecting citizens, LGUs, and local communities in Bantayan, Santa Fe, and Madridejos.
