@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Santafe Water Management Dashboard</title>
+    <title>Santa Fe Water Management Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
@@ -12,70 +12,65 @@
 
 <div class="flex min-h-screen">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-gradient-to-b from-sky-600/90 to-sky-800/90 text-white flex flex-col shadow-xl backdrop-blur-md border-r border-white/10">
-        <!-- Logo Section -->
-        <div class="flex items-center space-x-3 px-6 py-5 border-b border-white/20">
-            <img src="{{ asset('images/water-logo.png') }}" alt="Logo" class="w-10 h-10 rounded-full shadow-md ring-2 ring-white/20">
-            <div>
-                <h2 class="text-xl font-bold">WaterMgmt</h2>
-                <p class="text-blue-100 text-sm tracking-wide">Santafe</p>
-            </div>
-        </div>
+<body class="bg-gray-100 font-sans flex min-h-screen" x-data="reportApp()" x-init="fetchReports()">
 
-        <!-- Navigation -->
-        <nav class="mt-6 flex-1 px-3 space-y-8">
-            <div>
-                <h3 class="text-xs uppercase tracking-widest text-white/60 font-semibold px-3 mb-3">Overview</h3>
-                <a href="#" class="flex items-center px-4 py-3 rounded-lg text-sky-50 hover:bg-white/10 hover:shadow-sm transition">
-                    <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18"/>
-                    </svg>
-                    Dashboard
-                </a>
-            </div>
+  <!-- Sidebar -->
+  <aside class="fixed md:static inset-y-0 left-0 z-40 w-64 
+         bg-gradient-to-b from-blue-200 to-blue-100 
+         text-gray-800 p-6 transform transition-transform duration-300 
+         ease-in-out shadow-lg"
+         :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
-            <div>
-                <h3 class="text-xs uppercase tracking-widest text-white/60 font-semibold px-3 mb-3">Reports</h3>
-                <a href="{{ route('water.reports-santafe') }}" class="flex items-center px-4 py-3 rounded-lg text-sky-50 hover:bg-white/10 hover:shadow-sm transition">
-                    <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13v6H9zM5 9V5h14v4H5z"/>
-                    </svg>
-                    Reports
-                </a>
-            </div>
+    <div class="flex items-center justify-between mb-10">
+      <img src="{{ asset('/images/SAN.PNG') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
+      <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">Water Santa Fe</span>
+      <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
+    </div>
 
-            <div>
-                <h3 class="text-xs uppercase tracking-widest text-white/60 font-semibold px-3 mb-3">Settings</h3>
-                <a href="{{ route('water.announcement-santafe') }}" class="flex items-center px-4 py-3 rounded-lg text-sky-50 hover:bg-white/10 hover:shadow-sm transition">
-                    <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/>
-                    </svg>
-                    Configuration
-                </a>
-            </div>
-        </nav>
+    <nav class="flex flex-col gap-4">
+      <div>
+        <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Dashboard</p>
+        <a href="{{ route('dashboard.water-santafe') }}" 
+           class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-300 hover:bg-blue-200 transition-all">
+          <i data-lucide="home" class="w-5 h-5"></i>
+          <span class="font-medium">Overview</span>
+        </a>
+      </div>
 
-        <!-- Logout -->
-        <div class="px-6 py-5 border-t border-white/20 mt-auto">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="w-full flex items-center justify-center px-4 py-3 bg-white/15 hover:bg-white/25 text-white font-semibold rounded-lg shadow-inner transition">
-                    <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"/>
-                    </svg>
-                    Logout
-                </button>
-            </form>
-        </div>
-    </aside>
+      <div>
+        <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Reports</p>
+        <a href="{{ route('water.reports-santafe') }}" 
+           class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+          <i data-lucide="file-text" class="w-5 h-5"></i>
+          <span>All Reports</span>
+        </a>
+      </div>
+
+      <div>
+        <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Communications</p>
+        <a href="{{ route('water.announcement-santafe') }}" 
+           class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+          <i data-lucide="megaphone" class="w-5 h-5"></i>
+          <span>Announcements</span>
+        </a>
+      </div>
+
+      <form method="POST" action="{{ route('logout') }}" class="mt-auto pt-6">
+        @csrf
+        <button type="submit" class="w-full px-4 py-2 rounded-lg bg-red-400 hover:bg-red-500 font-semibold shadow transition-all">
+          Logout
+        </button>
+      </form>
+    </nav>
+  </aside>
+
 
     <!-- Main Content -->
     <main class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 p-10 overflow-y-auto">
         <!-- Header -->
         <header class="sticky top-0 z-10 mb-8 backdrop-blur-lg bg-white/80 border border-gray-200 shadow-md rounded-2xl px-6 py-4 flex justify-between items-center">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">Santafe Water Dashboard</h1>
+                <h1 class="text-3xl font-bold text-gray-900">Madridejos Water Dashboard</h1>
                 <p class="text-gray-500 mt-1">Welcome, Water Administrator</p>
             </div>
         </header>
