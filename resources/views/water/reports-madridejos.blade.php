@@ -17,32 +17,55 @@
 </head>
 <body class="bg-gray-50 font-sans min-h-screen flex">
 
-  <!-- Sidebar -->
-  <aside class="w-64 bg-white shadow-lg flex flex-col">
-    <div class="p-6 border-b border-gray-200">
-      <h2 class="text-2xl font-bold text-gray-900">WaterMgmt</h2>
-      <p class="text-gray-400 text-sm mt-1">Bantayan</p>
-    </div>
-    <nav class="mt-6 flex-1 space-y-2">
-      <a href="#" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18"/>
-        </svg>
-        Dashboard
-      </a>
-      <a href="{{ route('water.reports-madridejos') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13v6H9zM5 9V5h14v4H5z"/>
-        </svg>
-        Reports
-      </a>
-      <a href="#" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17a4 4 0 100-8 4 4 0 000 8z"/>
-        </svg>
-        announcements
-      </a>
+<body class="bg-gray-100 font-sans flex min-h-screen" x-data="reportApp()" x-init="fetchReports()">
 
+  <!-- Sidebar -->
+  <aside class="fixed md:static inset-y-0 left-0 z-40 w-64 
+         bg-gradient-to-b from-blue-200 to-blue-100 
+         text-gray-800 p-6 transform transition-transform duration-300 
+         ease-in-out shadow-lg"
+         :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
+
+    <div class="flex items-center justify-between mb-10">
+      <img src="{{ asset('/images/SAN.PNG') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
+      <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">Water madridejos</span>
+      <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
+    </div>
+
+    <nav class="flex flex-col gap-4">
+      <div>
+        <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Dashboard</p>
+        <a href="{{ route('dashboard.water-madridejos') }}" 
+           class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-300 hover:bg-blue-200 transition-all">
+          <i data-lucide="home" class="w-5 h-5"></i>
+          <span class="font-medium">Overview</span>
+        </a>
+      </div>
+
+      <div>
+        <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Reports</p>
+        <a href="{{ route('water.reports-madridejos') }}" 
+           class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+          <i data-lucide="file-text" class="w-5 h-5"></i>
+          <span>All Reports</span>
+        </a>
+      </div>
+
+      <div>
+        <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Communications</p>
+        <a href="{{ route('water.announcement-madridejos') }}" 
+           class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+          <i data-lucide="megaphone" class="w-5 h-5"></i>
+          <span>Announcements</span>
+        </a>
+      </div>
+
+      <form method="POST" action="{{ route('logout') }}" class="mt-auto pt-6">
+        @csrf
+        <button type="submit" class="w-full px-4 py-2 rounded-lg bg-red-400 hover:bg-red-500 font-semibold shadow transition-all">
+          Logout
+        </button>
+      </form>
     </nav>
   </aside>
 

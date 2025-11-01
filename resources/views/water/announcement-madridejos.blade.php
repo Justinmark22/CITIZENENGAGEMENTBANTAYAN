@@ -28,7 +28,7 @@
     <nav class="flex flex-col gap-4">
       <div>
         <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Dashboard</p>
-        <a href="{{ route('dashboard.water-bantayan') }}" 
+        <a href="{{ route('dashboard.water-madridejos') }}" 
            class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-300 hover:bg-blue-200 transition-all">
           <i data-lucide="home" class="w-5 h-5"></i>
           <span class="font-medium">Overview</span>
@@ -37,7 +37,7 @@
 
       <div>
         <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Reports</p>
-        <a href="{{ route('water.reports-bantayan') }}" 
+        <a href="{{ route('water.reports-madridejos') }}" 
            class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
           <i data-lucide="file-text" class="w-5 h-5"></i>
           <span>All Reports</span>
@@ -46,7 +46,7 @@
 
       <div>
         <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Communications</p>
-        <a href="{{ route('water.announcement-bantayan') }}" 
+        <a href="{{ route('water.announcement-madridejos') }}" 
            class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
           <i data-lucide="megaphone" class="w-5 h-5"></i>
           <span>Announcements</span>
