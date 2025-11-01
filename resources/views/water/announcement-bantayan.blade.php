@@ -171,7 +171,8 @@
 </div>
 
 
-<script>function reportApp() {
+<script>
+function reportApp() {
   return {
     reports: [],
     filteredReports: [],
@@ -180,28 +181,20 @@
 
     async fetchReports() {
       try {
-        // ✅ Fetch resolved reports for Bantayan
-        const response = await fetch('/resolved-reports-bantayan');
-        if (!response.ok) throw new Error('Failed to fetch Bantayan resolved reports');
-
+        const response = await fetch('/resolved-reports');
+        if (!response.ok) throw new Error('Failed to fetch reports');
         this.reports = await response.json();
         this.filteredReports = this.reports;
-
-        // ✅ If you want, you can track how many are "resolved"
-        this.stats.pending = this.reports.filter(r => r.status === 'resolved').length;
-
+        this.stats.pending = this.reports.filter(r => r.status === 'pending').length;
       } catch (error) {
         Swal.fire({
           title: 'Error!',
-          text: 'Failed to fetch resolved Bantayan reports.',
+          text: 'Failed to fetch reports.',
           icon: 'error',
           confirmButtonColor: '#d33'
         });
       }
     },
-  };
-}
-
 
     applyFilters() {
       this.filteredReports = this.reports.filter(r => {
