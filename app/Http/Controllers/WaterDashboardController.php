@@ -180,20 +180,59 @@ public function reportsSantafe()
     return view('water.reports-santafe', compact('reports'));
 }
 
-    public function reportsMadridejos()
-    {
-        $reports = ForwardedReport::where('location', 'Madridejos')
-            ->where(function ($q) {
-                $q->where('category', 'Water Management')
-                    ->orWhere('forwarded_to', 'Water Management')
-                    ->orWhere('status', 'Rerouted to Water Management');
-            })
-            ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Water Management'])
-            ->latest()
-            ->paginate(10);
+    
+public function reportsMadridejos()
+{
+    // 🔹 Forwarded Reports for Madridejos
+    $forwarded = ForwardedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'forwarded' as type") // mark type
+    )
+    ->where('location', 'Madridejos')
+    ->where(function ($q) {
+        $q->where('category', 'Water Management')
+          ->orWhere('forwarded_to', 'Water Management')
+          ->orWhere('status', 'Rerouted to Water Management');
+    })
+    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Water Management']);
 
-        return view('water.reports-madridejos', compact('reports'));
-    }
+    // 🔹 Rerouted Reports for Madridejos
+    $rerouted = ReroutedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'rerouted' as type") // mark type
+    )
+    ->where('location', 'Santa.Fe')
+    ->where('status', 'like', 'Rerouted%');
+
+    // 🔹 Combine both using union
+    $combinedQuery = $forwarded->unionAll($rerouted);
+
+    // 🔹 Wrap in query builder for ordering and pagination
+    $reports = DB::table(DB::raw("({$combinedQuery->toSql()}) as reports"))
+        ->mergeBindings($combinedQuery->getQuery())
+        ->orderByDesc('created_at')
+        ->paginate(10);
+
+    return view('water.reports-madridejos', compact('reports'));
+}
 
     /* ============================
      * UPDATE STATUS (Accept, Ongoing, Resolved, Reroute)
@@ -369,7 +408,7 @@ public function reportsSantafe()
  * ============================ */
 public function getResolvedReportsSantafe()
 {
-    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['santa.fe'])
+    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['Santa.Fe'])
         ->whereRaw('LOWER(status) = ?', ['resolved'])
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
@@ -420,6 +459,15 @@ public function getResolvedReportsMadridejos()
 
 
 public function bantayanAnnouncements()
+{
+    $announcements = \App\Models\Announcement::where('location', 'Bantayan')
+        ->latest()
+        ->get();
+
+    return view('water.announcement-bantayan', compact('announcements'));
+}
+
+public function madridejosAnnouncements()
 {
     $announcements = \App\Models\Announcement::where('location', 'Bantayan')
         ->latest()

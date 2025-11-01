@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Water Santa.Fe – Resolved Reports</title>
+  <title>Water Madridejos – Resolved Reports</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -21,14 +21,14 @@
 
     <div class="flex items-center justify-between mb-10">
       <img src="{{ asset('/images/SAN.PNG') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
-      <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">Water Santa.fe</span>
+      <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">Water madridejos</span>
       <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
     </div>
 
     <nav class="flex flex-col gap-4">
       <div>
         <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Dashboard</p>
-        <a href="{{ route('dashboard.water-santafe') }}" 
+        <a href="{{ route('dashboard.water-bantayan') }}" 
            class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-300 hover:bg-blue-200 transition-all">
           <i data-lucide="home" class="w-5 h-5"></i>
           <span class="font-medium">Overview</span>
@@ -37,7 +37,7 @@
 
       <div>
         <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Reports</p>
-        <a href="{{ route('water.reports-santafe') }}" 
+        <a href="{{ route('water.reports-bantayan') }}" 
            class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
           <i data-lucide="file-text" class="w-5 h-5"></i>
           <span>All Reports</span>
@@ -46,7 +46,7 @@
 
       <div>
         <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Communications</p>
-        <a href="{{ route('water.announcement-santafe') }}" 
+        <a href="{{ route('water.announcement-bantayan') }}" 
            class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
           <i data-lucide="megaphone" class="w-5 h-5"></i>
           <span>Announcements</span>
@@ -134,7 +134,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c.828 0 1.5-.672 1.5-1.5S12.828 8 12 8s-1.5.672-1.5 1.5S11.172 11 12 11zM12 12v7" />
                 </svg>
-                <span x-text="report.location || 'Santa.Fe'"></span>
+                <span x-text="report.location || 'Madridejos'"></span>
               </span>
             </div>
           </div>
@@ -160,15 +160,15 @@
 
         async fetchReports() {
           try {
-            const response = await fetch('/resolved-reports-Santafe');
-            if (!response.ok) throw new Error('Failed to fetch resolved Santafe reports');
+            const response = await fetch('/resolved-reports-madridejos');
+            if (!response.ok) throw new Error('Failed to fetch resolved madridejos reports');
             this.reports = await response.json();
             this.filteredReports = this.reports;
             console.log(this.reports); // ✅ Debug check
           } catch (error) {
             Swal.fire({
               title: 'Error!',
-              text: 'Failed to fetch resolved Santafe reports.',
+              text: 'Failed to fetch resolved madridejos reports.',
               icon: 'error',
               confirmButtonColor: '#d33'
             });
@@ -212,7 +212,7 @@
             formData.append('title', report.title + (formValues.extraTitle ? ` - ${formValues.extraTitle}` : ''));
             formData.append('description', report.description + (formValues.extraDesc ? `\n\nUpdate: ${formValues.extraDesc}` : ''));
             formData.append('category', report.category);
-            formData.append('location', 'Santa.Fe'); // ✅ Fixed
+            formData.append('location', 'Madridejos'); // ✅ Fixed
             formData.append('report_id', report.id);
             if (formValues.extraPhoto) formData.append('photo', formValues.extraPhoto);
 
