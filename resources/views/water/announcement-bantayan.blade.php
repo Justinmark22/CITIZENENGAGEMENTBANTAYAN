@@ -176,25 +176,35 @@ function reportApp() {
   return {
     reports: [],
     filteredReports: [],
-    stats: { announcements: 0, pending: 0 },
+    stats: { resolved: 0 },
     filters: { search: '', category: '', date: '' },
 
     async fetchReports() {
       try {
-        const response = await fetch('/resolved-reports');
+        // ✅ Fetch resolved reports for Bantayan
+        const response = await fetch('/resolved-reports/bantayan');
         if (!response.ok) throw new Error('Failed to fetch reports');
+
         this.reports = await response.json();
         this.filteredReports = this.reports;
-        this.stats.pending = this.reports.filter(r => r.status === 'pending').length;
+
+        // ✅ Count total resolved reports
+        this.stats.resolved = this.reports.length;
+
       } catch (error) {
         Swal.fire({
-          title: 'Error!',
-          text: 'Failed to fetch reports.',
           icon: 'error',
-          confirmButtonColor: '#d33'
+          title: 'Failed to Load Reports',
+          text: 'Unable to fetch resolved reports for Bantayan.',
+          confirmButtonColor: '#e3342f',
+          background: '#1f2937',
+          color: '#fff',
+          iconColor: '#f87171'
         });
       }
     },
+  };
+}
 
     applyFilters() {
       this.filteredReports = this.reports.filter(r => {
