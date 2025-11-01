@@ -391,22 +391,4 @@ public function bantayanAnnouncements()
 
     return view('water.announcement-bantayan', compact('announcements'));
 }
-
-public function getResolvedReportsBantayan()
-{
-    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['bantayan'])
-        ->whereRaw('LOWER(status) = ?', ['resolved'])
-        ->orderBy('updated_at', 'desc')
-        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
-
-    // ✅ Fix photo path
-    $reports->transform(function ($report) {
-        $report->photo = $report->photo
-            ? asset('storage/' . ltrim($report->photo, '/'))
-            : null;
-        return $report;
-    });
-
-    return response()->json($reports);
-}
 }
