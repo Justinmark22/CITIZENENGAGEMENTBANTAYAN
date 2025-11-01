@@ -160,7 +160,7 @@
 
         async fetchReports() {
           try {
-            const response = await fetch('/resolved-reports-Santafe');
+            const response = await fetch('/resolved-reports-santafe');
             if (!response.ok) throw new Error('Failed to fetch resolved Santafe reports');
             this.reports = await response.json();
             this.filteredReports = this.reports;
