@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> WaterSanta Fe – Resolved Reports</title>
+  <title> Water Bantayan – Resolved Reports</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- ✅ SweetAlert2 -->
@@ -22,7 +22,7 @@
   <div class="flex items-center justify-between mb-10">
     <!-- Replace text with logo -->
     <img src="{{ asset('/images/SAN.PNG') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
-    <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">Water SANTA.FE</span>
+    <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">Water Bantayan</span>
     <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
   </div>
 
