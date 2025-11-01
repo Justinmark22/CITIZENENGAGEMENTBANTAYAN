@@ -17,7 +17,6 @@
 </head>
 <body class="bg-gray-50 font-sans min-h-screen flex">
 
-
 <body class="bg-gray-100 font-sans flex min-h-screen" x-data="reportApp()" x-init="fetchReports()">
 
   <!-- Sidebar -->
@@ -29,14 +28,14 @@
 
     <div class="flex items-center justify-between mb-10">
       <img src="{{ asset('/images/SAN.PNG') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
-      <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">Water Santa.fe</span>
+      <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">Water Bantayan</span>
       <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
     </div>
 
     <nav class="flex flex-col gap-4">
       <div>
         <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Dashboard</p>
-        <a href="{{ route('dashboard.water-santafe') }}" 
+        <a href="{{ route('dashboard.water-bantayan') }}" 
            class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-300 hover:bg-blue-200 transition-all">
           <i data-lucide="home" class="w-5 h-5"></i>
           <span class="font-medium">Overview</span>
@@ -45,7 +44,7 @@
 
       <div>
         <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Reports</p>
-        <a href="{{ route('water.reports-santafe') }}" 
+        <a href="{{ route('water.reports-bantayan') }}" 
            class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
           <i data-lucide="file-text" class="w-5 h-5"></i>
           <span>All Reports</span>
@@ -54,7 +53,7 @@
 
       <div>
         <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Communications</p>
-        <a href="{{ route('water.announcement-santafe') }}" 
+        <a href="{{ route('water.announcement-bantayan') }}" 
            class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
           <i data-lucide="megaphone" class="w-5 h-5"></i>
           <span>Announcements</span>
@@ -69,6 +68,7 @@
       </form>
     </nav>
   </aside>
+
 
   <!-- Main Content -->
   <main class="flex-1 p-6 overflow-y-auto">
