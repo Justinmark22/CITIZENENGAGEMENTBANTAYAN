@@ -176,25 +176,24 @@ function reportApp() {
   return {
     reports: [],
     filteredReports: [],
-    stats: { announcements: 0, pending: 0 },
-    filters: { search: '', category: '', date: '' },
-
     async fetchReports() {
       try {
-        const response = await fetch('/resolved-reports');
-        if (!response.ok) throw new Error('Failed to fetch reports');
+        const response = await fetch('/resolved-reports-bantayan');
+        if (!response.ok) throw new Error('Failed to fetch resolved Bantayan reports');
         this.reports = await response.json();
         this.filteredReports = this.reports;
-        this.stats.pending = this.reports.filter(r => r.status === 'pending').length;
       } catch (error) {
         Swal.fire({
           title: 'Error!',
-          text: 'Failed to fetch reports.',
+          text: 'Failed to fetch resolved Bantayan reports.',
           icon: 'error',
           confirmButtonColor: '#d33'
         });
       }
     },
+  };
+}
+
 
     applyFilters() {
       this.filteredReports = this.reports.filter(r => {

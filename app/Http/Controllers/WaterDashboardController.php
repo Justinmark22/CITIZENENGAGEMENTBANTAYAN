@@ -364,15 +364,16 @@ public function reportsSantafe()
 
     return view('water.announcement-santafe', compact('announcements'));
 }
-
-public function getResolvedReports()
+/* ============================
+ * FETCH RESOLVED REPORTS (PER LOCATION)
+ * ============================ */
+public function getResolvedReportsSantafe()
 {
     $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['santa.fe'])
         ->whereRaw('LOWER(status) = ?', ['resolved'])
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
-    // ✅ Map photo to full URL
     $reports->transform(function ($report) {
         $report->photo = $report->photo
             ? asset('storage/' . ltrim($report->photo, '/'))
@@ -382,6 +383,41 @@ public function getResolvedReports()
 
     return response()->json($reports);
 }
+
+public function getResolvedReportsBantayan()
+{
+    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['bantayan'])
+        ->whereRaw('LOWER(status) = ?', ['resolved'])
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
+
+    $reports->transform(function ($report) {
+        $report->photo = $report->photo
+            ? asset('storage/' . ltrim($report->photo, '/'))
+            : null;
+        return $report;
+    });
+
+    return response()->json($reports);
+}
+
+public function getResolvedReportsMadridejos()
+{
+    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['madridejos'])
+        ->whereRaw('LOWER(status) = ?', ['resolved'])
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
+
+    $reports->transform(function ($report) {
+        $report->photo = $report->photo
+            ? asset('storage/' . ltrim($report->photo, '/'))
+            : null;
+        return $report;
+    });
+
+    return response()->json($reports);
+}
+
 
 public function bantayanAnnouncements()
 {
