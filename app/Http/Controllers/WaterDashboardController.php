@@ -391,13 +391,12 @@ public function bantayanAnnouncements()
 
     return view('water.announcement-bantayan', compact('announcements'));
 }
-
 public function getResolvedReportsBantayan()
 {
     $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['bantayan'])
         ->whereRaw('LOWER(status) = ?', ['resolved'])
         ->orderBy('updated_at', 'desc')
-        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo', 'status']); // ✅ include status
 
     // ✅ Fix photo path
     $reports->transform(function ($report) {
