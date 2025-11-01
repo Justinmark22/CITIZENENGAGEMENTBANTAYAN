@@ -6,6 +6,8 @@
   <title>Register | Bantayan 911</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"/>
+
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
 
@@ -152,53 +154,95 @@
         passwordHelp.classList.add("text-gray-400");
       }
     });
+// 💡 Google-style Password Suggestion Popup
+passwordInput.addEventListener('focus', () => {
+  if (popupShown) return;
+  popupShown = true;
 
-    // Suggested password popup
-    passwordInput.addEventListener('focus', () => {
-      if (popupShown) return;
-      popupShown = true;
+  const suggested = generateStrongPassword(16);
+  
+  Swal.fire({
+    title: '<span class="text-indigo-400 font-semibold text-lg">Strong Password Suggestion</span>',
+    html: `
+      <div class="flex flex-col items-center justify-center space-y-3 text-gray-200">
+        <input 
+          type="text" 
+          id="suggestedPassword" 
+          class="w-full text-center bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg font-mono text-sm tracking-wider select-all"
+          value="${suggested}" 
+          readonly>
+        <p class="text-xs text-gray-400 italic">Auto-generated for strong security — copy & use if you’d like.</p>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: 'Use Password',
+    cancelButtonText: 'Cancel',
+    focusConfirm: false,
+    background: '#1f2937', // Tailwind gray-800
+    color: '#E5E7EB', // gray-200
+    width: 400,
+    padding: '1.5rem',
+    confirmButtonColor: '#6366F1', // Indigo
+    cancelButtonColor: '#4B5563', // Gray
+    customClass: {
+      popup: 'rounded-2xl shadow-lg border border-gray-700',
+      confirmButton: 'px-4 py-2 text-sm font-semibold rounded-lg',
+      cancelButton: 'px-4 py-2 text-sm font-medium rounded-lg',
+    },
+    didOpen: () => {
+      const input = document.getElementById('suggestedPassword');
+      input.select();
+    },
+    preConfirm: () => document.getElementById('suggestedPassword').value
+  }).then(result => {
+    if (result.isConfirmed) {
+      passwordInput.value = result.value;
+      passwordInput.dispatchEvent(new Event('input')); // trigger strength validation
 
-      const suggested = generateStrongPassword(16);
-      Swal.fire({
-        title: 'Suggested Password',
-        html: `<input type="text" id="suggestedPassword" class="w-full bg-gray-700 text-white px-2 py-1 rounded" value="${suggested}" readonly>`,
-        showCancelButton: true,
-        confirmButtonText: 'Use & Copy Password',
-        cancelButtonText: 'Cancel',
-        didOpen: () => document.getElementById('suggestedPassword').select(),
-        preConfirm: () => document.getElementById('suggestedPassword').value
-      }).then(result => {
-        if (result.isConfirmed) {
-          passwordInput.value = result.value;
-          passwordInput.dispatchEvent(new Event('input'));
-          navigator.clipboard.writeText(result.value).then(() => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Copied!',
-              text: 'Password copied to clipboard.',
-              timer: 1500,
-              showConfirmButton: false
-            });
-          });
-        }
+      // Success copy notification
+      navigator.clipboard.writeText(result.value).then(() => {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Password copied to clipboard',
+          showConfirmButton: false,
+          timer: 2000,
+          background: '#111827',
+          color: '#E5E7EB',
+          customClass: {
+            popup: 'rounded-xl shadow-md border border-gray-700'
+          }
+        });
       });
-    });
-
-    // Generate strong random password
-    function generateStrongPassword(length = 16) {
-      const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      const lower = "abcdefghijklmnopqrstuvwxyz";
-      const numbers = "0123456789";
-      const symbols = "!@#$%^&*()_+[]{}|;:,.<>?";
-      let pass = "";
-      pass += upper[Math.floor(Math.random() * upper.length)];
-      pass += lower[Math.floor(Math.random() * lower.length)];
-      pass += numbers[Math.floor(Math.random() * numbers.length)];
-      pass += symbols[Math.floor(Math.random() * symbols.length)];
-      const all = upper + lower + numbers + symbols;
-      for (let i = 4; i < length; i++) pass += all[Math.floor(Math.random() * all.length)];
-      return pass.split('').sort(() => 0.5 - Math.random()).join('');
     }
+  });
+});
+
+// 🔐 Generate Strong Random Password (optimized & readable)
+function generateStrongPassword(length = 16) {
+  const charset = {
+    upper: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    lower: "abcdefghijklmnopqrstuvwxyz",
+    number: "0123456789",
+    symbol: "!@#$%^&*()_+[]{}|;:,.<>?"
+  };
+  let password = "";
+  
+  // Ensure at least one of each type
+  password += charset.upper[Math.floor(Math.random() * charset.upper.length)];
+  password += charset.lower[Math.floor(Math.random() * charset.lower.length)];
+  password += charset.number[Math.floor(Math.random() * charset.number.length)];
+  password += charset.symbol[Math.floor(Math.random() * charset.symbol.length)];
+
+  const allChars = Object.values(charset).join('');
+  for (let i = 4; i < length; i++) {
+    password += allChars[Math.floor(Math.random() * allChars.length)];
+  }
+
+  // Shuffle for randomness
+  return password.split('').sort(() => Math.random() - 0.5).join('');
+}
 
    // Show Terms popup (modern and optimized)
 function showTerms() {
