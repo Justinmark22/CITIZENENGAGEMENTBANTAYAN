@@ -197,7 +197,7 @@ Route::post('/login', function (Request $request) {
 
         // ✅ Admins, Staff, or Admin Location → skip OTP
         if (
-            in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water'])
+            in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water','fire'])
             || strtolower($user->location) === 'admin'
         ) {
             $route = match (strtolower($user->role)) {
