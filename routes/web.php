@@ -131,7 +131,6 @@ Route::get('/', function () {
 
     return $response;
 });
-
 // ✅ LOGIN ROUTES
 Route::get('/login', fn() => view('login'))->name('login');
 
@@ -147,7 +146,7 @@ Route::post('/login', function (Request $request) {
 
     // ✅ reCAPTCHA v3 verification
     $recaptchaResponse = $request->input('g-recaptcha-response');
-    $secretKey = '6LfSlPorAAAAABfz0johQXHxc_5oa-1mF7Uj01SY'; // replace with your key
+    $secretKey = '6LfSlPorAAAAABfz0johQXHxc_5oa-1mF7Uj01SY'; // your site key
 
     if (!$recaptchaResponse) {
         return back()->withErrors(['captcha' => 'Please complete the reCAPTCHA verification.'])
@@ -173,20 +172,28 @@ Route::post('/login', function (Request $request) {
         'password' => ['required', 'string', 'max:255'],
     ]);
 
-    $user = \App\Models\User::where('email', $credentials['email'])->first();
+    // Force lowercase to prevent mismatch
+    $credentials['email'] = Str::lower($credentials['email']);
 
-    if ($user && $user->status === 'disabled') {
+    $user = \App\Models\User::whereRaw('LOWER(email) = ?', [$credentials['email']])->first();
+
+    if (!$user) {
         RateLimiter::hit($key, 60);
-        return back()->withErrors([
-            'email' => 'Your account has been disabled. Contact the super admin.',
-        ])->onlyInput('email');
+        return back()->withErrors(['email' => 'Account not found.'])->onlyInput('email');
     }
 
-    if (Auth::attempt($credentials, $request->boolean('remember'))) {
-        $request->session()->regenerate();
-        $user = Auth::user();
+    if ($user->status === 'disabled') {
+        RateLimiter::hit($key, 60);
+        return back()->withErrors(['email' => 'Your account has been disabled. Contact the super admin.'])
+            ->onlyInput('email');
+    }
 
-        // ✅ Example cookies
+    // ✅ Try login manually if Auth::attempt fails
+    if (Auth::validate($credentials) || Hash::check($credentials['password'], $user->password)) {
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        // ✅ Set cookies
         cookie()->queue(cookie('user_name', $user->name, 60));
         cookie()->queue(cookie('user_role', $user->role, 60));
         cookie()->queue(cookie('secure_session', Str::random(32), 60, null, null, true, true));
@@ -195,7 +202,7 @@ Route::post('/login', function (Request $request) {
         $user->save();
         RateLimiter::clear($key);
 
-        // ✅ 6. Redirect for admins, staff, or system roles
+        // ✅ Redirect roles
         if (in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water', 'fire'])
             || strtolower($user->location) === 'admin') {
 
@@ -240,10 +247,8 @@ Route::post('/login', function (Request $request) {
             return redirect()->route($route);
         }
 
-
-        // ✅ Citizens only → Send OTP
+        // ✅ Citizen accounts → OTP
         $otp = rand(100000, 999999);
-
         session([
             'otp' => $otp,
             'otp_expires' => now()->addMinutes(3),
@@ -256,14 +261,13 @@ Route::post('/login', function (Request $request) {
             return back()->withErrors(['email' => 'Failed to send OTP: ' . $e->getMessage()]);
         }
 
-        Auth::logout(); // logout until OTP verified
+        Auth::logout();
         return redirect()->route('otp.verify')->with('status', 'OTP sent to your email. Please verify to continue.');
     }
 
+    // ❌ Invalid credentials
     RateLimiter::hit($key, 60);
-    return back()->withErrors([
-        'email' => 'Invalid email or password.',
-    ])->onlyInput('email');
+    return back()->withErrors(['email' => 'Invalid email or password.'])->onlyInput('email');
 })->name('login.submit');
 
 Route::post('/logout', function (Request $request) {
