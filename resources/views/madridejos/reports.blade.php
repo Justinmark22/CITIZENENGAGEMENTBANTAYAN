@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>bantayan- Reports</title>
+  <title>madridejos- Reports</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,13 +12,14 @@
 
   <style>
     body {
-      background-color: rgb(181, 202, 199);
+     background-color:rgba(250, 250, 248, 1);
       font-family: 'Segoe UI', sans-serif;
     }
+
     .sidebar {
       height: 100vh;
       width: 240px;
-       background: linear-gradient(180deg,rgb(130, 228, 174), #1d4ed8);
+         background: linear-gradient(180deg,rgba(225, 242, 127, 1), #0e0e0dff);
       color: #fff;
       position: fixed;
       top: 0;
@@ -41,6 +42,7 @@
       background-color: rgba(255, 255, 255, 0.1);
       color: #fff;
     }
+
     .navbar {
       padding: 1rem 2rem;
       background-color: #fff;
@@ -52,50 +54,61 @@
       margin-left: 240px;
       padding: 2rem;
     }
-    
-    .report-card {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(6px);
-    border-radius: 16px;
-    transition: all 0.3s ease-in-out;
-  }
 
-  .report-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-  }
-
-  .hover-glow:hover {
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
-  }
-
-  .bg-gradient-success {
-    background: linear-gradient(to right, #4ade80, #22c55e);
-    color: #fff !important;
-  }
-
-  .bg-gradient-danger {
-    background: linear-gradient(to right, #f87171, #ef4444);
-    color: #fff !important;
-  }
-
-  .bg-gradient-info {
-    background: linear-gradient(to right, #38bdf8, #0ea5e9);
-    color: #fff !important;
-  }
-
-  .bg-gradient-warning {
-    background: linear-gradient(to right, #facc15, #eab308);
-    color: #000 !important;
-  }
-
-  .cursor-pointer {
-    cursor: pointer;
-  }
-  .dropdown-menu {
-  z-index: 2000; /* Force it above modal/content */
+    .card-box {
+      background-color:rgb(211, 214, 220); /* <-- dirty white */
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+    }
+.table-spreadsheet {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+  background-color: #f9fafb;
 }
 
+.table-spreadsheet thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f1f5f9;
+  z-index: 2;
+  border-bottom: 2px solid #cbd5e1;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: left;
+}
+
+.table-spreadsheet tbody td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+  color: #334155;
+}
+
+.table-spreadsheet tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.table-spreadsheet tbody tr:hover {
+  background-color: #e2e8f0;
+  transition: background 0.2s ease;
+}
+
+.table-spreadsheet .btn-sm {
+  padding: 4px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #1f2937;
+    }
   </style>
 </head>
 <body>
@@ -109,29 +122,29 @@
   <img src="{{ asset('images/santafe.png') }}" alt="Santa Fe Logo" 
        class="img-fluid rounded-circle shadow-sm border border-white" 
        style="max-height: 80px; width: 80px; object-fit: cover; transition: transform 0.2s;">
-  <h6 class="mt-2 text-white-50 font-weight-bold">Bantayan Admin</h6>
+  <h6 class="mt-2 text-white-50 font-weight-bold">Madridejos Admin</h6>
 </div>
 
   <!-- Menu Links -->
-  <a href="{{ route('dashboard.bantayanadmin') }}">
+  <a href="{{ route('dashboard.madridejosadmin') }}">
   <i data-lucide="home" class="me-2"></i> Dashboard
 </a>
-  <a href="{{ route('bantayan.users.index') }}">
+  <a href="{{ route('madridejos.users.index') }}">
     <i data-lucide="users" class="me-2"></i> Users
   </a>
-  <a href="{{ route('bantayan.reports') }}">
+  <a href="{{ route('madridejos.reports') }}">
     <i data-lucide="file-text" class="me-2"></i> Reports
   </a>
-  <a href="{{ route('bantayan.feedback') }}">
+  <a href="{{ route('madridejos.feedback') }}">
     <i data-lucide="message-square" class="me-2"></i> Feedback
   </a>
-  <a href="{{ route('bantayan.announcements') }}">
+  <a href="{{ route('madridejos.announcements') }}">
     <i data-lucide="megaphone" class="me-2"></i> Announcements
   </a>
-  <a href="{{ route('bantayan.events') }}">
+  <a href="{{ route('madridejos.events') }}">
     <i data-lucide="calendar-days" class="me-2"></i> Events
   </a>
- <a href="{{ route('bantayan.updates') }}">
+ <a href="{{ route('madridejos.updates') }}">
   <i data-lucide="message-square" class="me-2"></i> Updates
 </a>
  
@@ -455,7 +468,7 @@
           <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'Water Management')">WATERMANAGEMENT</button>
         </li>
         <li>
-          <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'Fire Department')">Fire Department</button>
+          <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'Fire Management')">Fire Department</button>
         </li>
       </ul>
     </div>

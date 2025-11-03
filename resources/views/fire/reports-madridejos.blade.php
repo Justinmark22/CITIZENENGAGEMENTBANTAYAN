@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Water - Bantayan</title>
+  <title>Fire- Madridejos</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -17,44 +17,42 @@
 </head>
 <body class="bg-gray-50 font-sans min-h-screen flex">
 
-<body class="bg-gray-100 font-sans flex min-h-screen" x-data="reportApp()" x-init="fetchReports()">
-
   <!-- Sidebar -->
   <aside class="fixed md:static inset-y-0 left-0 z-40 w-64 
-         bg-gradient-to-b from-blue-200 to-blue-100 
-         text-gray-800 p-6 transform transition-transform duration-300 
-         ease-in-out shadow-lg"
+         bg-gradient-to-b from-red-800 to-yellow-600 
+         text-white p-6 transform transition-transform duration-300 
+         ease-in-out shadow-xl"
          :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
     <div class="flex items-center justify-between mb-10">
-      <img src="{{ asset('/images/SAN.PNG') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
-      <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">Water Bantayan</span>
-      <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
+      <img src="{{ asset('/images/madridefire.png') }}" alt="Madridejos Fire Logo" class="h-16 w-16 rounded-full object-cover border-2 border-yellow-400 shadow-md">
+      <span class="text-2xl font-extrabold tracking-wide drop-shadow-lg">Madridejos Fire</span>
+      <button class="md:hidden text-2xl font-bold text-white" @click="mobileMenu=false">✕</button>
     </div>
 
     <nav class="flex flex-col gap-4">
       <div>
-        <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Dashboard</p>
-        <a href="{{ route('dashboard.water-bantayan') }}" 
-           class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-300 hover:bg-blue-200 transition-all">
+        <p class="uppercase text-xs font-semibold text-yellow-300 px-4 mb-2">Dashboard</p>
+        <a href="{{ route('dashboard.fire-madridejos') }}" 
+           class="flex items-center gap-3 px-4 py-2 rounded-lg bg-yellow-500/20 hover:bg-yellow-400/30 transition-all text-yellow-100">
           <i data-lucide="home" class="w-5 h-5"></i>
           <span class="font-medium">Overview</span>
         </a>
       </div>
 
       <div>
-        <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Reports</p>
-        <a href="{{ route('water.reports-bantayan') }}" 
-           class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+        <p class="uppercase text-xs font-semibold text-yellow-300 px-4 mb-2">Reports</p>
+        <a href="{{ route('fire.reports-madridejos') }}" 
+           class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-yellow-400/30 transition-all text-yellow-100">
           <i data-lucide="file-text" class="w-5 h-5"></i>
           <span>All Reports</span>
         </a>
       </div>
 
       <div>
-        <p class="uppercase text-xs font-semibold text-gray-500 px-4 mb-2">Communications</p>
-        <a href="{{ route('water.announcement-bantayan') }}" 
-           class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-200 transition-all">
+        <p class="uppercase text-xs font-semibold text-yellow-300 px-4 mb-2">Communications</p>
+        <a href="{{ route('fire.announcement-madridejos') }}" 
+           class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-yellow-400/30 transition-all text-yellow-100">
           <i data-lucide="megaphone" class="w-5 h-5"></i>
           <span>Announcements</span>
         </a>
@@ -62,7 +60,7 @@
 
       <form method="POST" action="{{ route('logout') }}" class="mt-auto pt-6">
         @csrf
-        <button type="submit" class="w-full px-4 py-2 rounded-lg bg-red-400 hover:bg-red-500 font-semibold shadow transition-all">
+        <button type="submit" class="w-full px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 font-semibold shadow-lg text-white transition-all">
           Logout
         </button>
       </form>
@@ -70,12 +68,13 @@
   </aside>
 
 
+
   <!-- Main Content -->
   <main class="flex-1 p-6 overflow-y-auto">
     <!-- Header -->
     <div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Forwarded & Rerouted Reports (Water Management)</h1>
+        <h1 class="text-2xl font-bold text-gray-900"></h1>
         <p class="text-sm text-gray-500">Dashboard / Forwarded Reports</p>
       </div>
     </div>
@@ -110,11 +109,10 @@
         <div @click="open = !open" class="cursor-pointer px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition">
           <div>
             <h2 class="text-lg font-semibold text-gray-800">{{ $report->title }}</h2>
-           <p class="text-sm text-gray-500 mt-1">
-  {{ $report->category }} • User ID: {{ $report->user_id ?? 'N/A' }}
-  <span class="ml-2">By: {{ $report->user?->name ?? 'N/A' }}</span>
-</p>
-
+            <p class="text-sm text-gray-500 mt-1">
+              {{ $report->category }} • ID: {{ $report->id }}
+              <span class="ml-2">By: {{ $report->user?->name ?? 'N/A' }}</span>
+            </p>
           </div>
           <div class="flex items-center gap-3">
             <!-- Status Badge -->
@@ -246,97 +244,64 @@
         Swal.fire('Error', 'Network error.', 'error');
       }
     }
-async function rerouteReport(reportId, btn = null) {
-  const userId = btn ? btn.getAttribute('data-user-id') : null; // fetch reporter's user ID if available
-  console.log("DEBUG: reportId =", reportId);
-  console.log("DEBUG: reporterUserId =", userId);
 
-  // Ask which department to reroute to
-  const { value: department } = await Swal.fire({
-    title: "Reroute Report",
-    input: "select",
-    inputOptions: {
-      "Water Management": "Water Management",
-      "Waste Management": "Waste Management",
-      "MDRRMO": "MDRRMO",
-      "Fire Management": "Fire Department",
-    },
-    inputPlaceholder: "Select department to reroute to",
-    showCancelButton: true,
-    confirmButtonText: "Reroute",
-    cancelButtonText: "Cancel",
-    inputValidator: (value) => {
-      if (!value) return "Please select a department";
-    },
-  });
-
-  if (!department) return;
-
-  Swal.fire({
-    title: "Rerouting...",
-    allowOutsideClick: false,
-    didOpen: () => Swal.showLoading(),
-  });
-
-  try {
-    const res = await fetch(`/reports/${reportId}/reroute`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-      },
-      body: JSON.stringify({
-        rerouted_to: department,
-        reporter_user_id: userId
-      }),
-    });
-
-    const data = await res.json();
-    console.log("DEBUG: API response", data);
-
-    Swal.close();
-
-    if (res.ok && data.success) {
-      Swal.fire({
-        icon: "success",
-        title: `Report rerouted to ${department}`,
-        timer: 1800,
-        showConfirmButton: false,
+    async function rerouteReport(id) {
+      const { value: department } = await Swal.fire({
+        title: "Reroute Report",
+        input: "select",
+        inputOptions: {
+          "Water Management": "Water Management",
+          "Waste Management": "Waste Management",
+          "MDRRMO": "MDRRMO",
+          "Fire Management": "Fire Department",
+        },
+        inputPlaceholder: "Select department to reroute to",
+        showCancelButton: true,
+        confirmButtonText: "Reroute",
+        cancelButtonText: "Cancel",
+        inputValidator: (value) => {
+          if (!value) return "Please select a department";
+        },
       });
 
-      const badge = document.querySelector(`#report-${reportId} [data-role="status-badge"]`);
-      if (badge) {
-        badge.textContent = `Rerouted to ${department}`;
-        badge.classList.remove("bg-yellow-400", "bg-orange-400", "bg-blue-500");
-        badge.classList.add("bg-purple-600", "text-white");
-      }
+      if (department) {
+        try {
+          const res = await fetch(`/reports/${id}/reroute`, {
+            method: "POST",
+            headers: {
+              "X-CSRF-TOKEN": CSRF,
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+            },
+            body: JSON.stringify({ rerouted_to: department }),
+          });
 
-      const card = document.getElementById(`report-${reportId}`);
-      if (card) {
-        card.style.transition = "opacity .3s ease";
-        card.style.opacity = "0";
-        setTimeout(() => card.remove(), 350);
+          const data = await res.json();
+
+          if (!data.success) {
+            Swal.fire("Error", data.message || "Failed to reroute report", "error");
+            return;
+          }
+
+          Swal.fire({
+            icon: "success",
+            title: `Report rerouted to ${department}`,
+            timer: 1300,
+            showConfirmButton: false,
+          });
+
+          const card = document.getElementById(`report-${id}`);
+          if (card) {
+            card.style.transition = "opacity .3s ease";
+            card.style.opacity = "0";
+            setTimeout(() => card.remove(), 350);
+          }
+        } catch (err) {
+          console.error(err);
+          Swal.fire("Error", "Network error while rerouting.", "error");
+        }
       }
-    } else {
-      console.error("DEBUG: Error rerouting report", data);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: data.message || "Failed to reroute report.",
-      });
     }
-  } catch (err) {
-    console.error("DEBUG: Fetch error", err);
-    Swal.close();
-    Swal.fire({
-      icon: "error",
-      title: "Network Error",
-      text: err.message || "Please try again.",
-    });
-  }
-}
-
   </script>
 
 </body>

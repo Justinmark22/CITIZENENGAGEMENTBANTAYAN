@@ -158,28 +158,112 @@ class MDRRMOController extends Controller
     ));
 }
 
-    // Santa.Fe Forwarded Reports
-    public function reportsSantafe()
-    {
-        // Only Pending or Ongoing reports
-        $reports = ForwardedReport::where('location', 'Santa.Fe')
-                    ->whereIn('status', ['Forwarded','Pending','Ongoing'])
-                    ->latest()
-                    ->paginate(10);
+   public function reportsSantaFe()
+{
+    // 🔹 Forwarded Reports for Bantayan
+    $forwarded = ForwardedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'forwarded' as type") // mark type
+    )
+    ->where('location', 'Santa.Fe')
+    ->where(function ($q) {
+        $q->where('category', 'MDRRMO')
+          ->orWhere('forwarded_to', 'MDRRMO')
+          ->orWhere('status', 'Rerouted to MDRRMO');
+    })
+    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to MDRRMO']);
 
-        return view('mdrrmo.reports-santafe', compact('reports'));
-    }
+    // 🔹 Rerouted Reports for Bantayan
+    $rerouted = ReroutedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'rerouted' as type") // mark type
+    )
+    ->where('location', 'Santa.Fe')
+    ->where('status', 'like', 'Rerouted%');
 
-    // Madridejos Forwarded Reports
-    public function reportsMadridejos()
-    {
-        $reports = ForwardedReport::where('location', 'Madridejos')
-                    ->whereIn('status', ['Forwarded','Pending','Ongoing'])
-                    ->latest()
-                    ->paginate(10);
+    // 🔹 Combine both using union
+    $combinedQuery = $forwarded->unionAll($rerouted);
 
-        return view('mdrrmo.reports-madridejos', compact('reports'));
-    }    // Santa.Fe Forwarded Reports
+    // 🔹 Wrap in query builder for ordering and pagination
+    $reports = DB::table(DB::raw("({$combinedQuery->toSql()}) as reports"))
+        ->mergeBindings($combinedQuery->getQuery())
+        ->orderByDesc('created_at')
+        ->paginate(10);
+
+    return view('mdrrmo.reports-santafe', compact('reports'));
+}
+
+
+   public function reportsMadridejos()
+{
+    // 🔹 Forwarded Reports for Madridejos
+    $forwarded = ForwardedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'forwarded' as type") // mark type
+    )
+    ->where('location', 'Madridejos')
+    ->where(function ($q) {
+        $q->where('category', 'MDRRMO')
+          ->orWhere('forwarded_to', 'MDRRMO')
+          ->orWhere('status', 'Rerouted to MDRRMO');
+    })
+    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to MDRRMO']);
+
+    // 🔹 Rerouted Reports for Bantayan
+    $rerouted = ReroutedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'rerouted' as type") // mark type
+    )
+    ->where('location', 'Madridejos')
+    ->where('status', 'like', 'Rerouted%');
+
+    // 🔹 Combine both using union
+    $combinedQuery = $forwarded->unionAll($rerouted);
+
+    // 🔹 Wrap in query builder for ordering and pagination
+    $reports = DB::table(DB::raw("({$combinedQuery->toSql()}) as reports"))
+        ->mergeBindings($combinedQuery->getQuery())
+        ->orderByDesc('created_at')
+        ->paginate(10);
+
+    return view('mdrrmo.reports-madridejos', compact('reports'));
+}  // Santa.Fe Forwarded Reports
    
 public function reportsBantayan()
 {
@@ -239,13 +323,12 @@ public function reportsBantayan()
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
-    }
-public function updateStatus(Request $request, ForwardedReport $report)
+    }public function updateStatus(Request $request, ForwardedReport $report)
 {
     try {
         Log::debug('updateStatus called', [
             'report_id' => $report->id,
-            'payload'   => $request->only(['status','rerouted_to'])
+            'payload'   => $request->only(['status', 'rerouted_to'])
         ]);
 
         $request->validate([
@@ -256,13 +339,11 @@ public function updateStatus(Request $request, ForwardedReport $report)
         $origStatus  = trim((string) $request->input('status'));
         $rerouted_to = $request->input('rerouted_to');
 
-        // Allowed base statuses
+        // Allowed statuses
         $validStatuses = ['Pending', 'Forwarded', 'Accepted', 'Ongoing', 'Resolved', 'Rejected', 'Rerouted'];
 
         // --- Build final status ---
         if (strcasecmp($origStatus, 'Rerouted') === 0 && !empty($rerouted_to)) {
-            $status = 'Rerouted to ' . $rerouted_to;
-        } elseif (strcasecmp($origStatus, 'Forwarded') === 0 && !empty($rerouted_to)) {
             $status = 'Rerouted to ' . $rerouted_to;
         } elseif (Str::startsWith($origStatus, 'Rerouted to')) {
             $status = $origStatus;
@@ -271,15 +352,7 @@ public function updateStatus(Request $request, ForwardedReport $report)
         }
 
         // --- Validate final status ---
-        if (
-            ! in_array($status, $validStatuses, true) &&
-            ! Str::startsWith($status, 'Rerouted to')
-        ) {
-            Log::warning('updateStatus invalid status', [
-                'orig'  => $origStatus,
-                'final' => $status
-            ]);
-
+        if (!in_array($status, $validStatuses, true) && !Str::startsWith($status, 'Rerouted to')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid status provided.',
@@ -289,42 +362,34 @@ public function updateStatus(Request $request, ForwardedReport $report)
         // --- Update forwarded_reports record ---
         $report->status = $status;
 
+        // handle rerouted_to / forwarded_to column properly
         if (!empty($rerouted_to)) {
             if (Schema::hasColumn($report->getTable(), 'rerouted_to')) {
                 $report->rerouted_to = $rerouted_to;
-            } elseif (Schema::hasColumn($report->getTable(), 'forwarded_to')) {
-                $report->forwarded_to = $rerouted_to;
             } else {
-                $report->setAttribute('rerouted_to', $rerouted_to);
+                $report->forwarded_to = $rerouted_to;
             }
         }
 
         $report->save();
 
-        // --- Log reroute in rerouted_reports and hide original report ---
+        // --- If rerouted, create a new rerouted_reports record ---
         if (Str::startsWith($status, 'Rerouted to')) {
             $rr = new ReroutedReport();
-            $rr->report_id   = $report->id;
-            $rr->category    = $report->category ?? null;
-            $rr->title       = $report->title ?? null;
-            $rr->description = $report->description ?? null;
-            $rr->photo       = $report->photo ?? null;
-            $rr->status      = $status;
-
-            $rrTable = $rr->getTable();
-            if (Schema::hasColumn($rrTable, 'rerouted_to')) {
-                $rr->rerouted_to = $rerouted_to;
-            } elseif (Schema::hasColumn($rrTable, 'forwarded_to')) {
-                $rr->forwarded_to = $rerouted_to;
-            } else {
-                $rr->setAttribute('rerouted_to', $rerouted_to);
-            }
-
-            $rr->location = $report->location ?? null;
-            $rr->user_id  = $report->user_id ?? null;
+            $rr->report_id   = $report->report_id; // 🔹 Link to original citizen report, not the forwarded ID
+            $rr->category    = $report->category;
+            $rr->title       = $report->title;
+            $rr->description = $report->description;
+            $rr->photo       = $report->photo;
+            $rr->status      = 'Rerouted'; // keep clean status text
+            $rr->forwarded_to = $rerouted_to;
+            $rr->rerouted_to = $rerouted_to;
+            $rr->location    = $report->location;
+            $rr->user_id     = $report->user_id;
+            $rr->dismissed   = 0;
             $rr->save();
 
-            // ✅ Hide original forwarded report so it won't appear again
+            // ✅ Hide the old forwarded report
             $report->status = 'Rerouted away';
             $report->save();
         }
@@ -350,6 +415,7 @@ public function updateStatus(Request $request, ForwardedReport $report)
         ], 500);
     }
 }
+
 
 
 public function santafeAnnouncements()

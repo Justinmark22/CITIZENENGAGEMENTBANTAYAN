@@ -22,7 +22,7 @@
 
     <div class="flex items-center justify-between mb-10">
       <div class="flex items-center gap-3">
-        <img src="{{ asset('/images/mad.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
+        <img src="{{ asset('images/bantayanlogo.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
         <span class="text-lg md:text-2xl font-extrabold tracking-wide">MDRRMO BANTAYAN</span>
       </div>
       <button class="md:hidden text-2xl font-bold text-gray-600 hover:text-red-600" @click="mobileMenu=false">✕</button>
@@ -79,7 +79,7 @@
 
         <div class="flex items-center gap-2">
           <span class="text-sm text-gray-600">Admin</span>
-          <img src="/images/banmdrrmo.png" class="h-8 w-8 rounded-full border" alt="User Avatar">
+          <img src="/images/bantayanlogo.png" class="h-8 w-8 rounded-full border" alt="User Avatar">
         </div>
       </div>
     </header>

@@ -456,7 +456,7 @@
           <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'Water Management')">WATERMANAGEMENT</button>
         </li>
         <li>
-          <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'Fire Department')">Fire Department</button>
+          <button type="button" class="dropdown-item" data-user-id="" onclick="forwardReport(document.getElementById('reportModal').dataset.currentReportId, this, 'Fire Management')">Fire Department</button>
         </li>
       </ul>
     </div>

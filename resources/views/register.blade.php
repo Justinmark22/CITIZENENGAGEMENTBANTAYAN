@@ -111,15 +111,38 @@
         </form>
       </div>
 
-      <!-- Right Info Section -->
-      <div class="hidden md:flex flex-col items-center justify-center bg-gray-900 p-8 text-center">
-        <img src="{{ asset('images/citizen.png') }}" alt="Logo"
-          class="w-32 h-32 rounded-full mb-4 border border-gray-700 shadow-lg">
-        <h3 class="text-2xl font-bold mb-2">Welcome to Bantayan 911</h3>
-        <p class="text-gray-400 text-sm max-w-xs">
-          Join our platform to stay updated, report emergencies, and help make Bantayan safer together.
-        </p>
-      </div>
+   <!-- Right Info Section -->
+<div class="hidden md:flex flex-col items-center justify-center bg-gray-900 p-8 text-center animate__animated animate__fadeInRight">
+  <img src="{{ asset('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png') }}" alt="Logo"
+    class="w-32 h-32 rounded-full mb-4 border border-gray-700 shadow-lg animate__animated animate__fadeIn animate__delay-1s">
+  
+  <h3 class="text-2xl font-bold mb-2 text-white animate__animated animate__fadeInDown animate__delay-1s">
+    Welcome to Bantayan 911
+  </h3>
+  
+  <p id="typing-info" class="text-gray-400 text-sm max-w-xs mt-2"></p>
+</div>
+
+<!-- Typing Effect Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const text = "Join our platform to stay updated and report emergencies in real time. Access vital public services and receive alerts straight from your local responders. Bantayan 911 empowers every citizen to take part in building a safer community. Share information, connect with others, and make your voice heard in times of need. Together, we can create a stronger, smarter, and more resilient Bantayan.";
+
+  const typingElement = document.getElementById("typing-info");
+  let index = 0;
+
+  function type() {
+    if (index < text.length) {
+      typingElement.textContent += text.charAt(index);
+      index++;
+      setTimeout(type, 20); 
+    }
+  }
+  setTimeout(type, 1000);
+});
+</script>
+
+
     </div>
   </div>
 

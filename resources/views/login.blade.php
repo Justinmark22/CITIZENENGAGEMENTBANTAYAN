@@ -32,15 +32,38 @@
 
   <div class="w-full max-w-4xl bg-gray-800 rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
 
-    <!-- Logo & Description -->
-    <div class="flex flex-col justify-center items-center p-8 lg:p-12 text-center lg:text-left animate-fadeInUp">
-      <img src="{{ asset('images/citizen.png') }}" alt="Citizen Logo"
-           class="w-24 h-24 rounded-full shadow-lg mb-4 lg:mb-6">
-      <h1 class="text-3xl font-bold text-white mb-2">Bantayan 911</h1>
-      <p class="text-gray-300 text-sm lg:text-base">
-        A platform designed to strengthen community interaction and empower citizens through inclusive digital services.
-      </p>
-    </div>
+   <!-- Logo & Description -->
+<div class="flex flex-col justify-center items-center p-8 lg:p-12 text-center lg:text-left animate__animated animate__fadeInUp">
+  <img src="{{ asset('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png') }}" alt="Citizen Logo"
+       class="w-24 h-24 rounded-full shadow-lg mb-4 lg:mb-6 animate__animated animate__fadeIn animate__delay-1s">
+  
+  <h1 class="text-3xl font-bold text-white mb-2 animate__animated animate__fadeInDown animate__delay-1s">
+    Bantayan 911
+  </h1>
+  
+  <p id="typing-text" class="text-gray-300 text-sm lg:text-base mt-2"></p>
+</div>
+
+<!-- Typing Effect Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const text = "A platform designed to strengthen community interaction and empower citizens through inclusive digital services.";
+  const typingElement = document.getElementById("typing-text");
+  let index = 0;
+
+  function type() {
+    if (index < text.length) {
+      typingElement.textContent += text.charAt(index);
+      index++;
+      setTimeout(type, 40); // typing speed (milliseconds)
+    }
+  }
+
+  // small delay before typing starts
+  setTimeout(type, 800);
+});
+</script>
+
 
     <!-- Login Form -->
     <div class="p-8 lg:p-12 animate-fadeInUp">

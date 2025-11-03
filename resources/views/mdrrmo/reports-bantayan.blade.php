@@ -63,7 +63,7 @@
   <div class="flex items-center justify-between mb-10">
   <div class="flex items-center justify-between mb-10">
   <!-- Larger Circular Logo -->
-<img src="{{ asset('/images/mad.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
+<img src="{{ asset('images/bantayanlogo.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
     <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO BANTAYAN</span>
   
   <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
@@ -231,8 +231,8 @@
         <div id="dropdown-{{ $report->id }}" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-10">
             <button onclick="rerouteReport('{{ $report->id }}','Water Management')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Water Management</button>
             <button onclick="rerouteReport('{{ $report->id }}','Waste Management')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Waste Management</button>
-            <button onclick="rerouteReport('{{ $report->id }}','Mayor\'s Office')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Mayor's Office</button>
-            <button onclick="rerouteReport('{{ $report->id }}','Engineering Dept')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Engineering Dept</button>
+            <button onclick="rerouteReport('{{ $report->id }}','MDRRMO')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">MDRRMO</button>
+            <button onclick="rerouteReport('{{ $report->id }}','Fire Management')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Fire Department</button>
         </div>
     </div>
 </div>

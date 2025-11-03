@@ -206,10 +206,10 @@
             class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Water Management</button>
         <button onclick="rerouteReport('{{ $report->id }}','Waste Management')" 
             class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Waste Management</button>
-        <button onclick="rerouteReport('{{ $report->id }}','Mayor\'s Office')" 
-            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Mayor's Office</button>
-        <button onclick="rerouteReport('{{ $report->id }}','Engineering Dept')" 
-            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Engineering Dept</button>
+        <button onclick="rerouteReport('{{ $report->id }}','MDRRMO')" 
+            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">MDRRMO</button>
+        <button onclick="rerouteReport('{{ $report->id }}','Fire Management')" 
+            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Fire Department</button>
     </div>
   </div>
 </div>

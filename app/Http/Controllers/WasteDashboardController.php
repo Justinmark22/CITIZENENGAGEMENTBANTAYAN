@@ -2,128 +2,243 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use App\Models\Report;
 use App\Models\ForwardedReport;
 use App\Models\ReroutedReport;
-use App\Models\PostAnnounce;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class WasteDashboardController extends Controller
 {
-    /**
-     * 🔹 Santa Fe Waste Dashboard
+    public function __construct()
+    {
+        // ✅ Comment this line if you want the dashboard public
+        $this->middleware('auth');
+    }
+
+    /* ============================
+     * DASHBOARD SUMMARIES
+     * ============================
      */
+
     public function santafe()
     {
-        return $this->dashboardData('Santa Fe', 'dashboard.waste-santafe');
-    }
+        $totalReports = Report::count();
+        $pendingReportsCount = Report::where('status', 'Pending')->count();
+        $resolvedReportsCount = Report::where('status', 'Resolved')->count();
+        $reports = Report::latest()->take(10)->get();
 
-    /**
-     * 🔹 Bantayan Waste Dashboard
-     */
-    public function bantayan()
-    {
-        return $this->dashboardData('Bantayan', 'dashboard.waste-bantayan');
-    }
-
-    /**
-     * 🔹 Madridejos Waste Dashboard
-     */
-    public function madridejos()
-    {
-        return $this->dashboardData('Madridejos', 'dashboard.waste-madridejos');
-    }
-
-    /**
-     * ✅ Shared logic for dashboard counts
-     */
-    private function dashboardData($location, $view)
-    {
-        $totalUsers = User::where('location', $location)->count();
-
-        $query = ForwardedReport::where('location', $location)
-            ->where(function ($q) {
-                $q->where('category', 'Waste Management')
-                  ->orWhere('forwarded_to', 'Waste Management')
-                  ->orWhere('status', 'Rerouted to Waste Management');
-            });
-
-        $totalReports = $query->count();
-
-        $pendingReportsCount  = (clone $query)->where('status', 'Pending')->count();
-        $acceptedReportsCount = (clone $query)->where('status', 'Accepted')->count();
-        $ongoingReportsCount  = (clone $query)->where('status', 'Ongoing')->count();
-        $resolvedReportsCount = (clone $query)->where('status', 'Resolved')->count();
-
-        $resolvedReports = (clone $query)->where('status', 'Resolved')->latest()->get();
-        $reports = (clone $query)->latest()->take(5)->get();
-
-        return view($view, compact(
-            'totalUsers',
+        return view('dashboard.waste-santafe', compact(
             'totalReports',
             'pendingReportsCount',
-            'acceptedReportsCount',
-            'ongoingReportsCount',
             'resolvedReportsCount',
-            'resolvedReports',
             'reports'
         ));
     }
 
-    /**
-     * 🔹 Forwarded & Rerouted Reports List
+    public function bantayan()
+    {
+        $totalReports = Report::count();
+        $pendingReportsCount = Report::where('status', 'Pending')->count();
+        $resolvedReportsCount = Report::where('status', 'Resolved')->count();
+        $reports = Report::latest()->take(10)->get();
+
+        return view('dashboard.waste-bantayan', compact(
+            'totalReports',
+            'pendingReportsCount',
+            'resolvedReportsCount',
+            'reports'
+        ));
+    }
+
+    public function madridejos()
+    {
+        $totalReports = Report::count();
+        $pendingReportsCount = Report::where('status', 'Pending')->count();
+        $resolvedReportsCount = Report::where('status', 'Resolved')->count();
+        $reports = Report::latest()->take(10)->get();
+
+        return view('dashboard.waste-madridejos', compact(
+            'totalReports',
+            'pendingReportsCount',
+            'resolvedReportsCount',
+            'reports'
+        ));
+    }
+
+    /* ============================
+     * REPORTS PER LOCATION
+     * ============================
      */
-    public function reportsSantafe()
-    {
-        $reports = ForwardedReport::where('location', 'Santa Fe')
-            ->where(function ($q) {
-                $q->where('category', 'Waste Management')
-                  ->orWhere('forwarded_to', 'Waste Management')
-                  ->orWhere('status', 'Rerouted to Waste Management');
-            })
-            ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Waste Management'])
-            ->latest()
-            ->paginate(10);
 
-        return view('waste.reports-santafe', compact('reports'));
-    }
+   
+public function reportsBantayan()
+{
+    // 🔹 Forwarded Reports for Bantayan
+    $forwarded = ForwardedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'forwarded' as type") // mark type
+    )
+    ->where('location', 'Bantayan')
+    ->where(function ($q) {
+        $q->where('category', 'Waste Management')
+          ->orWhere('forwarded_to', 'Waste Management')
+          ->orWhere('status', 'Rerouted to Waste Management');
+    })
+    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Waste Management']);
 
-    public function reportsBantayan()
-    {
-        $reports = ForwardedReport::where('location', 'Bantayan')
-            ->where(function ($q) {
-                $q->where('category', 'Waste Management')
-                  ->orWhere('forwarded_to', 'Waste Management')
-                  ->orWhere('status', 'Rerouted to Waste Management');
-            })
-            ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Waste Management'])
-            ->latest()
-            ->paginate(10);
+    // 🔹 Rerouted Reports for Bantayan
+    $rerouted = ReroutedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'rerouted' as type") // mark type
+    )
+    ->where('location', 'Bantayan')
+    ->where('status', 'like', 'Rerouted%');
 
-        return view('waste.reports-bantayan', compact('reports'));
-    }
+    // 🔹 Combine both using union
+    $combinedQuery = $forwarded->unionAll($rerouted);
 
-    public function reportsMadridejos()
-    {
-        $reports = ForwardedReport::where('location', 'Madridejos')
-            ->where(function ($q) {
-                $q->where('category', 'Waste Management')
-                  ->orWhere('forwarded_to', 'Waste Management')
-                  ->orWhere('status', 'Rerouted to Waste Management');
-            })
-            ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Waste Management'])
-            ->latest()
-            ->paginate(10);
+    // 🔹 Wrap in query builder for ordering and pagination
+    $reports = DB::table(DB::raw("({$combinedQuery->toSql()}) as reports"))
+        ->mergeBindings($combinedQuery->getQuery())
+        ->orderByDesc('created_at')
+        ->paginate(10);
 
-        return view('waste.reports-madridejos', compact('reports'));
-    }
+    return view('waste.reports-bantayan', compact('reports'));
+}
+     
+public function reportsSantafe()
+{
+    // 🔹 Forwarded Reports for Santa Fe
+    $forwarded = ForwardedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'forwarded' as type") // mark type
+    )
+    ->where('location', 'Santa.Fe')
+    ->where(function ($q) {
+        $q->where('category', 'Waste Management')
+          ->orWhere('forwarded_to', 'Waste Management')
+          ->orWhere('status', 'Rerouted to Waste Management');
+    })
+    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Waste Management']);
 
-    /**
-     * 🔹 Update Report Status (with reroute handling)
+    // 🔹 Rerouted Reports for Santa Fe
+    $rerouted = ReroutedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'rerouted' as type") // mark type
+    )
+    ->where('location', 'Santa.Fe')
+    ->where('status', 'like', 'Rerouted%');
+
+    // 🔹 Combine both using union
+    $combinedQuery = $forwarded->unionAll($rerouted);
+
+    // 🔹 Wrap in query builder for ordering and pagination
+    $reports = DB::table(DB::raw("({$combinedQuery->toSql()}) as reports"))
+        ->mergeBindings($combinedQuery->getQuery())
+        ->orderByDesc('created_at')
+        ->paginate(10);
+
+    return view('waste.reports-santafe', compact('reports'));
+}
+
+    
+public function reportsMadridejos()
+{
+    // 🔹 Forwarded Reports for Madridejos
+    $forwarded = ForwardedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'forwarded' as type") // mark type
+    )
+    ->where('location', 'Madridejos')
+    ->where(function ($q) {
+        $q->where('category', 'Waste Management')
+          ->orWhere('forwarded_to', 'Waste Management')
+          ->orWhere('status', 'Rerouted to Waste Management');
+    })
+    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Waste Management']);
+
+    // 🔹 Rerouted Reports for Madridejos
+    $rerouted = ReroutedReport::select(
+        'id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'location',
+        'photo',
+        'user_id',
+        'created_at',
+        'updated_at',
+        DB::raw("'rerouted' as type") // mark type
+    )
+    ->where('location', 'Santa.Fe')
+    ->where('status', 'like', 'Rerouted%');
+
+    // 🔹 Combine both using union
+    $combinedQuery = $forwarded->unionAll($rerouted);
+
+    // 🔹 Wrap in query builder for ordering and pagination
+    $reports = DB::table(DB::raw("({$combinedQuery->toSql()}) as reports"))
+        ->mergeBindings($combinedQuery->getQuery())
+        ->orderByDesc('created_at')
+        ->paginate(10);
+
+    return view('waste.reports-madridejos', compact('reports'));
+}
+
+    /* ============================
+     * UPDATE STATUS (Accept, Ongoing, Resolved, Reroute)
+     * ============================
      */
-     public function updateStatus(Request $request, $id)
+    public function updateStatus(Request $request, $id)
     {
         try {
             $request->validate([
@@ -137,11 +252,11 @@ class WasteDashboardController extends Controller
             if (!in_array($status, $validStatuses) && !str_starts_with($status, 'Rerouted to')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid status provided.'
+                    'message' => 'Invalid status provided.',
                 ], 400);
             }
 
-            // 🔹 Look in Forwarded first
+            // 🔹 Try to find report in ForwardedReport first
             $report = ForwardedReport::find($id);
             $isReroutedModel = false;
 
@@ -153,14 +268,16 @@ class WasteDashboardController extends Controller
             if (!$report) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Report not found.'
+                    'message' => 'Report not found.',
                 ], 404);
             }
 
-            $oldStatus = $report->status; // ✅ Capture old status before update
+            $oldStatus = $report->status;
 
-            // 🔹 Update status
+            // 🔹 Update main status
             $report->status = $status;
+
+            // 🔹 Handle rerouting
             if ($request->filled('rerouted_to')) {
                 if (Schema::hasColumn($report->getTable(), 'rerouted_to')) {
                     $report->rerouted_to = $request->input('rerouted_to');
@@ -168,20 +285,21 @@ class WasteDashboardController extends Controller
                     $report->forwarded_to = $request->input('rerouted_to');
                 }
             }
+
             $report->save();
 
-            // 🔹 If rerouted, create new entry in ReroutedReports
+            // 🔹 If rerouted, duplicate in ReroutedReports
             if (str_starts_with($status, 'Rerouted to') && !$isReroutedModel) {
                 ReroutedReport::create([
                     'report_id'    => $report->id,
-                    'category'     => $report->category ?? null,
-                    'title'        => $report->title ?? null,
-                    'description'  => $report->description ?? null,
-                    'photo'        => $report->photo ?? null,
+                    'category'     => $report->category,
+                    'title'        => $report->title,
+                    'description'  => $report->description,
+                    'photo'        => $report->photo,
                     'status'       => $status,
                     'forwarded_to' => $request->input('rerouted_to'),
-                    'location'     => $report->location ?? null,
-                    'user_id'      => $report->user_id ?? null,
+                    'location'     => $report->location,
+                    'user_id'      => $report->user_id,
                 ]);
             }
 
@@ -189,50 +307,179 @@ class WasteDashboardController extends Controller
                 'success'     => true,
                 'message'     => 'Report status updated successfully.',
                 'status'      => $report->status,
-                'old_status'  => $oldStatus, // ✅ Send old status
+                'old_status'  => $oldStatus,
                 'rerouted_to' => $request->input('rerouted_to') ?? null,
             ], 200);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => collect($e->errors())->flatten()->join(' ')
+                'message' => collect($e->errors())->flatten()->join(' '),
             ], 422);
         } catch (\Throwable $e) {
             Log::error("updateStatus error: {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}");
             return response()->json([
                 'success' => false,
-                'message' => 'Server error while updating status. Check logs.'
+                'message' => 'Server error while updating status. Check logs.',
             ], 500);
         }
+    }public function reroute(Request $request, $id)
+{
+    try {
+        // 🔹 1. Validate input
+        $request->validate([
+            'rerouted_to' => 'required|string|max:255',
+        ]);
+
+        // 🔹 2. Try finding the report in ForwardedReport first
+        $report = ForwardedReport::find($id);
+
+        // If not found, check in ReroutedReport (if already rerouted before)
+        if (!$report) {
+            $report = ReroutedReport::find($id);
+        }
+
+        // 🔹 3. If still not found, return error
+        if (!$report) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Report not found in either ForwardedReport or ReroutedReport.',
+            ], 404);
+        }
+
+        // 🔹 4. Prepare reroute target and status
+        $newOffice = $request->input('rerouted_to');
+        $newStatus = "Rerouted to {$newOffice}";
+
+        // 🔹 5. Update the status and rerouted/forwarded columns
+        $report->status = $newStatus;
+
+        // Update rerouted_to if exists, else forwarded_to
+        if (\Schema::hasColumn($report->getTable(), 'rerouted_to')) {
+            $report->rerouted_to = $newOffice;
+        } elseif (\Schema::hasColumn($report->getTable(), 'forwarded_to')) {
+            $report->forwarded_to = $newOffice;
+        }
+
+        $report->save();
+
+        // 🔹 6. Insert a new rerouted record (linked to the *original* report_id)
+        ReroutedReport::create([
+            'report_id'    => $report->report_id ?? $report->id, // ✅ ensures correct linkage
+            'category'     => $report->category ?? 'Unknown',
+            'title'        => $report->title ?? 'Untitled',
+            'description'  => $report->description ?? '',
+            'photo'        => $report->photo ?? null,
+            'status'       => $newStatus,
+            'forwarded_to' => $newOffice,
+            'rerouted_to'  => $newOffice, // ✅ added to match DB
+            'location'     => $report->location ?? 'Unknown',
+            'user_id'      => $report->user_id ?? null,
+            'dismissed'    => 0,
+        ]);
+
+        // 🔹 7. Return success JSON response
+        return response()->json([
+            'success'     => true,
+            'message'     => 'Report rerouted successfully.',
+            'new_status'  => $newStatus,
+            'rerouted_to' => $newOffice,
+        ], 200);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        // Validation errors
+        return response()->json([
+            'success' => false,
+            'message' => collect($e->errors())->flatten()->join(' '),
+        ], 422);
+    } catch (\Throwable $e) {
+        // 🔥 Log the real error
+        \Log::error("Reroute error: {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}");
+
+        return response()->json([
+            'success' => false,
+            'message' => "Server error while rerouting report. Check storage/logs/laravel.log.",
+        ], 500);
     }
 
+}public function santafeAnnouncement()
+{
+    $announcements = \App\Models\Announcement::where('location', 'Santa.Fe')
+        ->latest()
+        ->get();
 
-    /**
-     * 🔹 Announcements per location
-     */
-    public function santafeAnnouncements()
-    {
-        return $this->announcements('Santa Fe', 'waste.waste-santafe-announcements');
-    }
+    return view('waste.announcement-santafe', compact('announcements'));
+}
+/* ============================
+ * FETCH RESOLVED REPORTS (PER LOCATION)
+ * ============================ */
+public function getResolvedReportsSantafe()
+{
+    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['Santa.Fe'])
+        ->whereRaw('LOWER(status) = ?', ['resolved'])
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
-    public function bantayanAnnouncements()
-    {
-        return $this->announcements('Bantayan', 'waste.waste-bantayan-announcements');
-    }
+    $reports->transform(function ($report) {
+        $report->photo = $report->photo
+            ? asset('storage/' . ltrim($report->photo, '/'))
+            : null;
+        return $report;
+    });
 
-    public function madridejosAnnouncements()
-    {
-        return $this->announcements('Madridejos', 'waste.waste-madridejos-announcements');
-    }
+    return response()->json($reports);
+}
 
-    private function announcements($location, $view)
-    {
-        $announcements = PostAnnounce::where('location', $location)
-            ->where('category', 'Waste Management')
-            ->latest()
-            ->get();
+public function getResolvedReportsBantayan()
+{
+    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['Bantayan'])
+        ->whereRaw('LOWER(status) = ?', ['resolved'])
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
-        return view($view, compact('announcements'));
-    }
+    $reports->transform(function ($report) {
+        $report->photo = $report->photo
+            ? asset('storage/' . ltrim($report->photo, '/'))
+            : null;
+        return $report;
+    });
+
+    return response()->json($reports);
+}
+
+public function getResolvedReportsMadridejos()
+{
+    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['Madridejos'])
+        ->whereRaw('LOWER(status) = ?', ['resolved'])
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
+
+    $reports->transform(function ($report) {
+        $report->photo = $report->photo
+            ? asset('storage/' . ltrim($report->photo, '/'))
+            : null;
+        return $report;
+    });
+
+    return response()->json($reports);
+}
+
+
+public function bantayanAnnouncement()
+{
+    $announcements = \App\Models\Announcement::where('location', 'Bantayan')
+        ->latest()
+        ->get();
+
+    return view('waste.announcement-bantayan', compact('announcements'));
+}
+
+public function madridejosAnnouncement()
+{
+    $announcements = \App\Models\Announcement::where('location', 'Madridejos')
+        ->latest()
+        ->get();
+
+    return view('waste.announcement-madridejos', compact('announcements'));
+}
 }

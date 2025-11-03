@@ -255,7 +255,7 @@
           "Water Management": "Water Management",
           "Waste Management": "Waste Management",
           "MDRRMO": "MDRRMO",
-          "Fire Department": "Fire Department",
+          "Fire Management": "Fire Department",
         },
         inputPlaceholder: "Select department to reroute to",
         showCancelButton: true,

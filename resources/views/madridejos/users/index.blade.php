@@ -221,7 +221,8 @@
             <td>{{ $user->name }}</td>
             <td>{{ $user->email }}</td>
           
-            <td>{{ $user->created_at->format('M d, Y') }}</td>
+            <td>{{ $user->created_at ? $user->created_at->format('M d, Y') : 'N/A' }}</td>
+
             <td class="text-end">
               <a href="{{ route('madridejos.users.edit', $user->id) }}"
                  class="btn btn-sm btn-edit btn-animated me-2"

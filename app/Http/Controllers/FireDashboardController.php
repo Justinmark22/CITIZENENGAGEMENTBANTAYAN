@@ -10,7 +10,7 @@ use App\Models\ForwardedReport;
 use App\Models\ReroutedReport;
 use Illuminate\Support\Facades\DB;
 
-class WaterDashboardController extends Controller
+class FireDashboardController extends Controller
 {
     public function __construct()
     {
@@ -30,7 +30,7 @@ class WaterDashboardController extends Controller
         $resolvedReportsCount = Report::where('status', 'Resolved')->count();
         $reports = Report::latest()->take(10)->get();
 
-        return view('dashboard.water-santafe', compact(
+        return view('dashboard.fire-santafe', compact(
             'totalReports',
             'pendingReportsCount',
             'resolvedReportsCount',
@@ -45,7 +45,7 @@ class WaterDashboardController extends Controller
         $resolvedReportsCount = Report::where('status', 'Resolved')->count();
         $reports = Report::latest()->take(10)->get();
 
-        return view('dashboard.water-bantayan', compact(
+        return view('dashboard.fire-bantayan', compact(
             'totalReports',
             'pendingReportsCount',
             'resolvedReportsCount',
@@ -60,7 +60,7 @@ class WaterDashboardController extends Controller
         $resolvedReportsCount = Report::where('status', 'Resolved')->count();
         $reports = Report::latest()->take(10)->get();
 
-        return view('dashboard.water-madridejos', compact(
+        return view('dashboard.fire-madridejos', compact(
             'totalReports',
             'pendingReportsCount',
             'resolvedReportsCount',
@@ -92,11 +92,11 @@ public function reportsBantayan()
     )
     ->where('location', 'Bantayan')
     ->where(function ($q) {
-        $q->where('category', 'Water Management')
-          ->orWhere('forwarded_to', 'Water Management')
-          ->orWhere('status', 'Rerouted to Water Management');
+        $q->where('category', 'Fire Management')
+          ->orWhere('forwarded_to', 'Fire Management')
+          ->orWhere('status', 'Rerouted to Fire Management');
     })
-    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Water Management']);
+    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Fire Management']);
 
     // 🔹 Rerouted Reports for Bantayan
     $rerouted = ReroutedReport::select(
@@ -124,7 +124,7 @@ public function reportsBantayan()
         ->orderByDesc('created_at')
         ->paginate(10);
 
-    return view('water.reports-bantayan', compact('reports'));
+    return view('fire.reports-bantayan', compact('reports'));
 }
      
 public function reportsSantafe()
@@ -145,11 +145,11 @@ public function reportsSantafe()
     )
     ->where('location', 'Santa.Fe')
     ->where(function ($q) {
-        $q->where('category', 'Water Management')
-          ->orWhere('forwarded_to', 'Water Management')
-          ->orWhere('status', 'Rerouted to Water Management');
+        $q->where('category', 'Fire Management')
+          ->orWhere('forwarded_to', 'Fire Management')
+          ->orWhere('status', 'Rerouted to Fire Management');
     })
-    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Water Management']);
+    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Fire Management']);
 
     // 🔹 Rerouted Reports for Santa Fe
     $rerouted = ReroutedReport::select(
@@ -177,7 +177,7 @@ public function reportsSantafe()
         ->orderByDesc('created_at')
         ->paginate(10);
 
-    return view('water.reports-santafe', compact('reports'));
+    return view('fire.reports-santafe', compact('reports'));
 }
 
     
@@ -199,11 +199,11 @@ public function reportsMadridejos()
     )
     ->where('location', 'Madridejos')
     ->where(function ($q) {
-        $q->where('category', 'Water Management')
-          ->orWhere('forwarded_to', 'Water Management')
-          ->orWhere('status', 'Rerouted to Water Management');
+        $q->where('category', 'Fire Management')
+          ->orWhere('forwarded_to', 'Fire Management')
+          ->orWhere('status', 'Rerouted to Fire Management');
     })
-    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Water Management']);
+    ->whereIn('status', ['Forwarded', 'Pending', 'Ongoing', 'Rerouted to Fire Management']);
 
     // 🔹 Rerouted Reports for Madridejos
     $rerouted = ReroutedReport::select(
@@ -219,7 +219,7 @@ public function reportsMadridejos()
         'updated_at',
         DB::raw("'rerouted' as type") // mark type
     )
-    ->where('location', 'Santa.Fe')
+    ->where('location', 'Madridejos')
     ->where('status', 'like', 'Rerouted%');
 
     // 🔹 Combine both using union
@@ -231,7 +231,7 @@ public function reportsMadridejos()
         ->orderByDesc('created_at')
         ->paginate(10);
 
-    return view('water.reports-madridejos', compact('reports'));
+    return view('fire.reports-madridejos', compact('reports'));
 }
 
     /* ============================
@@ -402,13 +402,13 @@ public function reportsMadridejos()
         ], 500);
     }
 
-}public function santafeAnnouncements()
+}public function santafeAnnouncement()
 {
     $announcements = \App\Models\Announcement::where('location', 'Santa.Fe')
         ->latest()
         ->get();
 
-    return view('water.announcement-santafe', compact('announcements'));
+    return view('fire.announcement-santafe', compact('announcements'));
 }
 /* ============================
  * FETCH RESOLVED REPORTS (PER LOCATION)
@@ -465,21 +465,21 @@ public function getResolvedReportsMadridejos()
 }
 
 
-public function bantayanAnnouncements()
+public function bantayanAnnouncement()
 {
     $announcements = \App\Models\Announcement::where('location', 'Bantayan')
         ->latest()
         ->get();
 
-    return view('water.announcement-bantayan', compact('announcements'));
+    return view('fire.announcement-bantayan', compact('announcements'));
 }
 
-public function madridejosAnnouncements()
+public function madridejosAnnouncement()
 {
     $announcements = \App\Models\Announcement::where('location', 'Madridejos')
         ->latest()
         ->get();
 
-    return view('water.announcement-madridejos', compact('announcements'));
+    return view('fire.announcement-madridejos', compact('announcements'));
 }
 }

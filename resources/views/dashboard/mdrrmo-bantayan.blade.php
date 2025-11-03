@@ -51,7 +51,7 @@ tailwind.config = {
 <aside class="fixed md:static inset-y-0 left-0 w-64 bg-gradient-to-b from-blue-200 to-blue-100 text-gray-800 p-6 transform transition-transform duration-300 z-40 shadow-lg"
        :class="mobileMenu ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
  <div class="flex items-center justify-between mb-10">
-  <img src="{{ asset('images/mad.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
+  <img src="{{ asset('images/bantayanlogo.png') }}" alt="MDRRMO Logo" class="h-16 w-16 rounded-full object-cover">
   <span class="text-2xl font-extrabold tracking-wide drop-shadow-sm">MDRRMO BANTAYAN</span>
   <button class="md:hidden text-2xl font-bold" @click="mobileMenu=false">✕</button>
  </div>

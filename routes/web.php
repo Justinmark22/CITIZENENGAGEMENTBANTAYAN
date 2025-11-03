@@ -56,6 +56,8 @@ use App\Mail\WelcomeNewUserEmail;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\OtpController;
+use App\Http\Controllers\FireDashboardController;
+
 
 
 
@@ -145,7 +147,7 @@ Route::post('/login', function (Request $request) {
 
     // ✅ reCAPTCHA v3 verification
     $recaptchaResponse = $request->input('g-recaptcha-response');
-    $secretKey = '6LfSlPorAAAAABfz0johQXHxc_5oa-1mF7Uj01SY'; // replace with your key
+    $secretKey = '6LfBN94rAAAAAAo8EQqJV6hayWp52XZLGJb8vDcd'; // replace with your key
 
     if (!$recaptchaResponse) {
         return back()->withErrors(['captcha' => 'Please complete the reCAPTCHA verification.'])
@@ -224,6 +226,12 @@ Route::post('/login', function (Request $request) {
                     'madridejos' => 'dashboard.water-madridejos',
                     default => 'dashboard',
                 },
+                'fire' => match (strtolower($user->location)) {
+                    'santa.fe' => 'dashboard.fire-santafe',
+                    'bantayan' => 'dashboard.fire-bantayan',
+                    'madridejos' => 'dashboard.fire-madridejos',
+                    default => 'dashboard',
+                },
                 default => match (strtolower($user->location)) {
                     'admin' => 'dashboard.admin',
                     default => 'dashboard',
@@ -257,45 +265,6 @@ Route::post('/login', function (Request $request) {
         'email' => 'Invalid email or password.',
     ])->onlyInput('email');
 })->name('login.submit');
-
-
-// ✅ OTP VERIFICATION ROUTES
-Route::get('/verify-otp', fn() => view('auth.verify-otp'))->name('otp.verify');
-
-Route::post('/verify-otp', function (Request $request) {
-    $request->validate(['otp' => 'required|numeric']);
-
-    $sessionOtp = session('otp');
-    $expires = session('otp_expires');
-    $userId = session('otp_user_id');
-
-    if (!$sessionOtp || now()->greaterThan($expires)) {
-        Auth::logout();
-        session()->forget(['otp', 'otp_expires', 'otp_user_id']);
-        return redirect()->route('login')->withErrors(['otp' => 'OTP expired. Please login again.']);
-    }
-
-    if ($request->otp != $sessionOtp) {
-        return back()->withErrors(['otp' => 'Invalid OTP code.']);
-    }
-
-    $user = \App\Models\User::find($userId);
-
-    if (!$user) {
-        return redirect()->route('login')->withErrors(['email' => 'User not found.']);
-    }
-
-    Auth::login($user);
-    session()->forget(['otp', 'otp_expires', 'otp_user_id']);
-
-    // ✅ Redirect based on location (for citizens)
-    return match ($user->location) {
-        'Santa.Fe'   => redirect()->route('dashboard.santafe'),
-        'Bantayan'   => redirect()->route('dashboard.bantayan'),
-        'Madridejos' => redirect()->route('dashboard.madridejos'),
-        default      => redirect('/dashboard'),
-    };
-})->name('otp.verify.submit');
 
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
@@ -948,3 +917,37 @@ Route::get('/water/announcement-bantayan', [WaterDashboardController::class, 'ba
     Route::get('/resolved-reports-santafe', [WaterDashboardController::class, 'getResolvedReportsSantafe']);
 Route::get('/resolved-reports-bantayan', [WaterDashboardController::class, 'getResolvedReportsBantayan']);
 Route::get('/resolved-reports-madridejos', [WaterDashboardController::class, 'getResolvedReportsMadridejos']);
+//fire dpartment
+Route::get('/dashboard/fire-santafe', [FireDashboardController::class, 'santafe'])
+    ->name('dashboard.fire-santafe');
+Route::get('/dashboard/fire-bantayan', [FireDashboardController::class, 'bantayan'])
+    ->name('dashboard.fire-bantayan');
+Route::get('/dashboard/fire-madridejos', [FireDashboardController::class, 'madridejos'])
+    ->name('dashboard.fire-madridejos');
+    // waste announcements
+    Route::get('/waste/announcement-bantayan', [WasteDashboardController::class, 'bantayanAnnouncement'])
+    ->name('waste.announcement-bantayan');
+    Route::get('/waste/announcement-santafe', [WasteDashboardController::class, 'santafeAnnouncement'])
+    ->name('waste.announcement-santafe');
+    Route::get('/waste/announcement-madridejos', [WasteDashboardController::class, 'madridejosAnnouncement'])
+    ->name('waste.announcement-madridejos');
+     Route::get('/resolved-reports-santafe', [WasteDashboardController::class, 'getResolvedReportsSantafe']);
+Route::get('/resolved-reports-Bantayan', [WasteDashboardController::class, 'getResolvedReportsBantayan']);
+Route::get('/resolved-reports-madridejos', [WasteDashboardController::class, 'getResolvedReportsMadridejos']);
+//fire department reports
+Route::get('/fire/reports-bantayan', [FireDashboardController::class, 'reportsBantayan'])
+    ->name('fire.reports-bantayan');
+Route::get('/fire/reports-santafe', [FireDashboardController::class, 'reportsSantafe'])
+    ->name('fire.reports-santafe');
+Route::get('/fire/reports-madridejos', [FireDashboardController::class, 'reportsMadridejos'])
+    ->name('fire.reports-madridejos');
+//fire announcements
+ Route::get('/fire/announcement-bantayan', [FireDashboardController::class, 'bantayanAnnouncement'])
+    ->name('fire.announcement-bantayan');
+    Route::get('/fire/announcement-santafe', [FireDashboardController::class, 'santafeAnnouncement'])
+    ->name('fire.announcement-santafe');
+    Route::get('/fire/announcement-madridejos', [FireDashboardController::class, 'madridejosAnnouncement'])
+    ->name('fire.announcement-madridejos');
+     Route::get('/resolved-reports-santafe', [FireDashboardController::class, 'getResolvedReportsSantafe']);
+Route::get('/resolved-reports-bantayan', [FireDashboardController::class, 'getResolvedReportsBantayan']);
+Route::get('/resolved-reports-madridejos', [FireDashboardController::class, 'getResolvedReportsMadridejos']);

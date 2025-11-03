@@ -24,26 +24,29 @@
     }
   </style>
 </head>
-<body class="bg-white text-gray-900">
 
-  <!-- ✅ Navbar -->
-  <nav class="bg-white shadow-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+<!-- ✅ Soft gradient background applied to entire page -->
+<body class="bg-gradient-to-b from-green-50 via-green-100 to-green-200 text-gray-900 font-sans scroll-smooth">
+
+   <!-- Navbar -->
+<nav class="bg-white border-b border-gray-200 shadow sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex justify-between items-center h-20">
+
       <!-- Logo -->
-      <div class="flex items-center gap-3" data-aos="fade-right">
-        <img src="images/citizen.png" alt="Citizen Logo" class="w-12 h-12 rounded-full border-2 border-blue-600 shadow">
-        <span class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-400">
-          Citizen Engagement Bantayan
-        </span>
-      </div>
+      <a href="{{ url('/') }}" class="flex items-center gap-3">
+        <img src="{{ asset('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png') }}" alt="Citizen Logo" class="w-12 h-12 rounded-full shadow-sm">
+        <span class="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">Bantayan 911</span>
+      </a>
 
       <!-- Desktop Menu -->
-      <div class="hidden md:flex space-x-8" data-aos="fade-down">
-        <a href="{{ url('/') }}" class="text-gray-800 hover:text-blue-700">Home</a>
-        <a href="{{ route('about') }}" class="text-gray-800 hover:text-blue-700">About</a>
-        <a href="{{ route('contact') }}" class="text-blue-700 font-semibold border-b-2 border-blue-700">Contact</a>
-        <a href="{{ route('faq') }}" class="text-gray-800 hover:text-blue-700">FAQs</a>
+      <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-800">
+        <a href="{{ url('/') }}" class="hover:text-green-700 transition">Home</a>
+        <a href="{{ route('about') }}" class="hover:text-green-700 transition">About</a>
+        <a href="{{ route('contact') }}" class="hover:text-green-700 transition">Contact</a>
+        <a href="{{ route('faq') }}" class="hover:text-green-700 transition">FAQs</a>
       </div>
+
 
       <!-- Mobile Menu Button -->
       <button id="menuBtn" class="md:hidden text-gray-800 focus:outline-none">
@@ -65,17 +68,18 @@
   </nav>
 
   <!-- ✅ Hero Section -->
-  <section class="relative h-[22rem] flex items-center justify-center bg-cover bg-center" style="background-image: url('/images/community.png');">
-    <div class="absolute inset-0 bg-blue-900 bg-opacity-70"></div>
+  <section class="relative h-[28rem] flex items-center justify-center bg-cover bg-center" 
+    style="background-image: url('{{ asset('images/bantayan.png') }}');">
+    <div class="absolute inset-0 bg-black bg-opacity-70"></div>
     <div class="relative z-10 text-center text-white px-4" data-aos="zoom-in">
-      <img src="images/citizen.png" alt="Citizen Logo" class="w-20 h-20 mx-auto mb-3 rounded-full shadow-lg border-4 border-blue-600">
-      <h1 class="text-3xl md:text-5xl font-bold text-blue-300">CONTACT US</h1>
+      <img src="{{ asset('images/Gemini_Generated_Image_8a7evl8a7evl8a7e.png') }}" alt="911 Logo" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-white">
+      <h1 class="text-3xl md:text-5xl font-bold">CONTACT US</h1>
       <p class="text-lg opacity-90 mt-2">Connecting Citizens, LGUs, and Communities in Bantayan Island</p>
     </div>
   </section>
 
   <!-- ✅ Contact Section -->
-  <section class="py-16 bg-white">
+  <section class="py-16">
     <div class="container mx-auto px-6">
       <div class="mb-12 text-center">
         <h2 class="text-3xl font-extrabold text-gray-800 mb-3">We’d Love to Hear from You</h2>
@@ -91,27 +95,56 @@
         </iframe>
 
         <!-- Contact Form -->
-        <div class="border border-gray-200 p-6 rounded-lg shadow-md bg-gray-50">
+        <div class="border border-gray-200 p-6 rounded-lg shadow-md bg-white bg-opacity-80 backdrop-blur-md">
           <h3 class="text-xl font-semibold mb-4 text-blue-700">Send us a message</h3>
           <form method="POST" action="{{ route('contact.send') }}">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label class="block text-sm font-medium mb-1" for="name">Name</label>
-                <input type="text" id="name" name="name" class="w-full border border-gray-300 px-4 py-2 rounded-md focus:ring-2 focus:ring-blue-500" required>
-              </div>
+             <div>
+  <label class="block text-sm font-medium mb-1" for="name">Name</label>
+  <input 
+    type="text" 
+    id="name" 
+    name="name" 
+    pattern="^[A-Za-z\s]+$" 
+    title="Name should contain letters and spaces only"
+    required
+    class="w-full border border-gray-300 px-4 py-2 rounded-md focus:ring-2 focus:ring-blue-500"
+  >
+</div>
+
               <div>
                 <label class="block text-sm font-medium mb-1" for="email">Email</label>
                 <input type="email" id="email" name="email" class="w-full border border-gray-300 px-4 py-2 rounded-md focus:ring-2 focus:ring-blue-500" required>
               </div>
-              <div>
-                <label class="block text-sm font-medium mb-1" for="phone">Phone</label>
-                <input type="text" id="phone" name="phone" class="w-full border border-gray-300 px-4 py-2 rounded-md focus:ring-2 focus:ring-blue-500">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1" for="subject">Subject</label>
-                <input type="text" id="subject" name="subject" class="w-full border border-gray-300 px-4 py-2 rounded-md focus:ring-2 focus:ring-blue-500">
-              </div>
+<div>
+  <label class="block text-sm font-medium mb-1" for="phone">Phone</label>
+  <input 
+    type="text" 
+    id="phone" 
+    name="phone" 
+    maxlength="11"
+    pattern="^(09)\d{9}$" 
+    title="Please enter a valid Philippine number (e.g., 09123456789)" 
+    required
+    class="w-full border border-gray-300 px-4 py-2 rounded-md focus:ring-2 focus:ring-blue-500"
+  >
+</div>
+
+             <div>
+  <label class="block text-sm font-medium mb-1" for="subject">Subject</label>
+  <input 
+    type="text" 
+    id="subject" 
+    name="subject" 
+    class="w-full border border-gray-300 px-4 py-2 rounded-md focus:ring-2 focus:ring-blue-500" 
+    pattern="[A-Za-z\s]+" 
+    title="Letters and spaces only" 
+    oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')" 
+    required
+  >
+</div>
+
             </div>
             <div class="mb-4">
               <label class="block text-sm font-medium mb-1" for="message">Message</label>
@@ -130,8 +163,8 @@
       <div class="mt-8 bg-blue-50 p-6 rounded-lg shadow-md" data-aos="fade-up">
         <h3 class="font-semibold text-blue-700 mb-2">Contact Information</h3>
         <p class="text-gray-700"><strong>📍 Address:</strong> Bantayan Island, Cebu, Philippines</p>
-        <p class="text-gray-700"><strong>📞 Phone:</strong> <span class="text-blue-700 font-bold">+63 912 345 6789</span></p>
-        <p class="text-gray-700"><strong>📧 Email:</strong> engage@bantayancommunity.org</p>
+        <p class="text-gray-700"><strong>📞 Phone:</strong> <span class="text-blue-700 font-bold">+63 994 309 5640</p>
+        <p class="text-gray-700"><strong>📧 Email:</strong> bantayan911@gmail.com</p>
         <p class="text-gray-700"><strong>🕒 Available:</strong> Mon - Sun | 8:00 AM - 6:00 PM</p>
       </div>
     </div>
