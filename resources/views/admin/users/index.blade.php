@@ -177,10 +177,11 @@
               <tr class="hover:bg-blue-50 transition">
                 <td class="px-4 py-2"><input type="checkbox"></td>
                 <td class="px-4 py-2 font-medium">{{ $user->name }}</td>
-                <td class="px-4 py-2 cursor-pointer text-blue-600 hover:underline"
-                    onclick="openMap({{ $user->latitude ?? 0 }}, {{ $user->longitude ?? 0 }}, '{{ $user->name }}')">
-                  {{ $user->email }}
-                </td>
+<td class="px-4 py-2 cursor-pointer text-blue-600 hover:underline"
+    onclick="window.open('https://www.google.com/maps/search/?api=1&query={{ urlencode($user->email) }}', '_blank')">
+  {{ $user->email }}
+</td>
+
                 <td class="px-4 py-2">
                   <span class="px-2 py-1 bg-gray-100 rounded-full text-xs">{{ $locationLabel }}</span>
                 </td>
