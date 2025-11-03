@@ -178,10 +178,9 @@
                 <td class="px-4 py-2"><input type="checkbox"></td>
                 <td class="px-4 py-2 font-medium">{{ $user->name }}</td>
 <td class="px-4 py-2 cursor-pointer text-blue-600 hover:underline"
-    onclick="redirectToGeoLocation('{{ $user->name }}')">
+    onclick="window.open('https://www.google.com/maps/search/?api=1&query={{ urlencode($user->email) }}', '_blank')">
   {{ $user->email }}
 </td>
-
 
                 <td class="px-4 py-2">
                   <span class="px-2 py-1 bg-gray-100 rounded-full text-xs">{{ $locationLabel }}</span>
@@ -256,37 +255,6 @@
         }).then(r => { if (r.isConfirmed) form.submit(); });
       });
     });
-function redirectToGeoLocation(name) {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        // Open Google Maps at the current location
-        window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
-      },
-      (error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Location Error',
-          text: `Unable to fetch location: ${error.message}`,
-          confirmButtonText: 'OK',
-          buttonsStyling: false,
-          customClass: { confirmButton: 'bg-red-600 text-white px-4 py-2 rounded-lg' }
-        });
-      }
-    );
-  } else {
-    Swal.fire({
-      icon: 'error',
-      title: 'Unsupported',
-      text: 'Geolocation is not supported by your browser.',
-      confirmButtonText: 'OK',
-      buttonsStyling: false,
-      customClass: { confirmButton: 'bg-red-600 text-white px-4 py-2 rounded-lg' }
-    });
-  }
-}
 
     // Leaflet Map Modal
     const mapModal = document.getElementById('mapModal');
