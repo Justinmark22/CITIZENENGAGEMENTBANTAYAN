@@ -917,13 +917,11 @@ Route::get('/water/announcement-bantayan', [WaterDashboardController::class, 'ba
     Route::get('/resolved-reports-santafe', [WaterDashboardController::class, 'getResolvedReportsSantafe']);
 Route::get('/resolved-reports-bantayan', [WaterDashboardController::class, 'getResolvedReportsBantayan']);
 Route::get('/resolved-reports-madridejos', [WaterDashboardController::class, 'getResolvedReportsMadridejos']);
-//fire dpartment
-Route::get('/dashboard/fire-santafe', [FireDashboardController::class, 'santafe'])
-    ->name('dashboard.fire-santafe');
-Route::get('/dashboard/fire-bantayan', [FireDashboardController::class, 'bantayan'])
-    ->name('dashboard.fire-bantayan');
-Route::get('/dashboard/fire-madridejos', [FireDashboardController::class, 'madridejos'])
-    ->name('dashboard.fire-madridejos');
+// ✅ Fire Dashboard Routes
+Route::get('/dashboard/fire-santafe', [FireDashboardController::class, 'index'])->name('dashboard.fire-santafe');
+Route::get('/dashboard/fire-bantayan', [FireDashboardController::class, 'bantayan'])->name('dashboard.fire-bantayan');
+Route::get('/dashboard/fire-madridejos', [FireDashboardController::class, 'madridejos'])->name('dashboard.fire-madridejos');
+
     // waste announcements
     Route::get('/waste/announcement-bantayan', [WasteDashboardController::class, 'bantayanAnnouncement'])
     ->name('waste.announcement-bantayan');
