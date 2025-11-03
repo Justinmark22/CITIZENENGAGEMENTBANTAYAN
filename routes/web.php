@@ -195,11 +195,10 @@ Route::post('/login', function (Request $request) {
         $user->save();
         RateLimiter::clear($key);
 
-        // ✅ Admins, Staff, or Admin Location → skip OTP
-        if (
-            in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water','fire'])
-            || strtolower($user->location) === 'admin'
-        ) {
+        // ✅ 6. Redirect for admins, staff, or system roles
+        if (in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water', 'fire'])
+            || strtolower($user->location) === 'admin') {
+
             $route = match (strtolower($user->role)) {
                 'admin' => match (strtolower($user->location)) {
                     'santa.fe' => 'dashboard.santafeadmin',
@@ -240,6 +239,7 @@ Route::post('/login', function (Request $request) {
 
             return redirect()->route($route);
         }
+
 
         // ✅ Citizens only → Send OTP
         $otp = rand(100000, 999999);
