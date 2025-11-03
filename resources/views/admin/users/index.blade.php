@@ -8,121 +8,159 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Manage Users</title>
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- SweetAlert -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <style>
-    /* Sticky table header */
     .sticky-header th {
       position: sticky;
       top: 0;
-      background-color: #f1f5f9;
+      background-color: #f8fafc;
       z-index: 10;
-      border-bottom: 2px solid #cbd5e1;
     }
+    .cursor-pointer { cursor: pointer; }
+    /* Modal for Leaflet Map */
+    #mapModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    #mapModalContent {
+      width: 90%;
+      max-width: 600px;
+      height: 400px;
+      background: white;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      position: relative;
+    }
+    #mapModalClose {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.5rem;
+      z-index: 10;
+    }
+    #mapid { height: 100%; width: 100%; }
   </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">
 
-  <!-- Mobile header with hamburger -->
-  <header class="fixed top-0 left-0 right-0 bg-gradient-to-b from-[#1e3a8a] to-[#1e40af] text-white flex items-center justify-between p-4 md:hidden z-50 shadow-md">
-    <button id="sidebarToggle" aria-label="Toggle sidebar" class="text-white text-2xl focus:outline-none">
-      <i class="bi bi-list"></i>
+  <!-- Mobile Header -->
+  <header class="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-800 to-blue-900 text-white flex items-center justify-between p-4 md:hidden shadow-md z-50">
+    <button id="sidebarToggle" class="text-white text-2xl">
+      <i data-lucide="menu"></i>
     </button>
-    <h1 class="text-lg font-bold">Admin Panel</h1>
-    <div class="w-8"></div> <!-- placeholder to center title -->
+    <h1 class="text-lg font-semibold">Admin Panel</h1>
+    <div class="w-6"></div>
   </header>
 
   <!-- Sidebar -->
-  <aside
-    id="sidebar"
-    class="fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-[#1e3a8a] to-[#1e40af] text-white p-6 flex flex-col shadow-xl z-40
-           transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out"
-  >
+  <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-blue-800 to-blue-900 text-white p-6 flex flex-col shadow-xl z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
     <h1 class="text-2xl font-bold mb-8 hidden md:block">Admin Panel</h1>
-
-   <nav class="flex flex-col gap-6">
-  <!-- Main -->
-  <div>
-    <p class="text-xs uppercase tracking-wider text-white/60 mb-2">Main</p>
-    <a href="{{ route('dashboard.admin') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-      <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
-    </a>
-    <a href="{{ route('admin.analytics') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition {{ request()->routeIs('admin.analytics') ? 'bg-white/20 font-semibold' : '' }}">
-      <i class="bi bi-graph-up-arrow"></i> <span>Analytics</span>
-    </a>
-  </div>
-
-  <!-- User Management -->
-  <div>
-    <p class="text-xs uppercase tracking-wider text-white/60 mb-2">User Management</p>
-    <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition {{ request()->routeIs('admin.users.index') ? 'bg-white/20 font-semibold' : '' }}">
-      <i class="bi bi-people"></i> <span>Users</span>
-    </a>
-    <a href="{{ route('admin.municipal.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition {{ request()->routeIs('admin.municipal.index') ? 'bg-white/20 font-semibold' : '' }}">
-      <i class="bi bi-person-badge"></i> <span>Municipal Admins</span>
-    </a>
-  </div>
-
-  <!-- Content -->
-  <div>
-    <p class="text-xs uppercase tracking-wider text-white/60 mb-2">Content</p>
-    <a href="{{ route('admin.announcements.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-      <i class="bi bi-megaphone"></i> <span>Announce</span>
-    </a>
-    <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-      <i class="bi bi-file-text"></i> <span>Reports</span>
-    </a>
-    <a href="{{ route('admin.updates.create') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-      <i class="bi bi-plus-square"></i> <span>Updates</span>
-    </a>
-    <a href="{{ route('admin.events.create') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-      <i class="bi bi-calendar-event"></i> <span>Events</span>
-    </a>
-    <a href="{{ route('admin.engagements.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-      <i class="bi bi-people-fill"></i> <span>Engagement</span>
-    </a>
-  </div>
-</nav>
+    <nav class="flex flex-col gap-8 text-sm">
+      <div>
+        <p class="text-xs uppercase tracking-wider text-white/60 mb-2">Main</p>
+        <a href="{{ route('dashboard.admin') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
+          <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="{{ route('admin.analytics') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition {{ request()->routeIs('admin.analytics') ? 'bg-white/20 font-semibold' : '' }}">
+          <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+          <span>Analytics</span>
+        </a>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wider text-white/60 mb-2">User Management</p>
+        <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition {{ request()->routeIs('admin.users.index') ? 'bg-white/20 font-semibold' : '' }}">
+          <i data-lucide="users" class="w-5 h-5"></i>
+          <span>Users</span>
+        </a>
+        <a href="{{ route('admin.municipal.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition {{ request()->routeIs('admin.municipal.index') ? 'bg-white/20 font-semibold' : '' }}">
+          <i data-lucide="user-cog" class="w-5 h-5"></i>
+          <span>Municipal Admins</span>
+        </a>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wider text-white/60 mb-2">Content</p>
+        <a href="{{ route('admin.announcements.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
+          <i data-lucide="megaphone" class="w-5 h-5"></i>
+          <span>Announcements</span>
+        </a>
+        <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
+          <i data-lucide="file-text" class="w-5 h-5"></i>
+          <span>Reports</span>
+        </a>
+        <a href="{{ route('admin.updates.create') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
+          <i data-lucide="plus-square" class="w-5 h-5"></i>
+          <span>Updates</span>
+        </a>
+        <a href="{{ route('admin.events.create') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
+          <i data-lucide="calendar" class="w-5 h-5"></i>
+          <span>Events</span>
+        </a>
+        <a href="{{ route('admin.engagements.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
+          <i data-lucide="users-2" class="w-5 h-5"></i>
+          <span>Engagements</span>
+        </a>
+      </div>
+    </nav>
   </aside>
-  <!-- Overlay when sidebar is open on mobile -->
-  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 md:hidden"></div>
+
+  <!-- Overlay -->
+  <div id="overlay" class="fixed inset-0 bg-black/50 hidden z-30 md:hidden"></div>
+
+  <!-- Map Modal -->
+  <div id="mapModal" class="flex">
+    <div id="mapModalContent">
+      <span id="mapModalClose">&times;</span>
+      <div id="mapid"></div>
+    </div>
+  </div>
 
   <!-- Main Content -->
-  <div class="pt-16 md:pt-6 md:ml-64 p-4 md:p-6 transition-all duration-300 ease-in-out">
+  <main class="pt-16 md:pt-8 md:ml-64 p-6 transition-all duration-300 ease-in-out">
 
     <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
       <div class="flex items-center gap-3">
-        <img src="{{ asset('images/citizen.png') }}" class="h-10 w-auto" alt="Logo" />
+        <img src="{{ asset('images/citizen.png') }}" class="h-10 w-auto" alt="Logo">
         <h2 class="text-2xl font-bold">Manage Users</h2>
       </div>
 
-      <!-- Search form -->
-      <form method="GET" action="{{ route('admin.users.index') }}" class="flex max-w-xl w-full md:w-auto">
-        <input
-          type="text"
-          name="search"
-          placeholder="Search users..."
-          value="{{ request()->search }}"
-          class="flex-1 px-4 py-2 rounded-l-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        />
-        <button type="submit" class="px-4 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 flex items-center justify-center">
-          <i class="bi bi-search"></i>
+      <!-- Search -->
+      <form method="GET" action="{{ route('admin.users.index') }}" class="flex w-full md:w-auto max-w-md">
+        <input type="text" name="search" value="{{ request()->search }}" placeholder="Search users..."
+          class="flex-1 px-4 py-2 rounded-l-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        <button type="submit" class="bg-blue-600 px-4 py-2 text-white rounded-r-lg hover:bg-blue-700 flex items-center justify-center">
+          <i data-lucide="search" class="w-5 h-5"></i>
         </button>
       </form>
     </div>
 
-    <!-- Users grouped by location -->
+    <!-- Users Table -->
     @forelse ($groupedUsers as $location => $usersByLocation)
       @php $locationLabel = $location === 'Santa.Fe' ? 'Sta. Fe' : $location; @endphp
-
       <section class="mb-8">
-        <h5 class="text-lg font-bold text-blue-700 mb-3 border-l-4 border-blue-600 pl-2">{{ $locationLabel }} Users</h5>
+        <h5 class="text-lg font-semibold text-blue-700 mb-3 border-l-4 border-blue-600 pl-2">{{ $locationLabel }} Users</h5>
 
         <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
-          <table class="min-w-full text-sm">
-            <thead class="bg-gray-100 text-gray-700 text-xs uppercase sticky-header">
+          <table class="min-w-full text-sm text-gray-700">
+            <thead class="bg-gray-100 text-xs uppercase sticky-header">
               <tr>
                 <th class="px-4 py-2"><input type="checkbox"></th>
                 <th class="px-4 py-2 text-left">Name</th>
@@ -130,41 +168,44 @@
                 <th class="px-4 py-2 text-left">Location</th>
                 <th class="px-4 py-2 text-left">Registered</th>
                 <th class="px-4 py-2 text-left">ID</th>
+                <th class="px-4 py-2 text-left">Status</th>
                 <th class="px-4 py-2 text-center">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
               @foreach ($usersByLocation as $user)
-                <tr class="hover:bg-green-50 transition">
-                  <td class="px-4 py-2"><input type="checkbox" /></td>
-                  <td class="px-4 py-2">{{ $user->name }}</td>
-                  <td class="px-4 py-2">{{ $user->email }}</td>
-                  <td class="px-4 py-2">
-                    <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">{{ $locationLabel }}</span>
-                  </td>
-<td class="px-4 py-2">
-  {{ optional($user->created_at)->format('d M Y') ?? 'N/A' }}
-</td>
-
-                  <td class="px-4 py-2">{{ $user->id }}</td>
-                  <td class="px-4 py-2 text-center">
-                    <a href="{{ route('admin.users.edit', $user->id) }}" class="text-yellow-600 hover:text-yellow-800 mx-1" aria-label="Edit {{ $user->name }}">
-                      <i class="bi bi-pencil"></i>
-                    </a>
-                    <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}" class="inline delete-user-form">
-                      @csrf
-                      @method('DELETE')
-                      <button
-                        type="button"
-                        class="text-red-600 hover:text-red-800 mx-1 delete-user-btn"
-                        data-user="{{ $user->name }}"
-                        aria-label="Delete {{ $user->name }}"
-                      >
-                        <i class="bi bi-trash"></i>
-                      </button>
-                    </form>
-                  </td>
-                </tr>
+              <tr class="hover:bg-blue-50 transition">
+                <td class="px-4 py-2"><input type="checkbox"></td>
+                <td class="px-4 py-2 font-medium">{{ $user->name }}</td>
+                <td class="px-4 py-2 cursor-pointer text-blue-600 hover:underline"
+                    onclick="openMap({{ $user->latitude ?? 0 }}, {{ $user->longitude ?? 0 }}, '{{ $user->name }}')">
+                  {{ $user->email }}
+                </td>
+                <td class="px-4 py-2">
+                  <span class="px-2 py-1 bg-gray-100 rounded-full text-xs">{{ $locationLabel }}</span>
+                </td>
+                <td class="px-4 py-2">{{ optional($user->created_at)->format('d M Y') ?? 'N/A' }}</td>
+                <td class="px-4 py-2">{{ $user->id }}</td>
+                <td class="px-4 py-2">
+                  @if($user->status === 'active')
+                    <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-800">Login Successful</span>
+                  @else
+                    <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">Inactive</span>
+                  @endif
+                </td>
+                <td class="px-4 py-2 text-center flex justify-center gap-2">
+                  <a href="{{ route('admin.users.edit', $user->id) }}" class="text-blue-600 hover:text-blue-800">
+                    <i data-lucide="edit" class="w-5 h-5"></i>
+                  </a>
+                  <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}" class="inline delete-user-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" class="text-red-600 hover:text-red-800 delete-user-btn" data-user="{{ $user->name }}">
+                      <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
               @endforeach
             </tbody>
           </table>
@@ -174,65 +215,69 @@
       <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-lg">No users found.</div>
     @endforelse
 
-    <!-- Pagination -->
     <div class="mt-6">{{ $users->links('pagination::tailwind') }}</div>
-  </div>
 
-  <!-- SweetAlert Delete -->
+  </main>
+
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Sidebar toggle
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('overlay');
-      const toggleBtn = document.getElementById('sidebarToggle');
+    lucide.createIcons();
 
-      function openSidebar() {
-        sidebar.classList.remove('-translate-x-full');
-        overlay.classList.remove('hidden');
-      }
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const toggleBtn = document.getElementById('sidebarToggle');
 
-      function closeSidebar() {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-      }
+    toggleBtn?.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    });
+    overlay?.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    });
 
-      toggleBtn.addEventListener('click', () => {
-        if (sidebar.classList.contains('-translate-x-full')) {
-          openSidebar();
-        } else {
-          closeSidebar();
-        }
-      });
-
-      overlay.addEventListener('click', () => {
-        closeSidebar();
-      });
-
-      // SweetAlert delete confirmation
-      document.querySelectorAll('.delete-user-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const form = btn.closest('form');
-          const userName = btn.dataset.user;
-          Swal.fire({
-            title: 'Delete User?',
-            html: `<small>Are you sure you want to delete <strong>${userName}</strong>?</small>`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Delete',
-            cancelButtonText: 'Cancel',
-            buttonsStyling: false,
-            customClass: {
-              confirmButton: 'bg-red-600 text-white px-4 py-2 rounded-lg mx-2',
-              cancelButton: 'bg-gray-200 px-4 py-2 rounded-lg'
-            }
-          }).then(result => {
-            if (result.isConfirmed) {
-              form.submit();
-            }
-          });
-        });
+    document.querySelectorAll('.delete-user-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const form = btn.closest('form');
+        const name = btn.dataset.user;
+        Swal.fire({
+          title: 'Delete User?',
+          html: `<small>Are you sure you want to delete <strong>${name}</strong>?</small>`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Delete',
+          cancelButtonText: 'Cancel',
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: 'bg-red-600 text-white px-4 py-2 rounded-lg mx-2',
+            cancelButton: 'bg-gray-200 px-4 py-2 rounded-lg'
+          }
+        }).then(r => { if (r.isConfirmed) form.submit(); });
       });
     });
+
+    // Leaflet Map Modal
+    const mapModal = document.getElementById('mapModal');
+    const mapClose = document.getElementById('mapModalClose');
+    let mapInstance;
+
+    function openMap(lat, lng, name) {
+      if(!lat || !lng) { alert("Location not available for this user."); return; }
+      mapModal.style.display = 'flex';
+      setTimeout(() => {
+        if(mapInstance) { mapInstance.remove(); } // Remove previous map
+        mapInstance = L.map('mapid').setView([parseFloat(lat), parseFloat(lng)], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(mapInstance);
+        L.marker([parseFloat(lat), parseFloat(lng)]).addTo(mapInstance)
+          .bindPopup(name)
+          .openPopup();
+      }, 50);
+    }
+
+    mapClose.onclick = () => mapModal.style.display = 'none';
+    window.onclick = (e) => { if(e.target == mapModal) mapModal.style.display = 'none'; };
+
   </script>
 
   @if(session('success'))
@@ -263,3 +308,4 @@
 
 </body>
 </html>
+    

@@ -132,39 +132,17 @@ Route::get('/', function () {
     return $response;
 });
 
-// ✅ LOGIN ROUTES
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
     $key = Str::lower($request->input('email')) . '|' . $request->ip();
 
+    // ✅ Rate limiting (3 attempts)
     if (RateLimiter::tooManyAttempts($key, 3)) {
         $seconds = RateLimiter::availableIn($key);
         return back()->withErrors([
             'email' => "Too many login attempts. Please try again in {$seconds} seconds.",
         ])->onlyInput('email');
-    }
-
-    // ✅ reCAPTCHA v3 verification
-    $recaptchaResponse = $request->input('g-recaptcha-response');
-    $secretKey = '6LfSlPorAAAAABfz0johQXHxc_5oa-1mF7Uj01SY'; // replace with your key
-
-    if (!$recaptchaResponse) {
-        return back()->withErrors(['captcha' => 'Please complete the reCAPTCHA verification.'])
-            ->onlyInput('email');
-    }
-
-    $verifyResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-        'secret' => $secretKey,
-        'response' => $recaptchaResponse,
-        'remoteip' => $request->ip(),
-    ]);
-
-    $recaptchaData = $verifyResponse->json();
-
-    if (empty($recaptchaData['success']) || $recaptchaData['success'] !== true || $recaptchaData['score'] < 0.5) {
-        return back()->withErrors(['captcha' => 'Suspicious activity detected. Please try again.'])
-            ->onlyInput('email');
     }
 
     // ✅ Validate credentials
@@ -175,6 +153,7 @@ Route::post('/login', function (Request $request) {
 
     $user = \App\Models\User::where('email', $credentials['email'])->first();
 
+    // ✅ Check if user disabled
     if ($user && $user->status === 'disabled') {
         RateLimiter::hit($key, 60);
         return back()->withErrors([
@@ -182,6 +161,7 @@ Route::post('/login', function (Request $request) {
         ])->onlyInput('email');
     }
 
+    // ✅ Attempt login
     if (Auth::attempt($credentials, $request->boolean('remember'))) {
         $request->session()->regenerate();
         $user = Auth::user();
@@ -191,80 +171,63 @@ Route::post('/login', function (Request $request) {
         cookie()->queue(cookie('user_role', $user->role, 60));
         cookie()->queue(cookie('secure_session', Str::random(32), 60, null, null, true, true));
 
+        // ✅ Mark user active
         $user->status = 'active';
         $user->save();
+
         RateLimiter::clear($key);
 
-        // ✅ 6. Redirect for admins, staff, or system roles
-        if (in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water', 'fire'])
-            || strtolower($user->location) === 'admin') {
+        // ✅ Redirect based on role and location
+        $route = match (strtolower($user->role)) {
+            'admin' => match (strtolower($user->location)) {
+                'santa.fe' => 'dashboard.santafeadmin',
+                'bantayan' => 'dashboard.bantayanadmin',
+                'madridejos' => 'dashboard.madridejosadmin',
+                'admin' => 'dashboard.admin',
+                default => 'dashboard',
+            },
+            'mdrrmo' => match (strtolower($user->location)) {
+                'santa.fe' => 'dashboard.mdrrmo-santafe',
+                'bantayan' => 'dashboard.mdrrmo-bantayan',
+                'madridejos' => 'dashboard.mdrrmo-madridejos',
+                default => 'dashboard',
+            },
+            'waste' => match (strtolower($user->location)) {
+                'santa.fe' => 'dashboard.waste-santafe',
+                'bantayan' => 'dashboard.waste-bantayan',
+                'madridejos' => 'dashboard.waste-madridejos',
+                default => 'dashboard',
+            },
+            'water' => match (strtolower($user->location)) {
+                'santa.fe' => 'dashboard.water-santafe',
+                'bantayan' => 'dashboard.water-bantayan',
+                'madridejos' => 'dashboard.water-madridejos',
+                default => 'dashboard',
+            },
+              'fire' => match (strtolower($user->location)) {
+                'santa.fe' => 'dashboard.fire-santafe',
+                'bantayan' => 'dashboard.fire-bantayan',
+                'madridejos' => 'dashboard.fire-madridejos',
+                default => 'dashboard',
+            },
+            default => match (strtolower($user->location)) {
+                'santa.fe' => 'dashboard.santafe',
+                'bantayan' => 'dashboard.bantayan',
+                'madridejos' => 'dashboard.madridejos',
+                default => 'dashboard',
+            },
+        };
 
-            $route = match (strtolower($user->role)) {
-                'admin' => match (strtolower($user->location)) {
-                    'santa.fe' => 'dashboard.santafeadmin',
-                    'bantayan' => 'dashboard.bantayanadmin',
-                    'madridejos' => 'dashboard.madridejosadmin',
-                    'admin' => 'dashboard.admin',
-                    default => 'dashboard',
-                },
-                'mdrrmo' => match (strtolower($user->location)) {
-                    'santa.fe' => 'dashboard.mdrrmo-santafe',
-                    'bantayan' => 'dashboard.mdrrmo-bantayan',
-                    'madridejos' => 'dashboard.mdrrmo-madridejos',
-                    default => 'dashboard',
-                },
-                'waste' => match (strtolower($user->location)) {
-                    'santa.fe' => 'dashboard.waste-santafe',
-                    'bantayan' => 'dashboard.waste-bantayan',
-                    'madridejos' => 'dashboard.waste-madridejos',
-                    default => 'dashboard',
-                },
-                'water' => match (strtolower($user->location)) {
-                    'santa.fe' => 'dashboard.water-santafe',
-                    'bantayan' => 'dashboard.water-bantayan',
-                    'madridejos' => 'dashboard.water-madridejos',
-                    default => 'dashboard',
-                },
-                'fire' => match (strtolower($user->location)) {
-                    'santa.fe' => 'dashboard.fire-santafe',
-                    'bantayan' => 'dashboard.fire-bantayan',
-                    'madridejos' => 'dashboard.fire-madridejos',
-                    default => 'dashboard',
-                },
-                default => match (strtolower($user->location)) {
-                    'admin' => 'dashboard.admin',
-                    default => 'dashboard',
-                },
-            };
-
-            return redirect()->route($route);
-        }
-
-
-        // ✅ Citizens only → Send OTP
-        $otp = rand(100000, 999999);
-
-        session([
-            'otp' => $otp,
-            'otp_expires' => now()->addMinutes(3),
-            'otp_user_id' => $user->id,
-        ]);
-
-        try {
-            Mail::to($user->email)->send(new SendOtpMail($otp));
-        } catch (\Exception $e) {
-            return back()->withErrors(['email' => 'Failed to send OTP: ' . $e->getMessage()]);
-        }
-
-        Auth::logout(); // logout until OTP verified
-        return redirect()->route('otp.verify')->with('status', 'OTP sent to your email. Please verify to continue.');
+        return redirect()->route($route);
     }
 
+    // ✅ Invalid credentials
     RateLimiter::hit($key, 60);
     return back()->withErrors([
         'email' => 'Invalid email or password.',
     ])->onlyInput('email');
 })->name('login.submit');
+
 
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
