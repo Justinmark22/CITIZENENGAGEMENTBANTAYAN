@@ -23,7 +23,8 @@ class SecurityHeaders
         );
 
         // X-Frame-Options (anti-clickjacking)
-        $response->headers->set('X-Frame-Options', 'DENY');
+$response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+
 
         // X-Content-Type-Options
         $response->headers->set('X-Content-Type-Options', 'nosniff');
