@@ -1,12 +1,8 @@
 # ======================================================
-# 🚀 Laravel Public Directory .htaccess
+# 🚀 Laravel Public Directory .htaccess (Hardened)
 # ======================================================
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    
-    # Allow direct access to storage files
-    RewriteCond %{REQUEST_URI} !^/storage
-    RewriteCond %{REQUEST_URI} !^/public/storage
 
     # ==================================================
     # 🔁 Redirect Trailing Slashes (except folders)
@@ -50,61 +46,62 @@
     Options +FollowSymLinks
 </IfModule>
 
-# Configure storage directory
 <Directory "storage">
     Options +FollowSymLinks
     AllowOverride None
     Require all granted
-    
+
     # Disable PHP execution in storage
     <FilesMatch "\.php$">
         Require all denied
     </FilesMatch>
-    
-    # Allow common image formats
-    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg)$">
+
+    # Allow common image formats with caching
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|pdf|txt)$">
         Require all granted
-        Header set Cache-Control "max-age=31536000"
+        Header set Cache-Control "max-age=31536000, public"
     </FilesMatch>
 </Directory>
 
-# Explicitly allow access to storage symlink
 <Directory "public/storage">
     Options +FollowSymLinks
     AllowOverride None
     Require all granted
 
-    # Allow common image formats with caching
-    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg)$">
+    # Allow common images/docs
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|pdf|txt)$">
         Require all granted
-        Header set Cache-Control "max-age=31536000"
+        Header set Cache-Control "max-age=31536000, public"
     </FilesMatch>
 </Directory>
 
-# Special rule for storage access
-RewriteRule ^storage/(.*)\.(jpg|jpeg|png|gif|webp|svg)$ storage/$1.$2 [L]
+# Explicit rule for storage access
+RewriteRule ^storage/(.*)\.(jpg|jpeg|png|gif|webp|svg|pdf|txt)$ storage/$1.$2 [L]
 
 # ======================================================
-# 🧰 Add Strong Security Headers
+# 🧰 Add Strong Security Headers (no duplicates)
 # ======================================================
 <IfModule mod_headers.c>
+    Header always unset X-Frame-Options
+    Header set X-Frame-Options "SAMEORIGIN"
+
     Header set X-Content-Type-Options "nosniff"
-    Header always append X-Frame-Options SAMEORIGIN
     Header set X-XSS-Protection "1; mode=block"
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     Header unset X-Powered-By
-    Header set Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';"
+    Header set Referrer-Policy "no-referrer-when-downgrade"
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self';"
 </IfModule>
 
 # ======================================================
-# 🧨 Block Dangerous File Extensions (except images/docs)
+# 🧨 Block Dangerous File Extensions (except allowed images/docs)
 # ======================================================
-<FilesMatch "\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist|pem|key|env|gz|zip|rar)$">
+<FilesMatch "\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist|pem|key|env|gz|zip|rar|phar)$">
     Require all denied
 </FilesMatch>
 
 # ======================================================
-# ⚡ Optional: Force HTTPS
+# ⚡ Force HTTPS
 # ======================================================
 <IfModule mod_rewrite.c>
     RewriteCond %{HTTPS} off
@@ -115,3 +112,13 @@ RewriteRule ^storage/(.*)\.(jpg|jpeg|png|gif|webp|svg)$ storage/$1.$2 [L]
 # 🧹 Disable Directory Browsing
 # ======================================================
 Options -Indexes
+
+# ======================================================
+# 🔒 Block Common Exploit Patterns (SQLi, LFI, RCE)
+# ======================================================
+<IfModule mod_rewrite.c>
+    RewriteCond %{QUERY_STRING} (\|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} (\.\./|\.\.\\) [NC,OR]
+    RewriteCond %{QUERY_STRING} (union|select|insert|cast|drop|update|delete|benchmark|sleep)\( [NC]
+    RewriteRule ^ - [F,L]
+</IfModule>
