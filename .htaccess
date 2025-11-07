@@ -12,14 +12,16 @@
 # 🚫 Protect Sensitive Files & Folders
 # ======================================================
 <FilesMatch "(^\.|composer\.json|composer\.lock|artisan|server\.php|.env|.env.*|.git|.htaccess|storage|vendor|node_modules)">
-    Require all denied
+    Order allow,deny
+    Deny from all
 </FilesMatch>
 
 # ======================================================
 # 🧱 Prevent Access to Config, Logs, and Cache
 # ======================================================
 <DirectoryMatch "(app|bootstrap|config|database|resources|routes|storage|tests|vendor)">
-    Require all denied
+    Order allow,deny
+    Deny from all
 </DirectoryMatch>
 
 # ======================================================
@@ -37,67 +39,31 @@ Options -Indexes
     Header set X-Frame-Options "SAMEORIGIN"
     # Prevent some XSS attacks
     Header set X-XSS-Protection "1; mode=block"
-    # Enforce HTTPS
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    # Enforce HTTPS (optional)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
     # Hide server info
     Header unset X-Powered-By
-    # Enable Referrer-Policy
-    Header set Referrer-Policy "no-referrer-when-downgrade"
-    # Content Security Policy (CSP) to prevent XSS
-    Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'"
 </IfModule>
 
 # ======================================================
 # 🧨 Block Dangerous File Extensions
 # ======================================================
-<FilesMatch "\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist|pem|key|phar)$">
-    Require all denied
+<FilesMatch "\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist|pem|key)$">
+    Order allow,deny
+    Deny from all
 </FilesMatch>
 
 # ======================================================
 # 🧯 Disable PHP Execution in Storage, Bootstrap, and Vendor
 # ======================================================
-<Directory "/home/yourusername/bantayan911.com/storage">
+<Directory "/home/yourusername/bantayan-911.com/storage">
     php_flag engine off
-    Options -ExecCGI
 </Directory>
 
-<Directory "/home/yourusername/bantayan911.com/bootstrap">
+<Directory "/home/yourusername/bantayan-911.com/bootstrap">
     php_flag engine off
-    Options -ExecCGI
 </Directory>
 
-<Directory "/home/yourusername/bantayan911.com/vendor">
+<Directory "/home/yourusername/bantayan-911.com/vendor">
     php_flag engine off
-    Options -ExecCGI
 </Directory>
-
-# ======================================================
-# 🛡 Rate Limiting / Brute Force Protection (Apache 2.4+)
-# ======================================================
-<IfModule mod_reqtimeout.c>
-    RequestReadTimeout header=20-40,minrate=500 body=20,MinRate=500
-</IfModule>
-
-# ======================================================
-# 🔒 Block Common Exploit Patterns
-# ======================================================
-<IfModule mod_rewrite.c>
-    # Block SQL injection attempts
-    RewriteCond %{QUERY_STRING} (\|%3E) [NC,OR]
-    RewriteCond %{QUERY_STRING} (\.\./|\.\.\\) [NC,OR]
-    RewriteCond %{QUERY_STRING} (union|select|insert|cast|drop|update|delete|benchmark|sleep)\( [NC]
-    RewriteRule ^ - [F,L]
-
-    # Block access to php files in storage, vendor, bootstrap
-    RewriteRule ^(storage|vendor|bootstrap)/.*\.php$ - [F,L]
-</IfModule>
-
-# ======================================================
-# 🔒 Optional: Protect Public Folder Directly
-# ======================================================
-<IfModule mod_headers.c>
-    <FilesMatch "\.(env|json|lock|log|sql|ini)$">
-        Require all denied
-    </FilesMatch>
-</IfModule>
