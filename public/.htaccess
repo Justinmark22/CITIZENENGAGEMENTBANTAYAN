@@ -104,8 +104,8 @@ RewriteRule ^storage/(.*)\.(jpg|jpeg|png|gif|webp|svg)$ storage/$1.$2 [L]
     # Hide server info
     Header unset X-Powered-By
 
-    # Content Security Policy - Tailwind/JS friendly
-    Header set Content-Security-Policy "default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' ws: wss: https:;"
+    # Content Security Policy - Production safe (Tailwind compatible)
+    Header set Content-Security-Policy "default-src 'self' https:; script-src 'self' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https:;"
 </IfModule>
 
 # ======================================================
