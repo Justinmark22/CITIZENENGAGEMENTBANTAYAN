@@ -41,13 +41,18 @@
               oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
           </div>
 
-          <!-- Email -->
-          <div>
-            <label for="email" class="block text-sm mb-1">Email Address</label>
-            <input type="email" id="email" name="email" value="{{ old('email') }}"
-              required
-              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          </div>
+        <!-- Email -->
+<div>
+  <label for="email" class="block text-sm mb-1">Email Address</label>
+  <input type="email"
+         id="email"
+         name="email"
+         value="{{ old('email') }}"
+         required
+         pattern="[a-zA-Z0-9._%+-]+@gmail\.com$"
+         title="Please enter a valid Gmail address (e.g. user@gmail.com)"
+         class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+</div>
 
           <!-- Location -->
           <div>
