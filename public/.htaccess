@@ -85,15 +85,18 @@
 RewriteRule ^storage/(.*)\.(jpg|jpeg|png|gif|webp|svg)$ storage/$1.$2 [L]
 
 # ======================================================
-# 🧰 Add Strong Security Headers
+# 🧰 Add Strong Security Headers (no duplicates)
 # ======================================================
 <IfModule mod_headers.c>
+    Header always unset X-Frame-Options
+    Header set X-Frame-Options "SAMEORIGIN"
+
     Header set X-Content-Type-Options "nosniff"
-    Header always append X-Frame-Options SAMEORIGIN
     Header set X-XSS-Protection "1; mode=block"
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     Header unset X-Powered-By
-    Header set Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';"
+    Header set Referrer-Policy "no-referrer-when-downgrade"
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self';"
 </IfModule>
 
 # ======================================================
