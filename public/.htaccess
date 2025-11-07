@@ -100,9 +100,9 @@ RewriteRule ^storage/(.*)\.(jpg|jpeg|png|gif|webp|svg)$ storage/$1.$2 [L]
     # Hide server technology
     Header unset X-Powered-By
 
-    # Permissions-Policy
+    # Permissions-Policyt
     Header set Permissions-Policy "camera=(), microphone=(), geolocation=(), fullscreen=(self)"
-Header set Content-Security-Policy "default-src 'self' https: data:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' data: https:; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self';"
+Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:;"
 
 </IfModule>
 
