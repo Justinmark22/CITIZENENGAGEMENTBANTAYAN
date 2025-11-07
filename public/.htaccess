@@ -105,9 +105,9 @@ RewriteRule ^storage/(.*)\.(jpg|jpeg|png|gif|webp|svg)$ storage/$1.$2 [L]
 
     # Permissions-Policy (replace old Feature-Policy)
     Header set Permissions-Policy "camera=(), microphone=(), geolocation=(), fullscreen=(self)"
+# ✅ Balanced and Safe CSP (does not break designs)
+Header set Content-Security-Policy "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self';"
 
-    # ✅ Strong Content Security Policy
-    Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self';"
 
 </IfModule>
 
