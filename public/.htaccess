@@ -83,17 +83,32 @@
 
 # Special rule for storage access
 RewriteRule ^storage/(.*)\.(jpg|jpeg|png|gif|webp|svg)$ storage/$1.$2 [L]
-
 # ======================================================
-# 🧰 Add Strong Security Headers
+# 🧰 Strong Security Headers
 # ======================================================
 <IfModule mod_headers.c>
+
+    # Prevent MIME sniffing
     Header set X-Content-Type-Options "nosniff"
-    Header always append X-Frame-Options SAMEORIGIN
+
+    # Prevent clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+
+    # Legacy XSS filter (mostly for IE/Edge)
     Header set X-XSS-Protection "1; mode=block"
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # Enforce HTTPS for 1 year (preload optional)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # Hide server technology
     Header unset X-Powered-By
-    Header set Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';"
+
+    # Permissions-Policy (replace old Feature-Policy)
+    Header set Permissions-Policy "camera=(), microphone=(), geolocation=(), fullscreen=(self)"
+
+    # ✅ Strong Content Security Policy
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self';"
+
 </IfModule>
 
 # ======================================================
