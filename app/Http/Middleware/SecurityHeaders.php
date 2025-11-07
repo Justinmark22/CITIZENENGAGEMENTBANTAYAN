@@ -34,6 +34,10 @@ class SecurityHeaders
         // X-XSS-Protection (legacy)
         $response->headers->set('X-XSS-Protection', '1; mode=block');
 
+        // ✅ Content-Security-Policy (CSP)
+        $csp = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';";
+        $response->headers->set('Content-Security-Policy', $csp);
+
         return $response;
     }
 }
