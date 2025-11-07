@@ -1,5 +1,5 @@
 # ======================================================
-# 🚀 Laravel Public Directory .htaccess (Hardened)
+# 🚀 Laravel Public Directory .htaccess (Hardened & Tailwind-Friendly)
 # ======================================================
 <IfModule mod_rewrite.c>
     RewriteEngine On
@@ -26,6 +26,13 @@
 </IfModule>
 
 # ======================================================
+# ✅ Allow Public Assets (CSS/JS/Fonts/Images)
+# ======================================================
+<FilesMatch "\.(css|js|map|woff|woff2|ttf|eot|svg|jpg|jpeg|png|gif|webp|pdf|txt)$">
+    Require all granted
+</FilesMatch>
+
+# ======================================================
 # 🧱 Block Access To Hidden Files (.env, .git, etc.)
 # ======================================================
 <FilesMatch "^\.">
@@ -40,7 +47,7 @@
 </FilesMatch>
 
 # ======================================================
-# ✅ Storage Access Configuration
+# ✅ Storage Access Configuration (Allow all)
 # ======================================================
 <IfModule mod_alias.c>
     Options +FollowSymLinks
@@ -50,33 +57,16 @@
     Options +FollowSymLinks
     AllowOverride None
     Require all granted
-
-    # Disable PHP execution in storage
-    <FilesMatch "\.php$">
-        Require all denied
-    </FilesMatch>
-
-    # Allow common image formats with caching
-    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|pdf|txt)$">
-        Require all granted
-        Header set Cache-Control "max-age=31536000, public"
-    </FilesMatch>
 </Directory>
 
 <Directory "public/storage">
     Options +FollowSymLinks
     AllowOverride None
     Require all granted
-
-    # Allow common images/docs
-    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|pdf|txt)$">
-        Require all granted
-        Header set Cache-Control "max-age=31536000, public"
-    </FilesMatch>
 </Directory>
 
-# Explicit rule for storage access
-RewriteRule ^storage/(.*)\.(jpg|jpeg|png|gif|webp|svg|pdf|txt)$ storage/$1.$2 [L]
+# Explicit storage rule for images/docs
+RewriteRule ^storage/(.*)$ storage/$1 [L]
 
 # ======================================================
 # 🧰 Add Strong Security Headers (no duplicates)
