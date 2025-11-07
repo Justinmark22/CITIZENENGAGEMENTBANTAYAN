@@ -16,15 +16,14 @@ class SecurityHeaders
             'max-age=31536000; includeSubDomains; preload'
         );
 
-        // Permissions-Policy
+        // Permissions-Policy: allow geolocation and fullscreen on your site
         $response->headers->set(
             'Permissions-Policy',
-            'camera=(), microphone=(), geolocation=(), fullscreen=(self)'
+            'camera=(), microphone=(), geolocation=(self), fullscreen=(self)'
         );
 
         // X-Frame-Options (anti-clickjacking)
-$response->headers->set('X-Frame-Options', 'SAMEORIGIN');
-
+        $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
 
         // X-Content-Type-Options
         $response->headers->set('X-Content-Type-Options', 'nosniff');
@@ -34,6 +33,15 @@ $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
 
         // X-XSS-Protection (legacy)
         $response->headers->set('X-XSS-Protection', '1; mode=block');
+
+        // Content-Security-Policy
+        $response->headers->set('Content-Security-Policy',
+            "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self';"
+        );
+
+        // Optional modern headers
+        $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
+        $response->headers->set('Cross-Origin-Embedder-Policy', 'require-corp');
 
         return $response;
     }
