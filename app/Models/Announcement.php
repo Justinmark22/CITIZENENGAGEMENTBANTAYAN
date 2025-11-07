@@ -7,8 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Announcement extends Model
 {
-    protected $fillable = [
-    'title', 'message', 'start_date', 'end_date', 'location'
+  protected $fillable = [
+    'title',
+    'message',
+    'location',
+    'start_date',
+    'end_date',
+    'user_id',  // ✅ Add this
 ];
+
+
 
 }

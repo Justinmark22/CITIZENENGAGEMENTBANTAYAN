@@ -115,6 +115,39 @@
     <span class="ml-2 block md:inline">Feedback</span>
      
     </a>
+<a href="{{ route('eventsandannouncements.santafe') }}" 
+   id="eventsBadgeLink"
+   class="relative flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
+    <i data-lucide="bell" class="w-4 h-4"></i>
+    <span class="ml-2 block md:inline">Events & Announcements</span>
+
+    @if($totalForwardedCount > 0)
+        <span id="eventsBadge" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full transform translate-x-3 -translate-y-1">
+            {{ $totalForwardedCount }}
+        </span>
+    @endif
+</a>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const link = document.getElementById('eventsBadgeLink');
+    const badge = document.getElementById('eventsBadge');
+    const storageKey = 'eventsBadgeLastClicked';
+    const now = new Date().getTime();
+
+    // Check if badge was clicked within last 24 hours
+    const lastClicked = localStorage.getItem(storageKey);
+    if (lastClicked && now - parseInt(lastClicked) < 24 * 60 * 60 * 1000) {
+        if(badge) badge.style.display = 'none';
+    }
+
+    // Hide badge on click and store timestamp
+    link.addEventListener('click', () => {
+        if(badge) badge.style.display = 'none';
+        localStorage.setItem(storageKey, now);
+    });
+});
+</script>
 
     <!-- 💬 Support -->
     <a href="{{ route('contact.support.page') }}" class="flex items-center gap-1 text-gray-700 hover:text-green-700 transition">
@@ -325,17 +358,70 @@
 
   </div>
 </div>
-</section>
   </div>  
+ 
+  <!-- Background blobs -->
+  <div class="absolute top-0 left-0 w-40 h-40 bg-green-200 rounded-full opacity-30 blur-3xl -z-10 animate-pulse"></div>
+  <div class="absolute bottom-0 right-0 w-60 h-60 bg-lime-200 rounded-full opacity-20 blur-3xl -z-10 animate-pulse"></div>
 
-<!-- Tailwind animation -->
-<style>
-@keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-.animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
-</style>
+  <div class="container mx-auto px-6 lg:px-20">
+    <!-- Section Header -->
+    <div class="text-center mb-12">
+     
+      <p class="text-gray-600 text-lg md:text-xl animate-fadeInUp delay-200">Empowering our community through information and services.</p>
+    </div>
+
+    <!-- Citizen Symbols Grid -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+  <!-- Citizen Icon 1 -->
+  <div class="flex flex-col items-center text-center animate-fadeInUp delay-300">
+    <img src="{{ asset('images/commu.png') }}" alt="Community" class="w-32 h-32 mb-4 rounded-full border-4 border-green-200 p-2">
+    <h3 class="text-xl font-semibold text-green-700">Community</h3>
+    <p class="text-gray-500 text-sm">Collaborative citizen engagement.</p>
+  </div>
+
+  <!-- Citizen Icon 2 -->
+  <div class="flex flex-col items-center text-center animate-fadeInUp delay-400">
+    <img src="{{ asset('images/indi.png') }}" alt="Individual" class="w-32 h-32 mb-4 rounded-full border-4 border-green-200 p-2">
+    <h3 class="text-xl font-semibold text-green-700">Individual</h3>
+    <p class="text-gray-500 text-sm">Empowering each citizen’s voice.</p>
+  </div>
+
+  <!-- Citizen Icon 3 -->
+  <div class="flex flex-col items-center text-center animate-fadeInUp delay-500">
+    <img src="{{ asset('images/govern.png') }}" alt="Governance" class="w-32 h-32 mb-4 rounded-full border-4 border-green-200 p-2">
+    <h3 class="text-xl font-semibold text-green-700">Governance</h3>
+    <p class="text-gray-500 text-sm">Transparent, accessible government services.</p>
+  </div>
+
+  <!-- Citizen Icon 4 -->
+  <div class="flex flex-col items-center text-center animate-fadeInUp delay-600">
+    <img src="{{ asset('images/sip.png') }}" alt="Support" class="w-32 h-32 mb-4 rounded-full border-4 border-green-200 p-2">
+    <h3 class="text-xl font-semibold text-green-700">Support</h3>
+    <p class="text-gray-500 text-sm">Assistance and resources for all citizens.</p>
+  </div>
+</div>
+
+
+  <style>
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeInUp {
+      animation: fadeInUp 0.8s forwards;
+    }
+    /* Stagger delay using Tailwind-style classes */
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+    .delay-500 { animation-delay: 0.5s; }
+    .delay-600 { animation-delay: 0.6s; }
+  </style>
+</section>
+
+      
+    </div>
 <!-- 📌 Submit Concern Modal -->
 <div id="reportModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 animate-fadeIn">
@@ -367,10 +453,13 @@
         <textarea name="description" rows="4" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500" placeholder="Describe your concern..." required></textarea>
       </div>
 
+      
       <div class="mb-3">
-        <label class="block text-sm font-medium text-gray-700">Upload Photo (Optional)</label>
-        <input type="file" name="photo" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500">
-      </div>
+  <label class="block text-sm font-medium text-gray-700">Upload Photo (Optional)</label>
+  <input type="file" id="photo" name="photo" accept="image/png, image/jpeg, image/jpg, image/gif" 
+         class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500">
+  <p class="text-xs text-gray-500 mt-1">Max size: 2MB. Allowed types: png, jpg, jpeg, gif.</p>
+</div>
 
       <div class="flex justify-end gap-3 pt-4 border-t">
         <button type="button" onclick="closeModal('reportModal')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
@@ -412,7 +501,22 @@
       }
     });
   });
+const photoInput = document.getElementById('photo');
+  photoInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
 
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+
+    if (!allowedTypes.includes(file.type)) {
+      alert('Invalid file type. Only PNG, JPG, JPEG, GIF allowed.');
+      this.value = '';
+    } else if (file.size > maxSize) {
+      alert('File is too large. Maximum 2MB allowed.');
+      this.value = '';
+    }
+  });
   function closeModal(id) {
     document.getElementById(id).classList.add('hidden');
   }

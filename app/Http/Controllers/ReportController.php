@@ -10,31 +10,35 @@ class ReportController extends Controller
 {
    public function store(Request $request)
 {
+    // ✅ Validate the form including the optional photo upload
     $validated = $request->validate([
         'category' => 'required|string',
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'photo' => 'nullable|image|max:2048',
+        'photo' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // 2MB max, only images
     ]);
 
+    // ✅ Handle photo upload if present
     if ($request->hasFile('photo')) {
         $photo = $request->file('photo');
-        $photoName = time() . '.' . $photo->getClientOriginalExtension();
+        $photoName = time() . '_' . preg_replace('/\s+/', '_', $photo->getClientOriginalName());
 
-        // ✅ Save directly to public/storage/reports
+        // Save directly to public/storage/reports
         $photo->move(public_path('storage/reports'), $photoName);
 
-        // ✅ Store only 'reports/filename.png' in database
+        // Store only relative path in database
         $validated['photo'] = 'reports/' . $photoName;
     }
 
-    // ✅ Default fields
+    // ✅ Default fields for report
     $validated['status'] = 'Pending';
     $validated['location'] = auth()->user()->location ?? 'Unknown';
     $validated['user_id'] = auth()->id();
 
+    // ✅ Create the report
     Report::create($validated);
 
+    // ✅ Redirect back with success message
     return redirect()->back()->with('success', 'Report submitted!');
 }
 

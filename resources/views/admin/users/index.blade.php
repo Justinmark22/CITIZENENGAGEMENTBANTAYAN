@@ -140,6 +140,12 @@
       <div class="flex items-center gap-3">
         <img src="{{ asset('images/citizen.png') }}" class="h-10 w-auto" alt="Logo">
         <h2 class="text-2xl font-bold">Manage Users</h2>
+<a href="{{ route('admin.users.backup') }}" 
+   class="ml-4 text-sm text-blue-600 hover:underline font-medium">
+   View Backup
+</a>
+
+
       </div>
 
       <!-- Search -->

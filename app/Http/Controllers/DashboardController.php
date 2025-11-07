@@ -107,6 +107,7 @@ public function dashboardSantaFe()
         ->where('status', 'Resolved')
         ->latest()
         ->get();
+$totalForwardedCount = $forwardedAnnouncements->count() + $forwardedEvents->count();
 
     return view('dashboard.santafe', compact(
         'alerts',
@@ -117,6 +118,7 @@ public function dashboardSantaFe()
         'events',
         'forwardedAnnouncements',
         'forwardedEvents',
+        'totalForwardedCount',
         'mddrmoAcceptedReports',
         'mddrmoOngoingReports',
         'mddrmoResolvedReports',
@@ -223,6 +225,7 @@ public function dashboardBantayan()
         ->where('status', 'Resolved')
         ->latest()
         ->get();
+$totalForwardedCount = $forwardedAnnouncements->count() + $forwardedEvents->count();
 
     return view('dashboard.bantayan', compact(
         'alerts',
@@ -233,6 +236,7 @@ public function dashboardBantayan()
         'events',
         'forwardedAnnouncements',
         'forwardedEvents',
+         'totalForwardedCount',
         'mddrmoAcceptedReports',
         'mddrmoOngoingReports',
         'mddrmoResolvedReports',
@@ -330,6 +334,7 @@ public function dashboardMadridejos()
         ->where('status', 'Resolved')
         ->latest()
         ->get();
+$totalForwardedCount = $forwardedAnnouncements->count() + $forwardedEvents->count();
 
     return view('dashboard.madridejos', compact(
         'alerts',
@@ -340,6 +345,7 @@ public function dashboardMadridejos()
         'events',
         'forwardedAnnouncements',
         'forwardedEvents',
+        'totalForwardedCount',
         'mddrmoAcceptedReports',
         'mddrmoOngoingReports',
         'mddrmoResolvedReports',

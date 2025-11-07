@@ -15,26 +15,25 @@ class AnnouncementController extends Controller
         
         return view('admin.announcements.create');
     }
-
 public function store(Request $request)
 {
-$request->validate([
-    'title' => 'required|string|max:255',
-    'message' => 'required|string|max:500',
-    'location' => 'required|string',
-    'start_date' => 'required|date|before_or_equal:end_date',
-    'end_date' => 'required|date|after_or_equal:start_date',
-]);
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'message' => 'required|string|max:500',
+        'location' => 'required|string',
+        'start_date' => 'required|date|before_or_equal:end_date',
+        'end_date' => 'required|date|after_or_equal:start_date',
+    ]);
 
-// Create the announcement with time frame
-Announcement::create([
-    'title' => $request->title,
-    'message' => $request->message,
-    'location' => $request->location,
-    'start_date' => $request->start_date,
-    'end_date' => $request->end_date,
-]);
-
+    // ✅ Create the announcement with user_id
+    Announcement::create([
+        'title' => $request->title,
+        'message' => $request->message,
+        'location' => $request->location,
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date,
+        'user_id' => auth()->id(), // Add this line
+    ]);
 
     return redirect()->route('admin.announcements.create')->with('success', 'Announcement added successfully!');
 }
