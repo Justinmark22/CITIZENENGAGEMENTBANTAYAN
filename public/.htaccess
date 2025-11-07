@@ -88,12 +88,24 @@ RewriteRule ^storage/(.*)\.(jpg|jpeg|png|gif|webp|svg)$ storage/$1.$2 [L]
 # 🧰 Add Strong Security Headers
 # ======================================================
 <IfModule mod_headers.c>
+    # Prevent MIME type sniffing
     Header set X-Content-Type-Options "nosniff"
-    Header always append X-Frame-Options SAMEORIGIN
+
+    # Prevent clickjacking
+    Header always unset X-Frame-Options
+    Header set X-Frame-Options "SAMEORIGIN"
+
+    # Basic XSS protection
     Header set X-XSS-Protection "1; mode=block"
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # Enforce HTTPS
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # Hide server info
     Header unset X-Powered-By
-    Header set Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';"
+
+    # Production-safe Content Security Policy
+    Header set Content-Security-Policy "default-src 'self' https:; script-src 'self' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https:;"
 </IfModule>
 
 # ======================================================
