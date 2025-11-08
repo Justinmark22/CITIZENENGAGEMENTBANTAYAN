@@ -140,18 +140,12 @@
       <div class="flex items-center gap-3">
         <img src="{{ asset('images/citizen.png') }}" class="h-10 w-auto" alt="Logo">
         <h2 class="text-2xl font-bold">Manage Users</h2>
-<a href="{{ route('admin.users.backup') }}" 
-   class="ml-4 text-sm text-blue-600 hover:underline font-medium">
-   View Backup
-</a>
-
-
+        <a href="{{ route('admin.users.backup') }}" class="ml-4 text-sm text-blue-600 hover:underline font-medium">View Backup</a>
       </div>
 
       <!-- Search -->
       <form method="GET" action="{{ route('admin.users.index') }}" class="flex w-full md:w-auto max-w-md">
-        <input type="text" name="search" value="{{ request()->search }}" placeholder="Search users..."
-          class="flex-1 px-4 py-2 rounded-l-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        <input type="text" name="search" value="{{ request()->search }}" placeholder="Search users..." class="flex-1 px-4 py-2 rounded-l-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
         <button type="submit" class="bg-blue-600 px-4 py-2 text-white rounded-r-lg hover:bg-blue-700 flex items-center justify-center">
           <i data-lucide="search" class="w-5 h-5"></i>
         </button>
@@ -163,7 +157,6 @@
       @php $locationLabel = $location === 'Santa.Fe' ? 'Sta. Fe' : $location; @endphp
       <section class="mb-8">
         <h5 class="text-lg font-semibold text-blue-700 mb-3 border-l-4 border-blue-600 pl-2">{{ $locationLabel }} Users</h5>
-
         <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
           <table class="min-w-full text-sm text-gray-700">
             <thead class="bg-gray-100 text-xs uppercase sticky-header">
@@ -183,11 +176,9 @@
               <tr class="hover:bg-blue-50 transition">
                 <td class="px-4 py-2"><input type="checkbox"></td>
                 <td class="px-4 py-2 font-medium">{{ $user->name }}</td>
-<td class="px-4 py-2 cursor-pointer text-blue-600 hover:underline"
-    onclick="window.open('https://www.google.com/maps/search/?api=1&query={{ urlencode($user->email) }}', '_blank')">
-  {{ $user->email }}
-</td>
-
+                <td class="px-4 py-2 cursor-pointer text-blue-600 hover:underline" onclick="window.open('https://www.google.com/maps/search/?api=1&query={{ urlencode($user->email) }}', '_blank')">
+                  {{ $user->email }}
+                </td>
                 <td class="px-4 py-2">
                   <span class="px-2 py-1 bg-gray-100 rounded-full text-xs">{{ $locationLabel }}</span>
                 </td>
@@ -223,6 +214,25 @@
     @endforelse
 
     <div class="mt-6">{{ $users->links('pagination::tailwind') }}</div>
+
+    <!-- Login Activity Table -->
+    <section class="mb-8">
+      <h5 class="text-lg font-semibold text-blue-700 mb-3 border-l-4 border-blue-600 pl-2">Login Activity</h5>
+      <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
+        <table class="min-w-full text-sm text-gray-700" id="login-activity-table">
+          <thead class="bg-gray-100 text-xs uppercase sticky-header">
+            <tr>
+              <th class="px-4 py-2">Name</th>
+              <th class="px-4 py-2">Email</th>
+              <th class="px-4 py-2">Login Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- JS will populate this -->
+          </tbody>
+        </table>
+      </div>
+    </section>
 
   </main>
 
@@ -271,7 +281,7 @@
       if(!lat || !lng) { alert("Location not available for this user."); return; }
       mapModal.style.display = 'flex';
       setTimeout(() => {
-        if(mapInstance) { mapInstance.remove(); } // Remove previous map
+        if(mapInstance) { mapInstance.remove(); }
         mapInstance = L.map('mapid').setView([parseFloat(lat), parseFloat(lng)], 15);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; OpenStreetMap contributors'
@@ -284,6 +294,36 @@
 
     mapClose.onclick = () => mapModal.style.display = 'none';
     window.onclick = (e) => { if(e.target == mapModal) mapModal.style.display = 'none'; };
+
+    // Login Activity JS
+    async function logLoginActivity() {
+      try {
+        const res = await fetch('{{ route("admin.activity-logs.login") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({})
+        });
+        const logs = await res.json();
+        const tbody = document.querySelector('#login-activity-table tbody');
+        tbody.innerHTML = '';
+        logs.forEach(log => {
+          const tr = document.createElement('tr');
+          tr.classList.add('hover:bg-blue-50','transition');
+          tr.innerHTML = `
+            <td class="px-4 py-2 font-medium">${log.name}</td>
+            <td class="px-4 py-2">${log.email}</td>
+            <td class="px-4 py-2">${log.logged_in_at}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch(err) {
+        console.error('Login activity failed:', err);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', logLoginActivity);
 
   </script>
 
@@ -315,4 +355,3 @@
 
 </body>
 </html>
-    
