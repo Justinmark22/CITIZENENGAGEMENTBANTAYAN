@@ -204,8 +204,6 @@
     </div>
   </div>
 </section>
-
-
 <!-- ✅ Premium Add Admin Modal -->
 <div id="adminModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-gray-200">
@@ -251,6 +249,19 @@
           </select>
         </div>
 
+        <!-- ✅ New Role Dropdown -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+          <select name="role" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-pink-500 focus:outline-none" required>
+            <option value="">Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="fire">Fire</option>
+            <option value="waste">Waste</option>
+            <option value="water">Water</option>
+            <option value="mdrrmo">MDRRMO</option>
+          </select>
+        </div>
+
         <!-- Footer Buttons -->
         <div class="flex justify-end gap-3 pt-4 border-t mt-6">
           <button type="button" onclick="closeModal('adminModal')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition font-medium">Cancel</button>
@@ -260,6 +271,7 @@
     </div>
   </div>
 </div>
+
 
 @if(session('success'))
 <div 

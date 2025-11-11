@@ -11,25 +11,28 @@ class AdminController extends Controller
     /**
      * Store a newly created admin in storage.
      */
-   public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users',
-        'password' => 'required|min:6',
-        'location' => 'required|string',
-    ]);
+    public function store(Request $request)
+    {
+        // ✅ Validate the incoming request
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|string|min:6',
+            'location' => 'required|string',
+            'role'     => 'required|string|in:admin,fire,waste,water,mdrrmo', // added role validation
+        ]);
 
-    $admin = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => bcrypt($request->password),
-        'location' => $request->location,
-        'role' => 'admin',
-        'status' => 'active',
-    ]);
+        // ✅ Create the admin account
+        $admin = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'location' => $request->location,
+            'role'     => $request->role, // use the selected role
+            'status'   => 'active',
+        ]);
 
-    return redirect()->back()->with('success', '✅ New admin added successfully!');
-}
-
+        // ✅ Redirect back with success message
+        return redirect()->back()->with('success', '✅ New ' . ucfirst($request->role) . ' admin added successfully!');
+    }
 }
