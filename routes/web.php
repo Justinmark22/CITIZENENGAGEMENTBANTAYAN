@@ -147,27 +147,6 @@ Route::post('/login', function (Request $request) {
         ])->onlyInput('email');
     }
 
-    // ✅ reCAPTCHA v3 verification
-    $recaptchaResponse = $request->input('g-recaptcha-response');
-    $secretKey = '6LfSlPorAAAAABfz0johQXHxc_5oa-1mF7Uj01SY'; // replace with your key
-
-    if (!$recaptchaResponse) {
-        return back()->withErrors(['captcha' => 'Please complete the reCAPTCHA verification.'])
-            ->onlyInput('email');
-    }
-
-    $verifyResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-        'secret' => $secretKey,
-        'response' => $recaptchaResponse,
-        'remoteip' => $request->ip(),
-    ]);
-
-    $recaptchaData = $verifyResponse->json();
-
-    if (empty($recaptchaData['success']) || $recaptchaData['success'] !== true || $recaptchaData['score'] < 0.5) {
-        return back()->withErrors(['captcha' => 'Suspicious activity detected. Please try again.'])
-            ->onlyInput('email');
-    }
     // ✅ Validate credentials
     $credentials = $request->validate([
         'email' => ['required', 'email', 'max:255'],
