@@ -1,35 +1,45 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use App\Models\UserActivityLog;
 use App\Models\User; 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
-{public function index(Request $request)
 {
-    $query = User::where(function ($q) {
-        $q->whereNull('role')
-          ->orWhereRaw('LOWER(role) != ?', ['admin']);
-    })
-    ->where(function ($q) {
-        $q->whereNull('location')
-          ->orWhereRaw('LOWER(location) != ?', ['admin']);
-    });
+public function index(Request $request)
+{
+    $excludedRoles = ['fire', 'water', 'mdrrmo', 'waste'];
 
-    if ($request->has('search') && $request->search != '') {
-        $query->where(function($query) use ($request) {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
+    // ✅ Exclude users whose role or location is "admin" (case-insensitive)
+    $query = User::whereRaw('LOWER(TRIM(role)) != ?', ['admin'])
+                 ->whereRaw('LOWER(TRIM(location)) != ?', ['admin'])
+                 ->whereNotIn('role', $excludedRoles);
+
+    // ✅ Optional search
+    if ($request->filled('search')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->search . '%')
+              ->orWhere('email', 'like', '%' . $request->search . '%');
         });
     }
 
+    // ✅ Order and paginate
     $users = $query->orderBy('created_at', 'desc')->paginate(20);
+
+    // ✅ Group users by location (for active users display)
     $groupedUsers = $users->getCollection()->groupBy('location');
 
-    return view('admin.users.index', compact('users', 'groupedUsers'));
+    // ✅ Historical activity logs (duplicates appear if user logs in again)
+    $activeUsersHistory = UserActivityLog::orderBy('created_at', 'desc')
+        ->get()
+        ->groupBy('location');
+
+    // ✅ Pass to the view
+    return view('admin.users.index', compact('users', 'groupedUsers', 'activeUsersHistory'));
 }
+
 
 
 
@@ -183,5 +193,27 @@ public function restore($id)
         return redirect()->route('admin.users.index')
                          ->with('success', 'Recycle Bin has been emptied successfully.');
     }
+    
+// Log login
+public function logLogin(Request $request)
+{
+    $user = $request->user();
+
+    UserActivityLog::updateOrCreate(
+        ['user_id' => $user->id],
+        ['last_login' => now(), 'is_active' => true]
+    );
+
+    return response()->json(['success' => true]);
+}
+
+// Set user inactive
+public function setInactive($id)
+{
+    $log = UserActivityLog::where('user_id', $id)->first();
+    if($log) $log->update(['is_active' => false]);
+
+    return response()->json(['success' => true]);
+}
 }
 

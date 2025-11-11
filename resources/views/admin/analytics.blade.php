@@ -18,53 +18,26 @@
   </button>
 </div>
 
-<!-- ✅ Sidebar (Desktop) -->
-<aside class="fixed top-0 left-0 h-screen w-64 bg-gradient-to-b from-[#1e3a8a] to-[#1e40af] 
-  text-white p-6 flex flex-col shadow-xl z-50 hidden md:flex">
-  <h1 class="text-2xl font-bold mb-8">Admin Panel</h1>
-  <nav class="flex flex-col gap-4">
-    <!-- 📊 Dashboard Section -->
-    <div>
-      <p class="text-xs uppercase tracking-wider text-white/60 mb-2">Main</p>
-      <a href="{{ route('dashboard.admin') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-        <i class="bi bi-speedometer2"></i> Dashboard
-      </a>
-      <a href="{{ route('admin.analytics') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition {{ request()->routeIs('admin.analytics') ? 'bg-white/20 font-semibold' : '' }}">
-        <i class="bi bi-graph-up-arrow"></i> Analytics
-      </a>
-    </div>
-    <!-- 👥 User Management -->
-    <div>
-      <p class="text-xs uppercase tracking-wider text-white/60 mb-2">User Management</p>
-      <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition {{ request()->routeIs('admin.users.index') ? 'bg-white/20 font-semibold' : '' }}">
-        <i class="bi bi-people"></i> Users
-      </a>
-      <a href="{{ route('admin.municipal.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition {{ request()->routeIs('admin.municipal.index') ? 'bg-white/20 font-semibold' : '' }}">
-        <i class="bi bi-person-badge"></i> Municipal Admins
-      </a>
-    </div>
-    <!-- 📢 Content Section -->
-    <div>
-      <p class="text-xs uppercase tracking-wider text-white/60 mb-2">Content</p>
-      <a href="{{ route('admin.announcements.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-        <i class="bi bi-megaphone"></i> Announce
-      </a>
-      <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-        <i class="bi bi-file-text"></i> Reports
-      </a>
-      <a href="{{ route('admin.updates.create') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-        <i class="bi bi-plus-square"></i> Updates
-      </a>
-      <a href="{{ route('admin.events.create') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-        <i class="bi bi-calendar-event"></i> Events
-      </a>
-      <a href="{{ route('admin.engagements.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-        <i class="bi bi-people-fill"></i> Engagement
-      </a>
-    </div>
+<!-- ✅ Sidebar -->
+<aside id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-gradient-to-b from-blue-900 to-blue-800 text-white p-6 transform -translate-x-full lg:translate-x-0 z-50">
+  <h1 class="text-2xl font-bold mb-6">Admin Panel</h1>
+  <nav class="flex flex-col gap-2 text-sm">
+    <p class="uppercase text-xs opacity-70">Main</p>
+    <a href="{{ route('dashboard.admin') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="{{ route('admin.analytics') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+
+    <p class="uppercase text-xs opacity-70 mt-3">User Management</p>
+    <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-people"></i> Users</a>
+    <a href="{{ route('admin.municipal.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-person-badge"></i> Municipal Admins</a>
+
+    <p class="uppercase text-xs opacity-70 mt-3">Content</p>
+    <a href="{{ route('admin.announcements.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-megaphone"></i> Announce</a>
+    
+
+    <a href="{{ route('admin.events.create') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-calendar-event"></i> Events</a>
+   
   </nav>
 </aside>
-
 <!-- ✅ Sidebar (Mobile Toggle) -->
 <aside id="mobileSidebar" class="fixed top-0 left-0 h-screen w-64 bg-gradient-to-b from-[#1e3a8a] to-[#1e40af] 
   text-white p-6 flex flex-col shadow-xl z-50 hidden md:hidden">

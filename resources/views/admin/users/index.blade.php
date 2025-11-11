@@ -1,357 +1,276 @@
 @php
-  $groupedUsers = $users->where('role', '!=', 'Admin')->groupBy('location');
+    // ✅ Group historical active sessions excluding:
+    // - Location = "Admin" (case-insensitive)
+    // - Roles = fire, waste, water, mdrrmo (case-insensitive)
+    $excludedRoles = ['fire', 'waste', 'water', 'mdrrmo'];
+
+    $groupedUsersHistory = ($activeUsersHistory ?? collect())
+        ->filter(function ($logs, $location) use ($excludedRoles) {
+            // Exclude "Admin" location
+            if (strtolower(trim($location)) === 'admin') {
+                return false;
+            }
+
+            // Filter out users with excluded roles
+            $filteredLogs = $logs->reject(function ($user) use ($excludedRoles) {
+                return in_array(strtolower(trim($user->role)), $excludedRoles);
+            });
+
+            // Keep only if there are remaining users after filtering
+            return $filteredLogs->isNotEmpty();
+        })
+        ->map(function ($logs) use ($excludedRoles) {
+            return $logs->reject(function ($user) use ($excludedRoles) {
+                return in_array(strtolower(trim($user->role)), $excludedRoles);
+            });
+        });
 @endphp
 
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Manage Users</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Monitoring - System Logs</title>
 
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- SweetAlert -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Leaflet CSS & JS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-  <style>
-    .sticky-header th {
-      position: sticky;
-      top: 0;
-      background-color: #f8fafc;
-      z-index: 10;
+    <style>
+        .sticky-header th {
+            position: sticky;
+            top: 0;
+            background-color: #f8fafc;
+            z-index: 10;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        
+    #sidebar { transition: transform 0.3s ease-in-out; }
+    @media (max-width: 640px) {
+      .stats-card p:first-child { font-size: 0.7rem; }
+      .stats-card p:last-child { font-size: 1.2rem; }
+      .quick-actions a, .quick-actions button { padding: 0.5rem; font-size: 0.85rem; }
     }
-    .cursor-pointer { cursor: pointer; }
-    /* Modal for Leaflet Map */
-    #mapModal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    #mapModalContent {
-      width: 90%;
-      max-width: 600px;
-      height: 400px;
-      background: white;
-      border-radius: 0.5rem;
-      overflow: hidden;
-      position: relative;
-    }
-    #mapModalClose {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 1.5rem;
-      z-index: 10;
-    }
-    #mapid { height: 100%; width: 100%; }
-  </style>
+  
+    </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">
 
-  <!-- Mobile Header -->
-  <header class="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-800 to-blue-900 text-white flex items-center justify-between p-4 md:hidden shadow-md z-50">
+<body class="bg-gradient-to-br from-gray-100 via-gray-50 to-white text-gray-800 font-sans">
+
+<!-- Mobile Header -->
+<header class="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-800 to-blue-900 text-white flex items-center justify-between p-4 md:hidden shadow-md z-50">
     <button id="sidebarToggle" class="text-white text-2xl">
-      <i data-lucide="menu"></i>
+        <i data-lucide="menu"></i>
     </button>
     <h1 class="text-lg font-semibold">Admin Panel</h1>
     <div class="w-6"></div>
-  </header>
+</header>
 
-  <!-- Sidebar -->
-  <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-blue-800 to-blue-900 text-white p-6 flex flex-col shadow-xl z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
-    <h1 class="text-2xl font-bold mb-8 hidden md:block">Admin Panel</h1>
-    <nav class="flex flex-col gap-8 text-sm">
-      <div>
-        <p class="text-xs uppercase tracking-wider text-white/60 mb-2">Main</p>
-        <a href="{{ route('dashboard.admin') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-          <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-          <span>Dashboard</span>
-        </a>
-        <a href="{{ route('admin.analytics') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition {{ request()->routeIs('admin.analytics') ? 'bg-white/20 font-semibold' : '' }}">
-          <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-          <span>Analytics</span>
-        </a>
-      </div>
-      <div>
-        <p class="text-xs uppercase tracking-wider text-white/60 mb-2">User Management</p>
-        <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition {{ request()->routeIs('admin.users.index') ? 'bg-white/20 font-semibold' : '' }}">
-          <i data-lucide="users" class="w-5 h-5"></i>
-          <span>Users</span>
-        </a>
-        <a href="{{ route('admin.municipal.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition {{ request()->routeIs('admin.municipal.index') ? 'bg-white/20 font-semibold' : '' }}">
-          <i data-lucide="user-cog" class="w-5 h-5"></i>
-          <span>Municipal Admins</span>
-        </a>
-      </div>
-      <div>
-        <p class="text-xs uppercase tracking-wider text-white/60 mb-2">Content</p>
-        <a href="{{ route('admin.announcements.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-          <i data-lucide="megaphone" class="w-5 h-5"></i>
-          <span>Announcements</span>
-        </a>
-        <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-          <i data-lucide="file-text" class="w-5 h-5"></i>
-          <span>Reports</span>
-        </a>
-        <a href="{{ route('admin.updates.create') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-          <i data-lucide="plus-square" class="w-5 h-5"></i>
-          <span>Updates</span>
-        </a>
-        <a href="{{ route('admin.events.create') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-          <i data-lucide="calendar" class="w-5 h-5"></i>
-          <span>Events</span>
-        </a>
-        <a href="{{ route('admin.engagements.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition">
-          <i data-lucide="users-2" class="w-5 h-5"></i>
-          <span>Engagements</span>
-        </a>
-      </div>
-    </nav>
-  </aside>
+<!-- ✅ Sidebar -->
+<aside id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-gradient-to-b from-blue-900 to-blue-800 text-white p-6 transform -translate-x-full lg:translate-x-0 z-50">
+  <h1 class="text-2xl font-bold mb-6">Admin Panel</h1>
+  <nav class="flex flex-col gap-2 text-sm">
+    <p class="uppercase text-xs opacity-70">Main</p>
+    <a href="{{ route('dashboard.admin') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="{{ route('admin.analytics') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
 
-  <!-- Overlay -->
-  <div id="overlay" class="fixed inset-0 bg-black/50 hidden z-30 md:hidden"></div>
+    <p class="uppercase text-xs opacity-70 mt-3">User Management</p>
+    <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-people"></i> Users</a>
+    <a href="{{ route('admin.municipal.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-person-badge"></i> Municipal Admins</a>
 
-  <!-- Map Modal -->
-  <div id="mapModal" class="flex">
-    <div id="mapModalContent">
-      <span id="mapModalClose">&times;</span>
-      <div id="mapid"></div>
-    </div>
-  </div>
+    <p class="uppercase text-xs opacity-70 mt-3">Content</p>
+    <a href="{{ route('admin.announcements.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-megaphone"></i> Announce</a>
+    
 
-  <!-- Main Content -->
-  <main class="pt-16 md:pt-8 md:ml-64 p-6 transition-all duration-300 ease-in-out">
+    <a href="{{ route('admin.events.create') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-calendar-event"></i> Events</a>
+   
+  </nav>
+</aside>
 
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-      <div class="flex items-center gap-3">
-        <img src="{{ asset('images/citizen.png') }}" class="h-10 w-auto" alt="Logo">
-        <h2 class="text-2xl font-bold">Manage Users</h2>
-        <a href="{{ route('admin.users.backup') }}" class="ml-4 text-sm text-blue-600 hover:underline font-medium">View Backup</a>
-      </div>
+<!-- Overlay -->
+<div id="overlay" class="fixed inset-0 bg-black/50 hidden z-30 md:hidden"></div>
 
-      <!-- Search -->
-      <form method="GET" action="{{ route('admin.users.index') }}" class="flex w-full md:w-auto max-w-md">
-        <input type="text" name="search" value="{{ request()->search }}" placeholder="Search users..." class="flex-1 px-4 py-2 rounded-l-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        <button type="submit" class="bg-blue-600 px-4 py-2 text-white rounded-r-lg hover:bg-blue-700 flex items-center justify-center">
-          <i data-lucide="search" class="w-5 h-5"></i>
-        </button>
-      </form>
+<!-- Main Content -->
+<main class="pt-16 md:pt-8 md:ml-64 p-6 transition-all duration-300">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-3xl font-extrabold text-gray-800 tracking-tight">User Activity Logs</h2>
+       <span id="liveClock" class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full font-mono shadow-sm">
+    Updated: {{ now('Asia/Manila')->format('d M Y, h:i A') }}
+</span>
+<script>
+    function updateClock() {
+        const clock = document.getElementById('liveClock');
+        const now = new Date();
+        
+        // Convert to Manila time
+        const options = {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        };
+        const manilaTime = now.toLocaleString('en-PH', options);
+        clock.textContent = `Updated: ${manilaTime}`;
+    }
+
+    // Update every second
+    setInterval(updateClock, 1000);
+    updateClock(); // initial call
+</script>
+
     </div>
 
-    <!-- Users Table -->
-    @forelse ($groupedUsers as $location => $usersByLocation)
-      @php $locationLabel = $location === 'Santa.Fe' ? 'Sta. Fe' : $location; @endphp
-      <section class="mb-8">
-        <h5 class="text-lg font-semibold text-blue-700 mb-3 border-l-4 border-blue-600 pl-2">{{ $locationLabel }} Users</h5>
-        <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
-          <table class="min-w-full text-sm text-gray-700">
-            <thead class="bg-gray-100 text-xs uppercase sticky-header">
-              <tr>
-                <th class="px-4 py-2"><input type="checkbox"></th>
-                <th class="px-4 py-2 text-left">Name</th>
-                <th class="px-4 py-2 text-left">Email</th>
-                <th class="px-4 py-2 text-left">Location</th>
-                <th class="px-4 py-2 text-left">Registered</th>
-                <th class="px-4 py-2 text-left">ID</th>
-                <th class="px-4 py-2 text-left">Status</th>
-                <th class="px-4 py-2 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              @foreach ($usersByLocation as $user)
-              <tr class="hover:bg-blue-50 transition">
-                <td class="px-4 py-2"><input type="checkbox"></td>
-                <td class="px-4 py-2 font-medium">{{ $user->name }}</td>
-                <td class="px-4 py-2 cursor-pointer text-blue-600 hover:underline" onclick="window.open('https://www.google.com/maps/search/?api=1&query={{ urlencode($user->email) }}', '_blank')">
-                  {{ $user->email }}
-                </td>
-                <td class="px-4 py-2">
-                  <span class="px-2 py-1 bg-gray-100 rounded-full text-xs">{{ $locationLabel }}</span>
-                </td>
-                <td class="px-4 py-2">{{ optional($user->created_at)->format('d M Y') ?? 'N/A' }}</td>
-                <td class="px-4 py-2">{{ $user->id }}</td>
-                <td class="px-4 py-2">
-                  @if($user->status === 'active')
-                    <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-800">Login Successful</span>
-                  @else
-                    <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">Inactive</span>
-                  @endif
-                </td>
-                <td class="px-4 py-2 text-center flex justify-center gap-2">
-                  <a href="{{ route('admin.users.edit', $user->id) }}" class="text-blue-600 hover:text-blue-800">
-                    <i data-lucide="edit" class="w-5 h-5"></i>
-                  </a>
-                  <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}" class="inline delete-user-form">
-                    @csrf
-                    @method('DELETE')
-                    <button type="button" class="text-red-600 hover:text-red-800 delete-user-btn" data-user="{{ $user->name }}">
-                      <i data-lucide="trash-2" class="w-5 h-5"></i>
-                    </button>
-                  </form>
-                </td>
-              </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
-      </section>
+    @forelse ($groupedUsersHistory as $location => $usersByLocation)
+        @php $locationLabel = $location === 'Santa.Fe' ? 'Sta. Fe' : $location; @endphp
+
+        <section class="mb-10">
+            <div class="flex items-center justify-between mb-3">
+                <h5 class="text-xl font-semibold text-blue-800 flex items-center gap-2">
+                    <i data-lucide="map-pin" class="w-5 h-5 text-blue-600"></i> 
+                    {{ $locationLabel }} Users
+                </h5>
+                <span class="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
+                    {{ $usersByLocation->count() }} Active Logs
+                </span>
+            </div>
+
+            <div class="glass-card rounded-2xl shadow-sm overflow-x-auto border border-gray-100">
+                <table class="min-w-full text-sm text-gray-700">
+                    <thead class="bg-blue-50 text-xs uppercase font-semibold sticky-header text-gray-600">
+                        <tr>
+                            <th class="px-4 py-3 text-left">ID</th>
+                            <th class="px-4 py-3 text-left">Name</th>
+                            <th class="px-4 py-3 text-left">Email</th>
+                            <th class="px-4 py-3 text-left">Location</th>
+                            <th class="px-4 py-3 text-left">Status</th>
+                            <th class="px-4 py-3 text-left">Joined</th>
+                            <th class="px-4 py-3 text-left">Last Login</th>
+                            <th class="px-4 py-3 text-left">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @foreach ($usersByLocation as $user)
+                            <tr class="hover:bg-blue-50 transition duration-200">
+                                <td class="px-4 py-2 text-gray-500">{{ $user->user_id }}</td>
+                                <td class="px-4 py-2 font-medium text-gray-800">{{ $user->name }}</td>
+                                <td class="px-4 py-2">
+                                   <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($user->location) }}" 
+   target="_blank" 
+   class="text-blue-600 hover:underline">
+    {{ $user->email }}
+</a>
+
+                                </td>
+                                <td class="px-4 py-2">{{ ucfirst($user->location) }}</td>
+                                <td class="px-4 py-2">
+                                    <span class="text-xs px-2 py-1 rounded-full font-semibold 
+                                        {{ $user->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600' }}">
+                                        {{ ucfirst($user->status) }}
+                                    </span>
+                                </td>
+                                 <td class="px-4 py-2">
+    {{ \Carbon\Carbon::parse($user->created_at)->timezone('Asia/Manila')->format('d M Y') }}
+</td>
+
+                                <td class="px-4 py-2">
+                                    {{ \Carbon\Carbon::parse($user->last_login)->timezone('Asia/Manila')->format('d M Y, h:i A') }}
+                                </td>
+        
+
+                                <td class="px-4 py-2">
+                                    <form action="{{ route('admin.users.destroy', $user->user_id) }}" method="POST" class="inline-block delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" onclick="confirmDelete(this)" 
+                                            class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg flex items-center gap-1 transition">
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </section>
     @empty
-      <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-lg">No users found.</div>
+        <div class="bg-yellow-50 border border-yellow-300 text-yellow-700 p-6 rounded-xl text-center font-medium shadow-sm">
+            <i data-lucide="alert-triangle" class="inline-block w-6 h-6 mr-2 align-middle text-yellow-600"></i>
+            No user activity found.
+        </div>
     @endforelse
+</main>
 
-    <div class="mt-6">{{ $users->links('pagination::tailwind') }}</div>
-
-    <!-- Login Activity Table -->
-    <section class="mb-8">
-      <h5 class="text-lg font-semibold text-blue-700 mb-3 border-l-4 border-blue-600 pl-2">Login Activity</h5>
-      <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
-        <table class="min-w-full text-sm text-gray-700" id="login-activity-table">
-          <thead class="bg-gray-100 text-xs uppercase sticky-header">
-            <tr>
-              <th class="px-4 py-2">Name</th>
-              <th class="px-4 py-2">Email</th>
-              <th class="px-4 py-2">Login Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- JS will populate this -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-  </main>
-
-  <script>
+<script>
     lucide.createIcons();
 
+    // Sidebar toggle
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
     const toggleBtn = document.getElementById('sidebarToggle');
 
     toggleBtn?.addEventListener('click', () => {
-      sidebar.classList.toggle('-translate-x-full');
-      overlay.classList.toggle('hidden');
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
     });
     overlay?.addEventListener('click', () => {
-      sidebar.classList.add('-translate-x-full');
-      overlay.classList.add('hidden');
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
     });
 
-    document.querySelectorAll('.delete-user-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const form = btn.closest('form');
-        const name = btn.dataset.user;
+    // SweetAlert Delete Confirmation
+    function confirmDelete(button) {
         Swal.fire({
-          title: 'Delete User?',
-          html: `<small>Are you sure you want to delete <strong>${name}</strong>?</small>`,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Delete',
-          cancelButtonText: 'Cancel',
-          buttonsStyling: false,
-          customClass: {
-            confirmButton: 'bg-red-600 text-white px-4 py-2 rounded-lg mx-2',
-            cancelButton: 'bg-gray-200 px-4 py-2 rounded-lg'
-          }
-        }).then(r => { if (r.isConfirmed) form.submit(); });
-      });
-    });
-
-    // Leaflet Map Modal
-    const mapModal = document.getElementById('mapModal');
-    const mapClose = document.getElementById('mapModalClose');
-    let mapInstance;
-
-    function openMap(lat, lng, name) {
-      if(!lat || !lng) { alert("Location not available for this user."); return; }
-      mapModal.style.display = 'flex';
-      setTimeout(() => {
-        if(mapInstance) { mapInstance.remove(); }
-        mapInstance = L.map('mapid').setView([parseFloat(lat), parseFloat(lng)], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(mapInstance);
-        L.marker([parseFloat(lat), parseFloat(lng)]).addTo(mapInstance)
-          .bindPopup(name)
-          .openPopup();
-      }, 50);
+            title: 'Delete User?',
+            text: 'This action cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e3342f',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!',
+            customClass: { popup: 'rounded-xl' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                button.closest('form').submit();
+            }
+        });
     }
 
-    mapClose.onclick = () => mapModal.style.display = 'none';
-    window.onclick = (e) => { if(e.target == mapModal) mapModal.style.display = 'none'; };
-
-    // Login Activity JS
-    async function logLoginActivity() {
-      try {
-        const res = await fetch('{{ route("admin.activity-logs.login") }}', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          },
-          body: JSON.stringify({})
+    // SweetAlert notifications
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: '{{ session('success') }}',
+            confirmButtonText: 'OK',
+            buttonsStyling: false,
+            customClass: { confirmButton: 'bg-green-600 text-white px-4 py-2 rounded-lg' }
         });
-        const logs = await res.json();
-        const tbody = document.querySelector('#login-activity-table tbody');
-        tbody.innerHTML = '';
-        logs.forEach(log => {
-          const tr = document.createElement('tr');
-          tr.classList.add('hover:bg-blue-50','transition');
-          tr.innerHTML = `
-            <td class="px-4 py-2 font-medium">${log.name}</td>
-            <td class="px-4 py-2">${log.email}</td>
-            <td class="px-4 py-2">${log.logged_in_at}</td>
-          `;
-          tbody.appendChild(tr);
+    @endif
+
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: '{{ session('error') }}',
+            confirmButtonText: 'OK',
+            buttonsStyling: false,
+            customClass: { confirmButton: 'bg-red-600 text-white px-4 py-2 rounded-lg' }
         });
-      } catch(err) {
-        console.error('Login activity failed:', err);
-      }
-    }
-    document.addEventListener('DOMContentLoaded', logLoginActivity);
-
-  </script>
-
-  @if(session('success'))
-  <script>
-    Swal.fire({
-      icon: 'success',
-      title: 'Success',
-      text: '{{ session('success') }}',
-      confirmButtonText: 'OK',
-      buttonsStyling: false,
-      customClass: { confirmButton: 'bg-green-600 text-white px-4 py-2 rounded-lg' }
-    });
-  </script>
-  @endif
-
-  @if(session('error'))
-  <script>
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: '{{ session('error') }}',
-      confirmButtonText: 'OK',
-      buttonsStyling: false,
-      customClass: { confirmButton: 'bg-red-600 text-white px-4 py-2 rounded-lg' }
-    });
-  </script>
-  @endif
+    @endif
+</script>
 
 </body>
 </html>

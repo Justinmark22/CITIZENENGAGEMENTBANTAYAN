@@ -278,9 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
 
     <div class="mt-4 flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-      <button class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs hover:bg-green-700 flex items-center gap-1 animate-bounce">
-        <i data-lucide="eye" class="w-4 h-4"></i> View Details
-      </button>
+
 <button onclick="window.location='{{ route('feedback.page', ['report' => $report->id]) }}'" 
         class="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs hover:bg-green-200 flex items-center gap-1 animate-pulse">
     <i data-lucide="message-circle" class="w-4 h-4"></i> Send Feedback
@@ -345,12 +343,12 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
         <div class="mt-4 flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-          <button class="bg-yellow-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-yellow-600 flex items-center gap-1 animate-bounce">
-            <i data-lucide="eye" class="w-4 h-4"></i> View Details
-          </button>
-          <button class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-lg text-xs hover:bg-yellow-200 flex items-center gap-1 animate-pulse">
-            <i data-lucide="message-circle" class="w-4 h-4"></i> Send Feedback
-          </button>
+         
+         
+<button onclick="window.location='{{ route('feedback.page', ['report' => $report->id]) }}'" 
+        class="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs hover:bg-green-200 flex items-center gap-1 animate-pulse">
+    <i data-lucide="message-circle" class="w-4 h-4"></i> Send Feedback
+</button>
         </div>
       </div>
     @empty

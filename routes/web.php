@@ -2,6 +2,7 @@
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use App\Models\UserActivityLog;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -132,11 +133,11 @@ Route::get('/', function () {
 
     return $response;
 });
-
 // ✅ LOGIN ROUTES
 Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function (Request $request) {
+
     $key = Str::lower($request->input('email')) . '|' . $request->ip();
 
     if (RateLimiter::tooManyAttempts($key, 3)) {
@@ -167,7 +168,6 @@ Route::post('/login', function (Request $request) {
         return back()->withErrors(['captcha' => 'Suspicious activity detected. Please try again.'])
             ->onlyInput('email');
     }
-
     // ✅ Validate credentials
     $credentials = $request->validate([
         'email' => ['required', 'email', 'max:255'],
@@ -192,14 +192,30 @@ Route::post('/login', function (Request $request) {
         cookie()->queue(cookie('user_role', $user->role, 60));
         cookie()->queue(cookie('secure_session', Str::random(32), 60, null, null, true, true));
 
+        // ✅ Mark user as active
         $user->status = 'active';
         $user->save();
+
+        // ✅ Log user activity for monitoring/duplication
+        \App\Models\UserActivityLog::create([
+            'user_id'    => $user->id,
+            'name'       => $user->name,
+            'email'      => $user->email,
+            'role'       => $user->role,
+            'location'   => $user->location,
+            'status'     => 'active',
+            'last_login' => now(),
+        ]);
+
         RateLimiter::clear($key);
 
-        // ✅ Admins, Staff, or Admin Location → skip OTP
+        // ✅ Store last login time in session (for table display)
+        session(['last_login_' . $user->id => now()]);
+
+        // ✅ Admins/Staff (excluding location = 'admin') → skip OTP
         if (
             in_array(strtolower($user->role), ['admin', 'mdrrmo', 'waste', 'water', 'fire'])
-            || strtolower($user->location) === 'admin'
+            && strtolower($user->location) !== 'admin'
         ) {
             $route = match (strtolower($user->role)) {
                 'admin' => match (strtolower($user->location)) {
@@ -242,7 +258,7 @@ Route::post('/login', function (Request $request) {
             return redirect()->route($route);
         }
 
-        // ✅ Citizens only → Send OTP
+        // ✅ Citizens & Users with location = 'admin' → Send OTP
         $otp = rand(100000, 999999);
 
         session([
@@ -297,23 +313,39 @@ Route::post('/verify-otp', function (Request $request) {
     Auth::login($user);
     session()->forget(['otp', 'otp_expires', 'otp_user_id']);
 
-    // ✅ Redirect based on location (for citizens)
+    // ✅ Store last login time in session
+    session(['last_login_' . $user->id => now()]);
+
+    // ✅ Redirect based on location (for citizens & admin location)
     return match ($user->location) {
         'Santa.Fe'   => redirect()->route('dashboard.santafe'),
         'Bantayan'   => redirect()->route('dashboard.bantayan'),
         'Madridejos' => redirect()->route('dashboard.madridejos'),
+        'admin'      => redirect()->route('dashboard.admin'), // added admin location
         default      => redirect('/dashboard'),
     };
 })->name('otp.verify.submit');
 
+
 Route::post('/logout', function (Request $request) {
     $user = Auth::user();
     if ($user) {
+        // Update user's status
         $user->status = 'offline';
         $user->save();
+
+        // Update latest activity log
+      UserActivityLog::where('user_id', $user->id)
+    ->whereNull('logout_at')
+    ->orderBy('last_login', 'desc')
+    ->update([
+        'logout_at' => now(),
+        'status' => 'inactive',
+    ]);
+
     }
 
-    // 🔥 Forget cookies
+    // Forget cookies
     cookie()->queue(cookie()->forget('user_name'));
     cookie()->queue(cookie()->forget('user_role'));
     cookie()->queue(cookie()->forget('secure_session'));
@@ -324,7 +356,6 @@ Route::post('/logout', function (Request $request) {
 
     return redirect('/');
 })->name('logout');
-
 
 // Dashboard redirection logic
 Route::get('/dashboard', [DashboardController::class, 'redirectBasedOnRole'])->middleware('auth')->name('dashboard');
@@ -1008,3 +1039,8 @@ Route::get('/santafe/events-announcements', [EventsAndAnnouncementController::cl
     ->name('eventsandannouncements.santafe');
     // notifications
     Route::get('/forwarded-notifications-count', [YourController::class, 'getForwardedNotificationsCount'])->name('forwarded.notifications.count');
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
+});
+Route::get('/admin/download-database', [AdminDashboardController::class, 'downloadDatabase'])
+     ->name('admin.download.database');

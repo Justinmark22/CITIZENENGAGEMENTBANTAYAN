@@ -11,10 +11,10 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate(
-            ['email' => 'admin@gmail.com'], // Prevent duplicate entries
+            ['email' => 'bantayan911@gmail.com'], // Prevent duplicate entries
             [
                 'name' => 'Admin User',
-                'email' => 'admin@gmail.com',
+                'email' => 'bantayan911@gmail.com',
                 'password' => Hash::make('thisisadmin00'), // Secure password
                 'role' => 'Admin', // ✅ Added role field
                 'location' => 'admin', // ✅ Optional: matches your redirect logic

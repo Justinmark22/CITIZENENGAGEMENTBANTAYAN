@@ -415,11 +415,22 @@ public function reportsMadridejos()
  * ============================ */
 public function getResolvedReportsSantafe()
 {
-    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['Santa.Fe'])
+   // Fetch Forwarded Reports
+    $forwardedReports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['Santa.Fe'])
         ->whereRaw('LOWER(status) = ?', ['resolved'])
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
+    // Fetch Rerouted Reports
+    $reroutedReports = \App\Models\ReroutedReport::whereRaw('LOWER(location) = ?', ['Santa.Fe'])
+        ->whereRaw('LOWER(status) = ?', ['resolved'])
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
+
+    // Combine both collections
+    $reports = $forwardedReports->merge($reroutedReports)->sortByDesc('updated_at')->values();
+
+    // Map photo to a full URL
     $reports->transform(function ($report) {
         $report->photo = $report->photo
             ? asset('storage/' . ltrim($report->photo, '/'))
@@ -432,11 +443,22 @@ public function getResolvedReportsSantafe()
 
 public function getResolvedReportsBantayan()
 {
-    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['Bantayan'])
+    // Fetch Forwarded Reports
+    $forwardedReports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['Bantayan'])
         ->whereRaw('LOWER(status) = ?', ['resolved'])
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
+    // Fetch Rerouted Reports
+    $reroutedReports = \App\Models\ReroutedReport::whereRaw('LOWER(location) = ?', ['Bantayan'])
+        ->whereRaw('LOWER(status) = ?', ['resolved'])
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
+
+    // Combine both collections
+    $reports = $forwardedReports->merge($reroutedReports)->sortByDesc('updated_at')->values();
+
+    // Map photo to a full URL
     $reports->transform(function ($report) {
         $report->photo = $report->photo
             ? asset('storage/' . ltrim($report->photo, '/'))
@@ -449,11 +471,22 @@ public function getResolvedReportsBantayan()
 
 public function getResolvedReportsMadridejos()
 {
-    $reports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['Madridejos'])
+   // Fetch Forwarded Reports
+    $forwardedReports = \App\Models\ForwardedReport::whereRaw('LOWER(location) = ?', ['Madridejos'])
         ->whereRaw('LOWER(status) = ?', ['resolved'])
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
+    // Fetch Rerouted Reports
+    $reroutedReports = \App\Models\ReroutedReport::whereRaw('LOWER(location) = ?', ['Madridejos'])
+        ->whereRaw('LOWER(status) = ?', ['resolved'])
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
+
+    // Combine both collections
+    $reports = $forwardedReports->merge($reroutedReports)->sortByDesc('updated_at')->values();
+
+    // Map photo to a full URL
     $reports->transform(function ($report) {
         $report->photo = $report->photo
             ? asset('storage/' . ltrim($report->photo, '/'))
@@ -463,7 +496,6 @@ public function getResolvedReportsMadridejos()
 
     return response()->json($reports);
 }
-
 
 public function bantayanAnnouncement()
 {

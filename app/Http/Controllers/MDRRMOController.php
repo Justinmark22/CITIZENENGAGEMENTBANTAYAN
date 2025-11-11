@@ -428,16 +428,29 @@ public function santafeAnnouncements()
 }
  public function getResolvedReports()
 {
-    $reports = ForwardedReport::where('location', 'Santa.Fe')
+    // ✅ Fetch Resolved reports from ForwardedReport
+    $forwarded = ForwardedReport::where('location', 'Santa.Fe')
         ->where('status', 'Resolved')
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
-    // Map photo to a full URL
+    // ✅ Fetch Resolved reports from ReroutedReport
+    $rerouted = ReroutedReport::where('location', 'Santa.Fe')
+        ->where('status', 'Resolved')
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
+
+    // ✅ Merge both collections
+    $reports = $forwarded->merge($rerouted)
+        ->sortByDesc('updated_at')
+        ->values(); // reindex the collection
+
+    // ✅ Map photo to full URL and add default property
     $reports->transform(function ($report) {
         $report->photo = $report->photo 
-            ? asset('storage/' . $report->photo)   // ✅ full URL
+            ? asset('storage/' . $report->photo)
             : null;
+        $report->announced = false; // add default field
         return $report;
     });
 
@@ -446,44 +459,69 @@ public function santafeAnnouncements()
 
 // 🔹 Madridejos Resolved Reports
 public function getResolvedReportsMadridejos()
-{
-    $reports = ForwardedReport::where('location', 'Madridejos')
+{ // ✅ Fetch Resolved reports from ForwardedReport
+    $forwarded = ForwardedReport::where('location', 'Madridejos')
         ->where('status', 'Resolved')
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
-    $reports->transform(function ($report) {
-        $report->photo = $report->photo 
-            ? asset('storage/' . $report->photo) 
-            : null;
-        return $report;
-    });
-
-    return response()->json($reports);
-}public function getResolvedReportsBantayan()
-{
-    $reports = ForwardedReport::where('location', 'Bantayan')
+    // ✅ Fetch Resolved reports from ReroutedReport
+    $rerouted = ReroutedReport::where('location', ' Madridejos')
         ->where('status', 'Resolved')
         ->orderBy('updated_at', 'desc')
         ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
-    // Map photo to a full URL
+    // ✅ Merge both collections
+    $reports = $forwarded->merge($rerouted)
+        ->sortByDesc('updated_at')
+        ->values(); // reindex the collection
+
+    // ✅ Map photo to full URL and add default property
     $reports->transform(function ($report) {
         $report->photo = $report->photo 
-            ? asset('storage/' . $report->photo)  // ✅ full URL
+            ? asset('storage/' . $report->photo)
             : null;
-        $report->announced = false; // add default announced state
+        $report->announced = false; // add default field
         return $report;
     });
 
     return response()->json($reports);
 }
 
+public function getResolvedReportsBantayan()
+{
+    // ✅ Fetch Resolved reports from ForwardedReport
+    $forwarded = ForwardedReport::where('location', 'Bantayan')
+        ->where('status', 'Resolved')
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
 
+    // ✅ Fetch Resolved reports from ReroutedReport
+    $rerouted = ReroutedReport::where('location', 'Bantayan')
+        ->where('status', 'Resolved')
+        ->orderBy('updated_at', 'desc')
+        ->get(['id', 'title', 'description', 'category', 'updated_at', 'photo']);
+
+    // ✅ Merge both collections
+    $reports = $forwarded->merge($rerouted)
+        ->sortByDesc('updated_at')
+        ->values(); // reindex the collection
+
+    // ✅ Map photo to full URL and add default property
+    $reports->transform(function ($report) {
+        $report->photo = $report->photo 
+            ? asset('storage/' . $report->photo)
+            : null;
+        $report->announced = false; // add default field
+        return $report;
+    });
+
+    return response()->json($reports);
+}
 
 public function postAnnouncement(Request $request)
 {
-    // Validate input
+    // ✅ Validate input
     $request->validate([
         'title'       => 'required|string|max:255',
         'description' => 'required|string',
@@ -492,26 +530,27 @@ public function postAnnouncement(Request $request)
         'photo'       => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
     ]);
 
-    // Handle photo upload
+    // ✅ Handle photo upload
     $photoPath = null;
     if ($request->hasFile('photo')) {
+        // Store in storage/app/public/announcements
         $photoPath = $request->file('photo')->store('announcements', 'public');
-        // stored in: storage/app/public/announcements
     }
 
-    // Save announcement
+    // ✅ Save announcement record
     $announcement = PostAnnounce::create([
         'title'       => $request->title,
         'description' => $request->description,
         'category'    => $request->category ?? 'General',
         'location'    => $request->location,
-        'photo'       => $photoPath, // ✅ save photo path
+        'photo'       => $photoPath, // store relative path
     ]);
 
     return response()->json([
         'success' => true,
         'message' => 'Announcement posted successfully.',
         'data'    => $announcement,
+        'photo_url' => $photoPath ? asset('storage/' . $photoPath) : null, // ✅ full public URL
     ]);
 }
 

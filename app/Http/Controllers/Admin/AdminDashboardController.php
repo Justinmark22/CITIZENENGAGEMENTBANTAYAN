@@ -49,6 +49,45 @@ class AdminDashboardController extends Controller
         'reportDays',
         'reportCounts'
     ));
+}public function downloadDatabase()
+{
+    $database = env('DB_DATABASE');
+    $username = env('DB_USERNAME');
+    $password = env('DB_PASSWORD');
+    $host = env('DB_HOST', '127.0.0.1');
+
+    try {
+        $pdo = new \PDO("mysql:host=$host;dbname=$database", $username, $password);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+        $tables = $pdo->query("SHOW TABLES")->fetchAll(\PDO::FETCH_COLUMN);
+
+        return response()->streamDownload(function() use ($pdo, $tables) {
+            foreach ($tables as $table) {
+                // Drop table
+                echo "DROP TABLE IF EXISTS `$table`;\n";
+
+                // Create table
+                $create = $pdo->query("SHOW CREATE TABLE `$table`")->fetch(\PDO::FETCH_ASSOC);
+                echo $create['Create Table'] . ";\n\n";
+
+                // Insert data in chunks to avoid memory issues
+                $stmt = $pdo->query("SELECT * FROM `$table`");
+                while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                    $columns = implode('`,`', array_keys($row));
+                    $values = implode(',', array_map([$pdo, 'quote'], array_values($row)));
+                    echo "INSERT INTO `$table` (`$columns`) VALUES ($values);\n";
+                }
+                echo "\n\n";
+            }
+        }, 'system.sql', [
+            'Content-Type' => 'application/sql',
+        ]);
+
+    } catch (\Exception $e) {
+        return back()->with('error', 'Database export failed: ' . $e->getMessage());
+    }
 }
+
 
 }

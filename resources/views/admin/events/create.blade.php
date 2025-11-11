@@ -58,19 +58,19 @@
   <h1 class="text-2xl font-bold mb-6">Admin Panel</h1>
   <nav class="flex flex-col gap-2 text-sm">
     <p class="uppercase text-xs opacity-70">Main</p>
-    <a href="{{ route('dashboard.admin') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10 sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
-    <a href="{{ route('admin.analytics') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10 sidebar-link"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+    <a href="{{ route('dashboard.admin') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="{{ route('admin.analytics') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
 
     <p class="uppercase text-xs opacity-70 mt-3">User Management</p>
-    <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10 sidebar-link"><i class="bi bi-people"></i> Users</a>
-    <a href="{{ route('admin.municipal.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10 sidebar-link"><i class="bi bi-person-badge"></i> Municipal Admins</a>
+    <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-people"></i> Users</a>
+    <a href="{{ route('admin.municipal.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-person-badge"></i> Municipal Admins</a>
 
     <p class="uppercase text-xs opacity-70 mt-3">Content</p>
-    <a href="{{ route('admin.announcements.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10 sidebar-link"><i class="bi bi-megaphone"></i> Announce</a>
-    <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10 sidebar-link"><i class="bi bi-file-text"></i> Reports</a>
-    <a href="{{ route('admin.updates.create') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10 sidebar-link"><i class="bi bi-plus-square"></i> Updates</a>
-    <a href="{{ route('admin.events.create') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10 sidebar-link"><i class="bi bi-calendar-event"></i> Events</a>
-    <a href="{{ route('admin.engagements.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10 sidebar-link"><i class="bi bi-people-fill"></i> Engagement</a>
+    <a href="{{ route('admin.announcements.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-megaphone"></i> Announce</a>
+    
+
+    <a href="{{ route('admin.events.create') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-calendar-event"></i> Events</a>
+   
   </nav>
 </aside>
 

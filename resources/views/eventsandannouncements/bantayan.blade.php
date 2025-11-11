@@ -12,6 +12,8 @@
   @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
   .badge { display:inline-block; padding:.25rem .5rem; font-size:.75rem; font-weight:600; border-radius:.375rem; }
   .card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+  th, td { border-bottom: 1px solid #e5e7eb; padding: 0.75rem; text-align: left; }
+  th { background: #f3f4f6; font-weight: 600; color: #374151; }
 </style>
 </head>
 <body class="min-h-screen">
@@ -21,7 +23,7 @@
   <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
     <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 flex items-center gap-3">
       <i data-lucide="bell" class="w-8 h-8 text-green-600"></i>
-    
+      Bantayan Forwarded Announcements & Events
     </h1>
     <p class="text-gray-500 mt-2 sm:mt-0 text-sm sm:text-base">
       Forwarded Announcements and Events for Bantayan Barangay.
@@ -31,7 +33,7 @@
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 fade-in space-y-12">
 
-  <!-- Forwarded Announcements -->
+  <!-- ✅ Forwarded Announcements (Original) -->
   <section>
     <h2 class="text-2xl sm:text-3xl font-semibold mb-6 text-gray-800 border-l-4 border-green-500 pl-3">Forwarded Announcements</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
@@ -61,7 +63,7 @@
     </div>
   </section>
 
-  <!-- Forwarded Events -->
+  <!-- ✅ Forwarded Events (Original) -->
   <section>
     <h2 class="text-2xl sm:text-3xl font-semibold mb-6 text-gray-800 border-l-4 border-purple-500 pl-3">Forwarded Events</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
@@ -93,6 +95,94 @@
       @endforelse
     </div>
   </section>
+<!-- 🌟 Clean & Polished Announcement Details (Non-Modal Version) -->
+<section class="announcement-details my-5">
+  <div class="container">
+    <div class="shadow-xl border-0 rounded-4 overflow-hidden"
+         style="backdrop-filter: blur(18px); background: rgba(255,255,255,0.96); transition: all 0.4s ease;">
+
+      <!-- 🔹 Header -->
+      <div class="text-white py-3 px-4 d-flex justify-content-between align-items-center"
+           style="background: linear-gradient(135deg, #f59e0b, #facc15); border-bottom: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+        <h4 class="d-flex align-items-center gap-2 fw-bold mb-0">
+          <i data-lucide="megaphone" class="me-1"></i> Announcement Details
+        </h4>
+        <small class="text-sm opacity-90">
+          <i data-lucide="calendar" class="me-1"></i>
+          <span id="announcementDate">Nov 10, 2025</span>
+        </small>
+      </div>
+
+      <!-- 🔹 Body -->
+      <div class="px-5 py-4">
+        <div class="row g-4 align-items-start">
+
+          <!-- 📌 Left Column -->
+          <div class="col-md-7">
+            <div class="mb-3">
+              <label class="text-muted small">Title</label>
+              <div id="announcementTitle" class="fw-semibold fs-5 text-dark">
+                Barangay Coastal Clean-Up Drive
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="text-muted small">Category</label>
+              <div id="announcementCategory" class="fs-6 text-dark">Environment</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="text-muted small">Location</label>
+              <div id="announcementLocation" class="fs-6 text-dark">Barangay Santa Fe</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="text-muted small">Description</label>
+              <div id="announcementDescription" class="bg-light p-3 rounded-3 shadow-sm fs-6 text-dark">
+                Join us for our annual coastal clean-up event! Let's work together to protect our beaches and marine life.
+              </div>
+            </div>
+          </div>
+
+          <!-- 📌 Right Column -->
+          <div class="col-md-5">
+            <label class="text-muted small">Photo</label>
+            <div class="bg-light p-3 rounded-3 shadow-sm text-center position-relative">
+              <img id="announcementPhoto" src="{{ asset('storage/uploads/cleanup.jpg') }}" alt="Announcement Photo"
+                   class="img-fluid rounded-3 shadow-sm border"
+                   style="max-height: 280px; object-fit: cover; border-color: #ccc;">
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 🔹 Footer -->
+      <div class="bg-light border-top rounded-bottom px-4 py-3 d-flex justify-content-between align-items-center">
+        <small class="text-muted d-flex align-items-center gap-2">
+          <i data-lucide="map-pin"></i> Barangay Bantayan
+        </small>
+        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary hover-scale">
+          <i data-lucide="arrow-left" class="me-1"></i> Back
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ✨ Animations and Effects -->
+<style>
+  .hover-scale {
+    transition: transform 0.2s ease-in-out;
+  }
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => lucide.createIcons());
+</script>
 
 </main>
 

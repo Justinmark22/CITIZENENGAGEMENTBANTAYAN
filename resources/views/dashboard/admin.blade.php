@@ -35,10 +35,10 @@
 
     <p class="uppercase text-xs opacity-70 mt-3">Content</p>
     <a href="{{ route('admin.announcements.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-megaphone"></i> Announce</a>
-    <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-file-text"></i> Reports</a>
-    <a href="{{ route('admin.updates.create') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-plus-square"></i> Updates</a>
+    
+
     <a href="{{ route('admin.events.create') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-calendar-event"></i> Events</a>
-    <a href="{{ route('admin.engagements.index') }}" class="flex items-center gap-2 p-2 rounded hover:bg-white/10"><i class="bi bi-people-fill"></i> Engagement</a>
+   
   </nav>
 </aside>
 
@@ -51,6 +51,10 @@
     <button class="bg-red-500 text-white px-3 py-2 text-sm rounded shadow mb-2 sm:mb-0" onclick="openModal('alertModal')">➕ Add Emergency</button>
 
     <div class="flex gap-3 text-sm mb-2 sm:mb-0">
+      <a href="{{ route('admin.download.database') }}" class="btn btn-primary">
+    Download Database
+</a>
+
   <a href="{{ route('view.bantayan') }}" class="relative font-semibold">
     Bantayan 
     <span id="badge-bantayan" class="hidden absolute -top-2 -right-3 bg-red-500 text-white font-bold rounded-full px-2 text-xs"></span>
