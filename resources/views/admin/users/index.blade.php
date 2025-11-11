@@ -1,8 +1,8 @@
 @php
     // ✅ Group historical active sessions excluding:
     // - Location = "Admin" (case-insensitive)
-    // - Roles = fire, waste, water, mdrrmo (case-insensitive)
-    $excludedRoles = ['fire', 'waste', 'water', 'mdrrmo'];
+    // - Roles = fire, waste, water, mdrrmo, admin (case-insensitive)
+    $excludedRoles = ['fire', 'waste', 'water', 'mdrrmo', 'admin'];
 
     $groupedUsersHistory = ($activeUsersHistory ?? collect())
         ->filter(function ($logs, $location) use ($excludedRoles) {
@@ -25,6 +25,7 @@
             });
         });
 @endphp
+
 
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
