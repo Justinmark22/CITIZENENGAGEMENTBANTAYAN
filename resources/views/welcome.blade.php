@@ -16,7 +16,10 @@
         overflow: hidden;
     }
 
+<<<<<<< HEAD
     /* Grid background */
+=======
+>>>>>>> 4fbfe1802933492fded01705b28f06795586980a
     .grid-background {
         position: fixed;
         top:0; left:0;
@@ -26,6 +29,7 @@
         ), repeating-linear-gradient(
             90deg, rgba(0,255,255,0.05) 0px, rgba(0,255,255,0.05) 1px, transparent 1px, transparent 20px
         );
+<<<<<<< HEAD
         z-index: -3;
         animation: gridmove 20s linear infinite;
     }
@@ -56,6 +60,16 @@
     @keyframes flicker { 0%,19%,21%,23%,25%,54%,56%,100%{text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff;color:#0ff;} 20%,24%,55%{text-shadow:none;color:#088;} }
 
     /* Terminal */
+=======
+        z-index: -2;
+        animation: gridmove 20s linear infinite;
+    }
+    @keyframes gridmove { 0% {background-position: 0 0, 0 0;} 100% {background-position: 200px 200px, 200px 200px;} }
+
+    .neon { color:#0ff; text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff; animation:flicker 1.5s infinite alternate;}
+    @keyframes flicker { 0%,19%,21%,23%,25%,54%,56%,100%{text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff;color:#0ff;} 20%,24%,55%{text-shadow:none;color:#088;} }
+
+>>>>>>> 4fbfe1802933492fded01705b28f06795586980a
     .terminal {
         background: rgba(0,0,0,0.7);
         border:1px solid #0ff;
@@ -72,7 +86,10 @@
 
     .terminal-line { display:block; color:#0ff; }
 
+<<<<<<< HEAD
     /* Buttons */
+=======
+>>>>>>> 4fbfe1802933492fded01705b28f06795586980a
     .neon-button { border:1px solid #0ff; color:#0ff; padding:12px 24px; font-weight:bold; border-radius:8px; transition:0.3s; }
     .neon-button:hover { background:#0ff; color:black; box-shadow:0 0 20px #0ff,0 0 40px #0ff; }
 
@@ -81,6 +98,7 @@
 </style>
 </head>
 <body>
+<<<<<<< HEAD
 
 <div class="grid-background"></div>
 
@@ -90,6 +108,11 @@
 
 <canvas id="particles" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;"></canvas>
 
+=======
+<div class="grid-background"></div>
+<canvas id="particles" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;"></canvas>
+
+>>>>>>> 4fbfe1802933492fded01705b28f06795586980a
 <div class="flex flex-col items-center justify-center min-h-screen space-y-5 p-5">
     <h1 class="text-5xl neon font-bold">CYBERPUNK HACKER TERMINAL</h1>
 
@@ -105,7 +128,11 @@
 
 <!-- Audio -->
 <audio id="cyberMusic" loop>
+<<<<<<< HEAD
     <source src="{{ asset('music/cyberpunk.mp3') }}" type="audio/mpeg">
+=======
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_1a3f4b8372.mp3?filename=cyberpunk-11718.mp3" type="audio/mpeg">
+>>>>>>> 4fbfe1802933492fded01705b28f06795586980a
     Your browser does not support the audio element.
 </audio>
 
@@ -126,12 +153,17 @@
         terminal.scrollTop = terminal.scrollHeight;
     }
 
+<<<<<<< HEAD
     setInterval(addLine, 120);
+=======
+    setInterval(addLine, 120); // New line every 120ms
+>>>>>>> 4fbfe1802933492fded01705b28f06795586980a
 
     // Particles
     const canvas=document.getElementById('particles'), ctx=canvas.getContext('2d');
     canvas.width=window.innerWidth; canvas.height=window.innerHeight;
     const particles=[];
+<<<<<<< HEAD
     for(let i=0;i<150;i++){
         particles.push({
             x:Math.random()*canvas.width,
@@ -179,6 +211,20 @@
         glitch1.style.backgroundImage = `url('${random1}')`;
         glitch2.style.backgroundImage = `url('${random2}')`;
     }, 3000); // Change every 3 seconds
+=======
+    for(let i=0;i<150;i++){ particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,size:Math.random()*3+1,speed:Math.random()*1+0.5,color:['#0ff','#f0f','#0f0','#ff0'][Math.floor(Math.random()*4)]}); }
+    function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{ ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill(); p.y-=p.speed; if(p.y<0)p.y=canvas.height; }); requestAnimationFrame(animate); }
+    animate();
+    window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
+
+    // Music Play
+    const music = document.getElementById('cyberMusic');
+    document.getElementById('playMusic').addEventListener('click',()=>{ music.play(); });
+
+    // Try autoplay (some browsers may require interaction)
+    music.volume=0.5;
+    music.play().catch(()=>console.log('Autoplay blocked, use Play button.'));
+>>>>>>> 4fbfe1802933492fded01705b28f06795586980a
 </script>
 </body>
 </html>
