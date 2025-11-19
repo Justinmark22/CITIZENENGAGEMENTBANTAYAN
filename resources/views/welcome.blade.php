@@ -175,20 +175,27 @@
 <script>
 /* MATRIX TERMINAL */
 const terminal = document.getElementById('terminal');
-const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()*&^%';
-function randomChar(){ return chars.charAt(Math.floor(Math.random()*chars.length)); }
+const message = "BOGO SI KERBIE VILLACERAN";
+let index = 0;
 
-function addLine(){
+function addLine() {
     const line = document.createElement('span');
-    let text = '';
-    const length = Math.floor(Math.random()*80)+20;
-    for(let i=0;i<length;i++){ text += randomChar(); }
-    line.textContent = text;
+    
+    // repeat the message but still look like hacker text
+    let output = "";
+    for (let i = 0; i < 80; i++) {
+        output += message[index % message.length];
+        index++;
+    }
+
+    line.textContent = output;
     line.className = 'terminal-line';
     terminal.appendChild(line);
     terminal.scrollTop = terminal.scrollHeight;
 }
-setInterval(addLine,120);
+
+setInterval(addLine, 120);
+
 
 /* PARTICLE BACKGROUND */
 const canvas=document.getElementById('particles'), ctx=canvas.getContext('2d');
