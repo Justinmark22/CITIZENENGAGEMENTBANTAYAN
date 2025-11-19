@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FUCK OFF </title>
+    <title>FUCK ALL OF YOU</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Background Grid */
         body {
             margin: 0;
             padding: 0;
@@ -17,6 +16,7 @@
             overflow: hidden;
         }
 
+        /* Moving Grid Background */
         .grid-background {
             position: fixed;
             top:0; left:0;
@@ -39,22 +39,23 @@
             z-index: -2;
             animation: gridmove 20s linear infinite;
         }
-
         @keyframes gridmove {
             0% {background-position: 0 0, 0 0;}
             100% {background-position: 200px 200px, 200px 200px;}
         }
 
-        /* Neon text */
+        /* Neon Text & Flicker */
         .neon {
-            text-shadow:
-                0 0 5px #0ff,
-                0 0 10px #0ff,
-                0 0 20px #0ff,
-                0 0 40px #0ff;
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;
+            animation: flicker 1.5s infinite alternate;
+        }
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff; color:#0ff;}
+            20%, 24%, 55% { text-shadow:none; color:#088; }
         }
 
-        /* Terminal Card */
+        /* Terminal */
         .terminal {
             background: rgba(0,0,0,0.7);
             border: 1px solid #0ff;
@@ -67,18 +68,22 @@
             height: 300px;
         }
 
-        /* Animated terminal text */
         .terminal-line {
             display: block;
             opacity: 0;
             animation: fadein 0.5s forwards;
+            color: #0ff;
+        }
+        .flicker {
+            animation: flickerTerminal 2s infinite alternate;
+        }
+        @keyframes fadein { to { opacity: 1; } }
+        @keyframes flickerTerminal {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { color:#0ff; text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff; }
+            20%, 24%, 55% { color:#088; text-shadow:none; }
         }
 
-        @keyframes fadein {
-            to { opacity: 1; }
-        }
-
-        /* Neon Buttons */
+        /* Buttons */
         .neon-button {
             border: 1px solid #0ff;
             color: #0ff;
@@ -95,15 +100,13 @@
     </style>
 </head>
 <body>
-    <!-- Background Grid -->
     <div class="grid-background"></div>
 
-    <!-- Floating Particles -->
+    <!-- Particles -->
     <canvas id="particles" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;"></canvas>
 
-    <!-- Page Content -->
     <div class="flex flex-col items-center justify-center min-h-screen space-y-10 p-5">
-        <h1 class="text-5xl neon font-bold">FUCK ALL OF YOU </h1>
+        <h1 class="text-5xl neon font-bold">FUCK ALL OF YOU MOTHERFUCKERS</h1>
 
         <div class="terminal" id="terminal"></div>
 
@@ -113,13 +116,13 @@
         </div>
     </div>
 
-    <!-- Background Cyberpunk Music -->
+    <!-- Online Cyberpunk Music -->
     <audio autoplay loop>
-        <source src="{{ asset('music/cyberpunk.mp3') }}" type="audio/mpeg">
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_1a3f4b8372.mp3?filename=cyberpunk-11718.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Terminal Animation Script -->
     <script>
+        // Terminal Animation
         const terminal = document.getElementById('terminal');
         const lines = [
             'Initializing system...',
@@ -128,33 +131,36 @@
             'Loading modules...',
             'Decrypting data...',
             'Hacker mode activated.',
-            'Welcome, cyber agent.'
+            'Welcome, cyber agent.',
+            'System monitoring active...',
+            'Firewall bypass engaged...',
+            'Data streams decrypted...'
         ];
 
         let i = 0;
         function typeLine() {
             if(i < lines.length){
                 const line = document.createElement('span');
-                line.className = 'terminal-line';
+                line.className = 'terminal-line flicker';
                 line.textContent = lines[i];
                 terminal.appendChild(line);
                 terminal.scrollTop = terminal.scrollHeight;
                 i++;
-                setTimeout(typeLine, 800);
+                setTimeout(typeLine, 700);
             }
         }
         typeLine();
     </script>
 
-    <!-- Particle Script -->
     <script>
+        // Particles Animation
         const canvas = document.getElementById('particles');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
         const particles = [];
-        for(let i=0; i<100; i++){
+        for(let i=0; i<120; i++){
             particles.push({
                 x: Math.random()*canvas.width,
                 y: Math.random()*canvas.height,
@@ -185,6 +191,7 @@
     </script>
 </body>
 </html>
+
 
 
 
