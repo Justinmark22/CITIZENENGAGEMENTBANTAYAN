@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CYBERPUNK HAC</title>
 <script src="https://cdn.tailwindcss.com"></script>
+
 <style>
     body {
         margin: 0;
@@ -29,9 +30,12 @@
         z-index: -3;
         animation: gridmove 20s linear infinite;
     }
-    @keyframes gridmove { 0% {background-position:0 0,0 0;} 100% {background-position:200px 200px,200px 200px;} }
+    @keyframes gridmove { 
+        0% {background-position:0 0,0 0;} 
+        100% {background-position:200px 200px,200px 200px;} 
+    }
 
-    /* Glitching background images */
+    /* Glitch background images */
     .glitch-bg {
         position: fixed;
         top:0; left:0;
@@ -51,11 +55,45 @@
         100%{opacity:0.05; transform:translate(0,0) rotate(0deg);}
     }
 
-    /* Neon flicker text */
-    .neon { color:#0ff; text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff; animation:flicker 1.5s infinite alternate;}
-    @keyframes flicker { 0%,19%,21%,23%,25%,54%,56%,100%{text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff;color:#0ff;} 20%,24%,55%{text-shadow:none;color:#088;} }
+    /* MANY POP-UP GLITCH IMAGES */
+    .glitch-pop {
+        position: fixed;
+        width: 180px;
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+        opacity: 0.15;
+        mix-blend-mode: screen;
+        animation: popGlitch 3s infinite ease-in-out;
+        z-index: -1;
+    }
 
-    /* Terminal */
+    @keyframes popGlitch {
+        0% { transform: scale(0.8) translate(0,0); opacity:0.05; }
+        25% { transform: scale(1.1) translate(-10px,5px); opacity:0.25; }
+        50% { transform: scale(0.9) translate(8px,-5px); opacity:0.18; }
+        75% { transform: scale(1.2) translate(-5px,10px); opacity:0.30; }
+        100% { transform: scale(0.8) translate(0,0); opacity:0.10; }
+    }
+
+    /* Neon text */
+    .neon { 
+        color:#0ff; 
+        text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff; 
+        animation:flicker 1.5s infinite alternate;
+    }
+    @keyframes flicker { 
+        0%,19%,21%,23%,25%,54%,56%,100%{
+            text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff;
+            color:#0ff;
+        } 
+        20%,24%,55%{
+            text-shadow:none;
+            color:#088;
+        } 
+    }
+
+    /* Terminal box */
     .terminal {
         background: rgba(0,0,0,0.7);
         border:1px solid #0ff;
@@ -73,20 +111,46 @@
     .terminal-line { display:block; color:#0ff; }
 
     /* Buttons */
-    .neon-button { border:1px solid #0ff; color:#0ff; padding:12px 24px; font-weight:bold; border-radius:8px; transition:0.3s; }
-    .neon-button:hover { background:#0ff; color:black; box-shadow:0 0 20px #0ff,0 0 40px #0ff; }
+    .neon-button { 
+        border:1px solid #0ff; 
+        color:#0ff; 
+        padding:12px 24px; 
+        font-weight:bold; 
+        border-radius:8px; 
+        transition:0.3s; 
+    }
+    .neon-button:hover { 
+        background:#0ff; 
+        color:black; 
+        box-shadow:0 0 20px #0ff,0 0 40px #0ff; 
+    }
 
-    .music-btn { margin-top:10px; border:1px solid #f0f; color:#f0f; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; }
-    .music-btn:hover { background:#f0f; color:black; box-shadow:0 0 20px #f0f,0 0 40px #f0f; }
+    .music-btn { 
+        margin-top:10px; 
+        border:1px solid #f0f; 
+        color:#f0f; 
+        padding:10px 20px; 
+        border-radius:8px; 
+        cursor:pointer; 
+        font-weight:bold; 
+    }
+    .music-btn:hover { 
+        background:#f0f; 
+        color:black; 
+        box-shadow:0 0 20px #f0f,0 0 40px #f0f; 
+    }
 </style>
 </head>
 <body>
 
 <div class="grid-background"></div>
 
-<!-- Glitching background images from public/images -->
+<!-- Static glitch background layers -->
 <div class="glitch-bg" id="glitch1" style="background-image:url('{{ asset('images/bg1.jpg') }}');"></div>
 <div class="glitch-bg" id="glitch2" style="background-image:url('{{ asset('images/bg2.jpg') }}');"></div>
+
+<!-- Container for MANY glitch pop-up images -->
+<div id="glitchContainer"></div>
 
 <canvas id="particles" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;"></canvas>
 
@@ -106,79 +170,92 @@
 <!-- Audio -->
 <audio id="cyberMusic" loop>
     <source src="{{ asset('music/cyberpunk.mp3') }}" type="audio/mpeg">
-    Your browser does not support the audio element.
 </audio>
 
 <script>
-    // Matrix-style Terminal
-    const terminal = document.getElementById('terminal');
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()*&^%';
-    function randomChar() { return chars.charAt(Math.floor(Math.random() * chars.length)); }
+/* MATRIX TERMINAL */
+const terminal = document.getElementById('terminal');
+const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()*&^%';
+function randomChar(){ return chars.charAt(Math.floor(Math.random()*chars.length)); }
 
-    function addLine() {
-        const line = document.createElement('span');
-        let text = '';
-        const length = Math.floor(Math.random() * 80) + 20;
-        for(let i=0;i<length;i++) { text += randomChar(); }
-        line.textContent = text;
-        line.className='terminal-line';
-        terminal.appendChild(line);
-        terminal.scrollTop = terminal.scrollHeight;
-    }
+function addLine(){
+    const line = document.createElement('span');
+    let text = '';
+    const length = Math.floor(Math.random()*80)+20;
+    for(let i=0;i<length;i++){ text += randomChar(); }
+    line.textContent = text;
+    line.className = 'terminal-line';
+    terminal.appendChild(line);
+    terminal.scrollTop = terminal.scrollHeight;
+}
+setInterval(addLine,120);
 
-    setInterval(addLine, 120);
+/* PARTICLE BACKGROUND */
+const canvas=document.getElementById('particles'), ctx=canvas.getContext('2d');
+canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+const particles=[];
+for(let i=0;i<150;i++){
+    particles.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        size:Math.random()*3+1,
+        speed:Math.random()*1+0.5,
+        color:['#0ff','#f0f','#0f0','#ff0'][Math.floor(Math.random()*4)]
+    });
+}
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+        ctx.fillStyle=p.color;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+        ctx.fill();
+        p.y -= p.speed;
+        if(p.y<0) p.y=canvas.height;
+    });
+    requestAnimationFrame(animate);
+}
+animate();
 
-    // Particles
-    const canvas=document.getElementById('particles'), ctx=canvas.getContext('2d');
-    canvas.width=window.innerWidth; canvas.height=window.innerHeight;
-    const particles=[];
-    for(let i=0;i<150;i++){
-        particles.push({
-            x:Math.random()*canvas.width,
-            y:Math.random()*canvas.height,
-            size:Math.random()*3+1,
-            speed:Math.random()*1+0.5,
-            color:['#0ff','#f0f','#0f0','#ff0'][Math.floor(Math.random()*4)]
-        });
-    }
-    function animate(){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        particles.forEach(p=>{
-            ctx.fillStyle=p.color;
-            ctx.beginPath();
-            ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
-            ctx.fill();
-            p.y -= p.speed;
-            if(p.y<0) p.y=canvas.height;
-        });
-        requestAnimationFrame(animate);
-    }
-    animate();
-    window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
+/* WORKING MUSIC */
+const music=document.getElementById('cyberMusic');
+document.getElementById('playMusic').addEventListener('click',()=>{ music.play(); });
+music.volume=0.5;
 
-    // Music
-    const music = document.getElementById('cyberMusic');
-    document.getElementById('playMusic').addEventListener('click',()=>{ music.play(); });
+/* MANY POP-UP GLITCH IMAGES */
+const glitchContainer = document.getElementById('glitchContainer');
+const popImages = [
+    "{{ asset('images/kebri.png') }}",
+    "{{ asset('images/kebri.png') }}",
+    "{{ asset('images/kebri.png') }}"
+];
 
-    // Try autoplay
-    music.volume=0.5;
-    music.play().catch(()=>console.log('Autoplay blocked, use Play button.'));
+function createGlitchPop(){
+    const img=document.createElement('div');
+    img.className="glitch-pop";
 
-    // Glitching images randomly
-    const glitchImages = [
-        '{{ asset('images/kebri.png') }}',
-        '{{ asset('images/kebri.png') }}',
-        '{{ asset('images/kebri.png') }}'
-    ];
-    const glitch1 = document.getElementById('glitch1');
-    const glitch2 = document.getElementById('glitch2');
+    // Random image
+    img.style.backgroundImage=`url('${popImages[Math.floor(Math.random()*popImages.length)]}')`;
 
-    setInterval(()=>{
-        const random1 = glitchImages[Math.floor(Math.random()*glitchImages.length)];
-        const random2 = glitchImages[Math.floor(Math.random()*glitchImages.length)];
-        glitch1.style.backgroundImage = `url('${random1}')`;
-        glitch2.style.backgroundImage = `url('${random2}')`;
-    }, 3000); // Change every 3 seconds
+    // Random size
+    const size=Math.random()*120+80;
+    img.style.width=size+"px";
+    img.style.height=size+"px";
+
+    // Random position
+    img.style.top=Math.random()*window.innerHeight+"px";
+    img.style.left=Math.random()*window.innerWidth+"px";
+
+    glitchContainer.appendChild(img);
+
+    setTimeout(()=>{ img.remove(); },3000);
+}
+
+// Create 5 new glitch images every 0.8 seconds
+setInterval(()=>{ 
+    for(let i=0;i<5;i++){ createGlitchPop(); }
+},800);
 </script>
+
 </body>
 </html>
