@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CYBERPUNK HAC</title>
+<title>FUCK OFF MOTHER FUCKEERS</title>
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
@@ -139,6 +139,31 @@
         color:black; 
         box-shadow:0 0 20px #f0f,0 0 40px #f0f; 
     }
+
+    /* AUDIO TAPE VISUALIZER */
+    #audioVisualizer {
+        width: 200px;
+        height: 80px;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        opacity: 0;
+        transition: 0.4s ease;
+    }
+
+    .bar {
+        width: 8px;
+        background: #0ff;
+        box-shadow: 0 0 10px #0ff;
+        border-radius: 4px;
+        animation: bounce 0.7s infinite ease-in-out alternate;
+    }
+
+    @keyframes bounce {
+        from { height: 10px; }
+        to { height: 80px; }
+    }
+
 </style>
 </head>
 <body>
@@ -146,8 +171,8 @@
 <div class="grid-background"></div>
 
 <!-- Static glitch background layers -->
-<div class="glitch-bg" id="glitch1" style="background-image:url('{{ asset('images/bg1.jpg') }}');"></div>
-<div class="glitch-bg" id="glitch2" style="background-image:url('{{ asset('images/bg2.jpg') }}');"></div>
+<div class="glitch-bg" id="glitch1" style="background-image:url('{{ asset('images/kebri.png') }}');"></div>
+<div class="glitch-bg" id="glitch2" style="background-image:url('{{ asset('images/kebri.png') }}');"></div>
 
 <!-- Container for MANY glitch pop-up images -->
 <div id="glitchContainer"></div>
@@ -155,7 +180,7 @@
 <canvas id="particles" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;"></canvas>
 
 <div class="flex flex-col items-center justify-center min-h-screen space-y-5 p-5">
-    <h1 class="text-5xl neon font-bold">CYBERPUNK HACKER TERMINAL</h1>
+    <h1 class="text-5xl neon font-bold">THE BEST HACKER OF THE MOTHERFUCKING WORLD</h1>
 
     <div class="terminal" id="terminal"></div>
 
@@ -165,6 +190,16 @@
     </div>
 
     <button id="playMusic" class="music-btn">Play Cyberpunk Music</button>
+
+    <!-- AUDIO TAPE VISUALIZER -->
+    <div id="audioVisualizer">
+        <div class="bar" style="animation-delay:0s"></div>
+        <div class="bar" style="animation-delay:0.1s"></div>
+        <div class="bar" style="animation-delay:0.2s"></div>
+        <div class="bar" style="animation-delay:0.3s"></div>
+        <div class="bar" style="animation-delay:0.4s"></div>
+        <div class="bar" style="animation-delay:0.5s"></div>
+    </div>
 </div>
 
 <!-- Audio -->
@@ -181,7 +216,6 @@ let index = 0;
 function addLine() {
     const line = document.createElement('span');
     
-    // repeat the message but still look like hacker text
     let output = "";
     for (let i = 0; i < 80; i++) {
         output += message[index % message.length];
@@ -224,10 +258,39 @@ function animate(){
 }
 animate();
 
-/* WORKING MUSIC */
+
+/* AUTOPLAY MUSIC + VISUALIZER */
 const music=document.getElementById('cyberMusic');
-document.getElementById('playMusic').addEventListener('click',()=>{ music.play(); });
+const playBtn=document.getElementById('playMusic');
+const visualizer=document.getElementById('audioVisualizer');
+let isPlaying=false;
+
 music.volume=0.5;
+
+// Try autoplay
+music.play().then(() => {
+    isPlaying=true;
+    playBtn.textContent="Pause Music";
+    visualizer.style.opacity=1;
+}).catch(() => {
+    console.log("Autoplay blocked by browser.");
+});
+
+// Click toggle
+playBtn.addEventListener('click',()=>{
+    if(!isPlaying){
+        music.play();
+        isPlaying=true;
+        playBtn.textContent="Pause Music";
+        visualizer.style.opacity=1;
+    } else {
+        music.pause();
+        isPlaying=false;
+        playBtn.textContent="Play Music";
+        visualizer.style.opacity=0;
+    }
+});
+
 
 /* MANY POP-UP GLITCH IMAGES */
 const glitchContainer = document.getElementById('glitchContainer');
@@ -240,16 +303,12 @@ const popImages = [
 function createGlitchPop(){
     const img=document.createElement('div');
     img.className="glitch-pop";
-
-    // Random image
     img.style.backgroundImage=`url('${popImages[Math.floor(Math.random()*popImages.length)]}')`;
 
-    // Random size
     const size=Math.random()*120+80;
     img.style.width=size+"px";
     img.style.height=size+"px";
 
-    // Random position
     img.style.top=Math.random()*window.innerHeight+"px";
     img.style.left=Math.random()*window.innerWidth+"px";
 
@@ -258,7 +317,6 @@ function createGlitchPop(){
     setTimeout(()=>{ img.remove(); },3000);
 }
 
-// Create 5 new glitch images every 0.8 seconds
 setInterval(()=>{ 
     for(let i=0;i<5;i++){ createGlitchPop(); }
 },800);
