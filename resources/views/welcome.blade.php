@@ -15,6 +15,7 @@
         font-family: 'Courier New', Courier, monospace;
         overflow: hidden;
     }
+
     .grid-background {
         position: fixed;
         top:0; left:0;
@@ -32,11 +33,21 @@
     .neon { color:#0ff; text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff; animation:flicker 1.5s infinite alternate;}
     @keyframes flicker { 0%,19%,21%,23%,25%,54%,56%,100%{text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff;color:#0ff;} 20%,24%,55%{text-shadow:none;color:#088;} }
 
-    .terminal { background: rgba(0,0,0,0.7); border:1px solid #0ff; box-shadow:0 0 20px #0ff; border-radius:10px; padding:20px; max-width:700px; width:90%; overflow-y:auto; height:300px; }
-    .terminal-line { display:block; opacity:0; animation:fadein 0.5s forwards; color:#0ff; }
-    .flicker { animation: flickerTerminal 2s infinite alternate; }
-    @keyframes fadein { to { opacity: 1; } }
-    @keyframes flickerTerminal { 0%,18%,22%,25%,53%,57%,100%{color:#0ff;text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff;} 20%,24%,55%{color:#088;text-shadow:none;} }
+    .terminal {
+        background: rgba(0,0,0,0.7);
+        border:1px solid #0ff;
+        box-shadow:0 0 20px #0ff;
+        border-radius:10px;
+        padding:20px;
+        max-width:700px;
+        width:90%;
+        overflow-y:auto;
+        height:400px;
+        font-size:16px;
+        line-height:1.2em;
+    }
+
+    .terminal-line { display:block; color:#0ff; }
 
     .neon-button { border:1px solid #0ff; color:#0ff; padding:12px 24px; font-weight:bold; border-radius:8px; transition:0.3s; }
     .neon-button:hover { background:#0ff; color:black; box-shadow:0 0 20px #0ff,0 0 40px #0ff; }
@@ -46,59 +57,63 @@
 </style>
 </head>
 <body>
-    <div class="grid-background"></div>
-    <canvas id="particles" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;"></canvas>
+<div class="grid-background"></div>
+<canvas id="particles" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;"></canvas>
 
-    <div class="flex flex-col items-center justify-center min-h-screen space-y-10 p-5">
-        <h1 class="text-5xl neon font-bold">CYBERPUNK HACKER TERMINAL</h1>
+<div class="flex flex-col items-center justify-center min-h-screen space-y-5 p-5">
+    <h1 class="text-5xl neon font-bold">CYBERPUNK HACKER TERMINAL</h1>
 
-        <div class="terminal" id="terminal"></div>
+    <div class="terminal" id="terminal"></div>
 
-        <div class="flex space-x-5">
-            <button class="neon-button">Launch Hack</button>
-            <button class="neon-button">Access Server</button>
-        </div>
-
-        <!-- Music Play Button -->
-        <button id="playMusic" class="music-btn">Play Cyberpunk Music</button>
+    <div class="flex space-x-5">
+        <button class="neon-button">Launch Hack</button>
+        <button class="neon-button">Access Server</button>
     </div>
 
-    <!-- Audio Element -->
-    <audio id="cyberMusic" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_1a3f4b8372.mp3?filename=cyberpunk-11718.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+    <button id="playMusic" class="music-btn">Play Cyberpunk Music</button>
+</div>
 
-    <script>
-        // Terminal
-        const terminal = document.getElementById('terminal');
-        const lines = [
-            'Initializing system...', 'Connecting to secure server...', 'Access granted.',
-            'Loading modules...', 'Decrypting data...', 'Hacker mode activated.',
-            'Welcome, cyber agent.', 'System monitoring active...', 'Firewall bypass engaged...', 'Data streams decrypted...'
-        ];
-        let i=0;
-        function typeLine(){ if(i<lines.length){ const line=document.createElement('span'); line.className='terminal-line flicker'; line.textContent=lines[i]; terminal.appendChild(line); terminal.scrollTop=terminal.scrollHeight; i++; setTimeout(typeLine,700); } }
-        typeLine();
+<!-- Audio -->
+<audio id="cyberMusic" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_1a3f4b8372.mp3?filename=cyberpunk-11718.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
 
-        // Particles
-        const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');
-        canvas.width=window.innerWidth; canvas.height=window.innerHeight;
-        const particles=[];
-        for(let i=0;i<120;i++){ particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,size:Math.random()*3+1,speed:Math.random()*1+0.5,color:['#0ff','#f0f','#0f0','#ff0'][Math.floor(Math.random()*4)]}); }
-        function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{ ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill(); p.y-=p.speed; if(p.y<0)p.y=canvas.height; }); requestAnimationFrame(animate); }
-        animate();
-        window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
+<script>
+    // Matrix-style Terminal
+    const terminal = document.getElementById('terminal');
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()*&^%';
+    function randomChar() { return chars.charAt(Math.floor(Math.random() * chars.length)); }
 
-        // Music play button
-        const music = document.getElementById('cyberMusic');
-        document.getElementById('playMusic').addEventListener('click',()=>{ music.play(); });
-    </script>
+    function addLine() {
+        const line = document.createElement('span');
+        let text = '';
+        const length = Math.floor(Math.random() * 80) + 20;
+        for(let i=0;i<length;i++) { text += randomChar(); }
+        line.textContent = text;
+        line.className='terminal-line';
+        terminal.appendChild(line);
+        terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    setInterval(addLine, 120); // New line every 120ms
+
+    // Particles
+    const canvas=document.getElementById('particles'), ctx=canvas.getContext('2d');
+    canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+    const particles=[];
+    for(let i=0;i<150;i++){ particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,size:Math.random()*3+1,speed:Math.random()*1+0.5,color:['#0ff','#f0f','#0f0','#ff0'][Math.floor(Math.random()*4)]}); }
+    function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{ ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill(); p.y-=p.speed; if(p.y<0)p.y=canvas.height; }); requestAnimationFrame(animate); }
+    animate();
+    window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
+
+    // Music Play
+    const music = document.getElementById('cyberMusic');
+    document.getElementById('playMusic').addEventListener('click',()=>{ music.play(); });
+
+    // Try autoplay (some browsers may require interaction)
+    music.volume=0.5;
+    music.play().catch(()=>console.log('Autoplay blocked, use Play button.'));
+</script>
 </body>
 </html>
-
-
-
-
-
-
