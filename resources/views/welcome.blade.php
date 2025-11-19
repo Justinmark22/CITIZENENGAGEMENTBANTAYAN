@@ -204,7 +204,7 @@
 
 <!-- Audio -->
 <audio id="cyberMusic" loop>
-    <source src="{{ asset('music/cyberpunk-132336.mp3') }}" type="audio/mpeg">
+    <source src="{{ asset('music/Sub_Urban_-_Cradles_slowed_reverb_(mp3.pm).mp3') }}" type="audio/mpeg">
 </audio>
 
 <script>
